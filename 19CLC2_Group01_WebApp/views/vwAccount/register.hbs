@@ -1,0 +1,70 @@
+{{#section 'css'}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+{{/section}}
+
+{{#section 'js'}}
+    <script scr="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script>
+        $('#frmRegister').on('submit', function(e){
+            e.preventDefault()
+            const username = $('#username').val()
+            if(username.length==0){
+                alert('Invalid data')
+                return
+            }
+            $('#frmRegister').off('submit').submit();
+        })
+
+        $('#DoB').datetimepicker()
+        $('#username').select()
+    </script>
+{{/section}}
+<form id="frmRegister"method="POST">
+    <div class="card">
+        <h4 class="card-header">
+            Account Register
+        </h4>
+        <div class="card-body">
+            <h5>Account Information</h5>
+            <div class="form-group">
+                <label for="username">Username: </label>
+                <input type="text" class="form-control" id="username" name="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password: </label>
+                <input type="password" class="form-control" id="password" name="password">
+            </div>
+            <div class="form-group mb-5">
+                <label for="txtConfirm">ConfirmPassword: </label>
+                <input type="password" class="form-control" id="txtConfirm">
+            </div>
+            <h5>Personal Information</h5>
+            <div class="form-group">
+                <label for="Name">Name:</label>
+                <input type="text" class="form-control" id="Name" name="Name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" >
+            </div>
+            <div class="form-group">
+                <label for="DoB">DoB:</label>
+                <input type="text" class="form-control" id="DoB" name="DoB">
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <a class="btn btn-success" href="/admin/categories" role="button">
+                <i class="fa fa-backward" aria-hidden="true"></i>
+                List
+            </a>
+            <button type="submit" formaction="/admin/categories/del" class="btn btn-danger">
+                <i class="fa fa-check" aria-hidden="true"></i>
+                Delete
+            </button>
+            <button type="submit" formaction="/admin/categories/patch" class="btn btn-primary">
+                <i class="fa fa-check" aria-hidden="true"></i>
+                Save
+            </button>
+        </div>
+    </div>
+</form>

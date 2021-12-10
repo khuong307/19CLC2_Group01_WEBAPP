@@ -1,0 +1,41 @@
+<div class="card text">
+    <h4 class="card-header d-flex justify-content-between">
+        Products
+        <a class="btn btn-sm btn-outline-primary" href="/admin/products/add" role="button">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            Add Product
+        </a>
+    </h4>
+
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Product</th>
+            <th scope="col">Current Price</th>
+            <th scope="col">Step Price</th>
+            <th scope="col">Description</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.products}}
+            <tr>
+                <th scope="row">{{ProID}}</th>
+                <td>{{ProName}}</td>
+                <td>{{format_number CurrentPrice}}</td>
+                <td>{{StepPrice}}</td>
+                <td>{{TinyDes}}</td>
+                <td class="text-right">\
+                    <a name="" id="" class="btn btn-sm btn-primary" href="/admin/categories/edit?id={{ProID}}" role="button">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    <div class="card-footer text-muted">
+        2 days ago
+    </div>
+</div>

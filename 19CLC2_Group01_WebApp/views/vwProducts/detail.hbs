@@ -1,0 +1,17 @@
+<div class="card">
+    <h4 class="card-header">
+        {{this.product.ProName}}
+    </h4>
+    <div class="card-body">
+        <img  width="250px" height="250px" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+        <p class="card-text mt-4">
+            Giá hiện tại: <span class = "font-weight-bold text-danger">{{format_number this.product.CurrentPrice}}</span>
+        </p>
+        <p class="card-text">
+            Giá tăng tối thiểu: {{format_number this.product.StepPrice}}
+        </p>
+        <p class="card-text">
+            {{{this.product.FullDes}}}
+        </p>
+    </div>
+</div>

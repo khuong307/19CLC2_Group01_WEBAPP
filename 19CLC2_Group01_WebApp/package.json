@@ -1,0 +1,22 @@
+{
+  "type": "module",
+  "name": "19clc2_group01_webapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^6.0.2",
+    "express-handlebars-sections": "^1.0.1",
+    "knex": "^0.95.14",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.3.3",
+    "numeral": "^2.0.6"
+  }
+}
