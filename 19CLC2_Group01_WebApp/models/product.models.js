@@ -42,6 +42,21 @@ export default {
     async countByCatID(CatID){
         const list = await db('Product').where('CatID2', CatID).count({amount: 'ProID' })
         return list[0].amount
+    },
+
+    async getRelateProduct(CatID2, ProID){
+        const list = await db('Product').where('CatID2', CatID2).andWhereNot('ProID', ProID).limit(5);
+        return list;
+    },
+
+    async getCatID2FromProID(ProID){
+        const CatID2 = await db('Product').select('Product.CatID2').where('ProID', ProID);
+        return CatID2[0]
+    },
+
+    async getCatID1FromCatID2(CatID2){
+        const CatID1 = await db('CategoryL2').select('CategoryL2.CatID1').where('CatID2', CatID2);
+        return CatID1[0]
     }
 
 }

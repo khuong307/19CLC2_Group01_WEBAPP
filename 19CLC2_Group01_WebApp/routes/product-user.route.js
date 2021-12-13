@@ -53,6 +53,7 @@ router.get('/byCat/:id', async function(req, res){
     }
 
     const list = await productModel.findPageByCatID(catID2, limit, offset)
+
     res.render('vwProducts/byCat', {
         products: list,
         empty: list.length === 0,
@@ -95,13 +96,23 @@ router.get('/detail/:id', async function(req, res){
     }
 
     const product = await productModel.findById(proID)
-    console.log(product)
+    const catID2 = await productModel.getCatID2FromProID(proID)
+    const catID1 = await productModel.getCatID1FromCatID2(catID2.CatID2)
+    const list5Relate = await productModel.getRelateProduct(catID2.CatID2, proID)
+
+    for (const c of list5Relate){
+        c.CatID1 =  catID1.CatID1
+    }
+
+
     if(product===null){
         return res.redirect('/')
     }
     res.render('vwProducts/detail', {
         product,
-        empty: product.length === 0
+        empty: product.length === 0,
+        list5Relate,
+        Category1: catID1.CatID1
     })
 })
 
