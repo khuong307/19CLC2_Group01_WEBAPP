@@ -6,6 +6,44 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {{{_sections.css}}}
+    <style>
+        .just-padding {
+            padding: 15px;
+        }
+
+        .list-group.list-group-root {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .list-group.list-group-root .list-group {
+            margin-bottom: 0;
+        }
+
+        .list-group.list-group-root .list-group-item {
+            border-radius: 0;
+            border-width: 1px 0 0 0;
+        }
+
+        .list-group.list-group-root > .list-group-item:first-child {
+            border-top-width: 0;
+        }
+
+        .list-group.list-group-root > .list-group > .list-group-item {
+            padding-left: 50px;
+        }
+
+        .list-group.list-group-root > .list-group > .list-group > .list-group-item {
+            padding-left: 75px;
+        }
+
+        .list-group-item .glyphicon {
+            margin-right: 5px;
+        }
+        body {
+            font-family: 'Advent Pro';font-size: 18px;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
@@ -76,28 +114,31 @@
                 <h4 class="card-header">
                     Categories
                 </h4>
-                <div class="list-group list-group-flush">
-                    {{#each lcCategories}}
-                        <a href="/products/byCat/{{CatID2}}" class="list-group-item list-group-item-action {{#if isActive}} active {{/if}}">
-                            <i class="fa fa-caret-right" aria-hidden="true"></i>
-                            {{CatName2}}
-                            {{#if ProductCount}}
-                                <span class="badge badge-pill badge-danger float-right">{{ProductCount}}</span>
-                            {{/if}}
-                        </a>
-                    {{/each}}
-                  </div>
-            </div>
-            <div class="card mt-3">
-                <h4 class="card-header">
-                    Header
-                </h4>
-                <div class="card-body">
-                    <h4 class="card-title">Title</h4>
-                    <p class="card-text">Text</p>
-                </div>
-                <div class="card-footer text-muted">
-                    Footer
+                <div class="just-padding">
+                    <div class="list-group list-group-root well">
+                        {{#each CategoryL1}}
+                            <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if isActive}}style="color: blue" {{/if}} data-toggle="collapse">
+                                <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                {{CatName1}}
+                                {{#if numberPro}}
+                                    <span class="badge badge-pill badge-danger float-right">{{numberPro}}</span>
+                                {{/if}}
+                            </a>
+                        <div class="list-group collapse" id="{{CatID1}}">
+                            {{#each ../lcCategories}}
+                                {{#ifCond ../this.CatID1 this.CatID1}}
+                                    <a href="/products/byCat/{{CatID2}}" class="list-group-item list-group-item-action" {{#if  this.isActive}} style="color: blue" {{/if}}>
+                                        <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                        {{CatName2}}
+                                        {{#if ProductCount}}
+                                            <span class="badge badge-pill badge-success float-right">{{ProductCount}}</span>
+                                        {{/if}}
+                                    </a>
+                                {{/ifCond}}
+                            {{/each}}
+                        </div>
+                        {{/each}}
+                    </div>
                 </div>
             </div>
         </div>

@@ -10,8 +10,27 @@ router.get('/byCat/:id', async function(req, res){
     for (const c of res.locals.lcCategories){ // nhấn vào thì hiện xanh.
         if(c.CatID2 === catID2){
             c.isActive = 1;
-            console.log(c.CatID2, catID2)
             break
+        }
+    }
+
+    for (const c of res.locals.lcCategories){ // nhấn vào thì hiện xanh.
+        if(c.isActive === 1){
+            for (const d of res.locals.CategoryL1){
+                if (d.CatID1 === c.CatID1){
+                    d.isActive = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
         }
     }
 
@@ -52,6 +71,26 @@ router.get('/detail/:id', async function(req, res){
         if(c.CatID2 === CatID){
             c.isActive = 1;
             break
+        }
+    }
+
+    for (const c of res.locals.lcCategories){ // nhấn vào thì hiện xanh.
+        if(c.isActive === 1){
+            for (const d of res.locals.CategoryL1){
+                if (d.CatID1 === c.CatID1){
+                    d.isActive = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
         }
     }
 
