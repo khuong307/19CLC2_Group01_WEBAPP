@@ -1,3 +1,19 @@
+{{#section 'js'}}
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/hilios/jQuery.countdown@2.0.4/dist/jquery.countdown.min.js"></script>
+    <script>
+        $(function(){
+            $('[data-countdown]').each(function() {
+                var $this = $(this), finalDate = $(this).data('countdown');
+                $this.countdown(finalDate, function(event) {
+                    $this.html(event.strftime('%D days %H:%M:%S'))}).on('finish.countdown', function() {
+                    alert("Finish");
+                });
+            });
+        });
+    </script>
+
+{{/section}}
 <div class="card">
     <h4 class="card-header">
         {{this.product.ProName}}
@@ -9,14 +25,35 @@
                 <img  style="padding-left: 20px" width="250px" height="250px" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
         </div>
 
-        <p class="card-text mt-4">
-            Giá hiện tại: <span class = "font-weight-bold text-danger">{{format_number this.product.CurrentPrice}}</span>
-        </p>
-        <p class="card-text">
-            Giá tăng tối thiểu: {{format_number this.product.StepPrice}}
-        </p>
-        <p class="card-text">
-            {{{this.product.FullDes}}}
-        </p>
+        <div class="row">
+            <div class="col-md-6" style="text-align: justify-all; padding-top: 20px">
+                <p class="card-text mt-4">
+                    Giá hiện tại: <span class = "font-weight-bold text-danger">{{format_number this.product.CurrentPrice}}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fa fa-user"></i>
+                    Người bán: {{this.product.UploadUser}}
+                </p>
+                <p class="card-text">
+                    <i class="fa fa-clock-o"></i>
+                    <span style="font-weight: bold">Ngày đăng:</span> {{formatDate this.product.UploadDate}}
+                </p>
+                <p class="card-text">
+                    <span style="font-weight: bold"> <i class="fa fa-clock-o"></i>
+                        Thời gian hết hạn:  </span>
+                    <span style="color:#181f5e; font-weight: bold" data-countdown="{{formatDateCountdown this.product.EndDate}}"></span>
+                </p>
+                <p style="font-weight: bold">Thông tin chi tiết: </p>
+                <p class="card-text">
+                    {{{this.product.TinyDes}}}
+                </p>
+                <p class="card-text">
+                    {{{this.product.FullDes}}}
+                </p>
+            </div>
+            <div class="col-md-6" style="padding-top: 20px">
+                <img  width="100%" height="100%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+            </div>
+        </div>
     </div>
 </div>

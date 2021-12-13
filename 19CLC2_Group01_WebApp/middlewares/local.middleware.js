@@ -9,8 +9,7 @@ export default function(app){
 
 
         const CategoryL1 = await categoryModel.findALlCategoryL1()
-        res.locals.CategoryL1 = CategoryL1
-        console.log(CategoryL1)
+        res.locals.CategoryL1 = CategoryL1;
         next()
     })
 }

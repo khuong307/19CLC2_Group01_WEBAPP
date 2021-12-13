@@ -95,6 +95,7 @@ router.get('/detail/:id', async function(req, res){
     }
 
     const product = await productModel.findById(proID)
+    console.log(product)
     if(product===null){
         return res.redirect('/')
     }
