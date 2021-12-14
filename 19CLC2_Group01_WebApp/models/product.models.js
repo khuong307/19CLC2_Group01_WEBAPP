@@ -64,6 +64,13 @@ export default {
         return db('WatchList').insert(entity);
     },
 
+    delFromWatchList(entity){
+        return db('WatchList').where({
+            'UserID': entity.UserID,
+            'ProID': entity.ProID
+        }).del();
+    },
+
     async countWatchList(){
         const lst = await db('WatchList').select();
         return lst.length;

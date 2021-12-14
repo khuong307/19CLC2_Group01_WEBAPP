@@ -109,6 +109,7 @@ router.get('/detail/:id', async function(req, res){
     if(product===null){
         return res.redirect('/')
     }
+
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
@@ -166,13 +167,28 @@ router.get('/WatchList', async function (req, res){
 
 router.post('/addWatchList', async function (req, res){
     const id = req.body.ProID;
+    console.log(id);
     const entity = {
         UserID: 'U002',
         ProID: id
     };
     const ret = await ProductModels.addToWatchList(entity);
-    const obj = await ProductModels.getCatID2FromProID(id);
-    res.redirect(`/products/byCat/${obj.CatID2}`);
+    if (req.body.ProStatus === undefined){
+        const obj = await ProductModels.getCatID2FromProID(id);
+        res.redirect(`/products/byCat/${obj.CatID2}`);
+    }
+    else
+        res.redirect(`/products/detail/${id}`)
+});
+
+router.post('/delWatchList', async function(req, res){
+    const id = req.body.ProID;
+    const entity = {
+        UserID: 'U002',
+        ProID: id
+    };
+    const ret = await ProductModels.delFromWatchList(entity);
+    res.redirect('/products/WatchList');
 });
 // Khang
 

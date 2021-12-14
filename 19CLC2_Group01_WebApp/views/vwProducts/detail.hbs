@@ -29,6 +29,17 @@
 <div class="card">
     <h4 class="card-header">
         {{this.product.ProName}}
+        <!--Khang: Add to watch list-->
+        <div class="float-right">
+            <form action="/products/addWatchList" method="post">
+                <input type="hidden" name="ProID" value={{this.product.ProID}}>
+                <input type="hidden" name="ProStatus" value="detail">
+                <button class="btn btn-outline-danger" type="submit">
+                    <i class="fa fa-heart-o"></i>
+                </button>
+            </form>
+        </div>
+        <!--Khang: Add to watch list-->
     </h4>
     <div class="card-body">
         <div class="row">
