@@ -6,6 +6,14 @@ const router = express.Router();
 
 router.get('/', async function(req, res){
     const list = await categoryModel.findAll()
+    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
+        }
+    }
     res.render('vwCategory/index', {
         categories: list
     })
