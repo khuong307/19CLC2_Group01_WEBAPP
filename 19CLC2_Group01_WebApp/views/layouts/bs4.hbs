@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>E-Commerce Web App</title>
+    <title>E-Bidding Web App</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {{{_sections.css}}}
@@ -90,6 +90,16 @@
                     Sign In
                 </a>
             </li>
+
+            <!--Khang: View Watch List to layout-->
+            <li class="nav-item active">
+                <a class="nav-link text-danger" href="/products/WatchList">
+                    <i class="fa fa-heart"></i>
+                    Watch List: <span><b>{{lengthOfWatchList}} item(s)</b></span>
+                </a>
+            </li>
+            <!--Khang: View Watch List to layout-->
+
             <li class="nav-item active dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                     Hi,  <b>nvdkhuong!</b>

@@ -30,7 +30,7 @@
 
 <div class="card text">
     <h4 class="card-header d-flex justify-content-between">
-        Products
+        Watch List
     </h4>
     <div class="card-body">
         {{#if this.empty}}
@@ -102,11 +102,11 @@
                                 </a>
 
                                 <!--Khang: Add to watch list-->
-                                <div class="float-right">
+                                <div class="float-right bg-danger">
                                     <form action="/products/addWatchList" method="post">
                                         <input type="hidden" name="ProID" value={{ProID}}>
                                         <button class="btn btn-outline-danger" type="submit">
-                                            <i class="fa fa-heart-o"></i>
+                                            <i class="fa fa-heart-o text-light"></i>
                                         </button>
                                     </form>
                                 </div>

@@ -1,6 +1,7 @@
 //admin/categories
 import express from 'express';
 import productModel from '../models/product.models.js'
+import ProductModels from "../models/product.models.js";
 
 const router = express.Router();
 
@@ -115,5 +116,64 @@ router.get('/detail/:id', async function(req, res){
         Category1: catID1.CatID1
     })
 })
+
+// Khang
+router.get('/WatchList', async function (req, res){
+    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
+        }
+    }
+
+    const limit = 3
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await productModel.countWatchList();
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const WatchList = await ProductModels.getWatchListFromUserID("U002", limit, offset);
+
+    for (const obj of WatchList){
+        const CatID2 = obj.CatID2;
+        const CatID1 = await ProductModels.getCatID1FromCatID2(CatID2);
+        obj.CatID1 = CatID1.CatID1;
+    }
+
+    res.render('vwProducts/watchList', {
+        products: WatchList,
+        empty: WatchList.length === 0,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages
+    })
+})
+
+router.post('/addWatchList', async function (req, res){
+    const id = req.body.ProID;
+    const entity = {
+        UserID: 'U002',
+        ProID: id
+    };
+    const ret = await ProductModels.addToWatchList(entity);
+    const obj = await ProductModels.getCatID2FromProID(id);
+    res.redirect(`/products/byCat/${obj.CatID2}`);
+});
+// Khang
 
 export default router;

@@ -57,6 +57,22 @@ export default {
     async getCatID1FromCatID2(CatID2){
         const CatID1 = await db('CategoryL2').select('CategoryL2.CatID1').where('CatID2', CatID2);
         return CatID1[0]
-    }
+    },
 
+    // Khang
+    addToWatchList(entity){
+        return db('WatchList').insert(entity);
+    },
+
+    async countWatchList(){
+        const lst = await db('WatchList').select();
+        return lst.length;
+    },
+
+    async getWatchListFromUserID(id, limit, offset){
+        const lst = await db('Product').join('WatchList', 'Product.ProID',
+            '=', 'WatchList.ProID').where('WatchList.UserID', id).limit(limit).offset(offset).select();
+        return lst;
+    }
+    // Khang
 }

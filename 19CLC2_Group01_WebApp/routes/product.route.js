@@ -49,5 +49,4 @@ router.post('/patch', async function(req, res){
     res.redirect('/admin/products')
 })
 
-
 export default router;
