@@ -9,6 +9,7 @@ const app = express()
 app.use(morgan('dev'))
 //hinh anh.
 app.use('/public', express.static('public'))
+//app.use('/css', express.static('css'))
 // cần có dòng này để có thể thực hiện các thao tác POST.
 app.use(express.urlencoded({extended: true}))
 

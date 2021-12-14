@@ -10,8 +10,27 @@ router.get('/byCat/:id', async function(req, res){
     for (const c of res.locals.lcCategories){ // nhấn vào thì hiện xanh.
         if(c.CatID2 === catID2){
             c.isActive = 1;
-            console.log(c.CatID2, catID2)
             break
+        }
+    }
+
+    for (const c of res.locals.lcCategories){ // nhấn vào thì hiện xanh.
+        if(c.isActive === 1){
+            for (const d of res.locals.CategoryL1){
+                if (d.CatID1 === c.CatID1){
+                    d.isActive = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
         }
     }
 
@@ -34,6 +53,7 @@ router.get('/byCat/:id', async function(req, res){
     }
 
     const list = await productModel.findPageByCatID(catID2, limit, offset)
+
     res.render('vwProducts/byCat', {
         products: list,
         empty: list.length === 0,
@@ -55,13 +75,44 @@ router.get('/detail/:id', async function(req, res){
         }
     }
 
+    for (const c of res.locals.lcCategories){ // nhấn vào thì hiện xanh.
+        if(c.isActive === 1){
+            for (const d of res.locals.CategoryL1){
+                if (d.CatID1 === c.CatID1){
+                    d.isActive = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
+        }
+    }
+
     const product = await productModel.findById(proID)
+    const catID2 = await productModel.getCatID2FromProID(proID)
+    const catID1 = await productModel.getCatID1FromCatID2(catID2.CatID2)
+    const list5Relate = await productModel.getRelateProduct(catID2.CatID2, proID)
+
+    for (const c of list5Relate){
+        c.CatID1 =  catID1.CatID1
+    }
+
+
     if(product===null){
         return res.redirect('/')
     }
     res.render('vwProducts/detail', {
         product,
-        empty: product.length === 0
+        empty: product.length === 0,
+        list5Relate,
+        Category1: catID1.CatID1
     })
 })
 

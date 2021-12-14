@@ -29,4 +29,8 @@ export default {
     //     return raw[0]
     // }
 
+    async findALlCategoryL1(){
+        return db.select().table('CategoryL1');
+    }
+
 }
