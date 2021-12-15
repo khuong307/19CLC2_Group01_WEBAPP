@@ -29,4 +29,15 @@ export default {
     //     return raw[0]
     // }
 
+    async findByIdLV1(id){
+        const list =  await db('CategoryL1').where('CatID1', id)
+        if(list.length === 0){
+            return null
+        }
+        return list[0];
+    },
+
+    async findALlCategoryL1(){
+        return db.select().table('CategoryL1');
+    }
 }

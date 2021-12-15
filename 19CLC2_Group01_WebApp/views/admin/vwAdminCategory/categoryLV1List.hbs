@@ -1,0 +1,46 @@
+<div class="card text">
+    <h4 class="card-header d-flex justify-content-between" style="background-color: antiquewhite">
+        Categories Level 1
+        <a class="btn btn-sm btn-outline-primary" href="/admin/categories/lv1/add" role="button">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            Add Category Level 1
+        </a>
+    </h4>
+
+    <table class="table" style="text-align: center">
+        <thead>
+        <tr class="table-active">
+            <th scope="col">ID</th>
+            <th scope="col">Category</th>
+            <th scope="col">Quantity</th>
+            <th scope="col" style="text-align: center">Modification</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.categories}}
+            <tr class="table-info">
+                <th scope="row">{{CatID1}}</th>
+                <td>{{CatName1}}</td>
+                <td>
+                    {{#if ProductCount}}
+                        {{ProductCount}}
+                    {{else}}
+                        0
+                    {{/if}}
+                </td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-primary" href="/admin/categories/lv1/edit?id={{CatID1}}" role="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Edit
+                    </a>
+
+                    <a class="btn btn-sm btn-danger" href="/admin/categories/lv1/del?id={{CatID1}}&quantity={{ProductCount}}" role="button">
+                    <i class=" fa fa-trash" aria-hidden="true"></i>
+                    Delete
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
