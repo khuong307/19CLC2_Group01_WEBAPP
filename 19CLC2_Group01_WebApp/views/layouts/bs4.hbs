@@ -3,11 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>E-Commerce Web App</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
-          integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{{_sections.css}}}
     <style>
+        body{
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #71b7e6, #9b59b6);
+            font-family: "Pacifico", sans-serif;
+            font-size: 18px;
+        }
         .just-padding {
             padding: 15px;
         }
@@ -41,48 +51,22 @@
         .list-group-item .glyphicon {
             margin-right: 5px;
         }
-
-        body {
-            font-family: 'Advent Pro';
-            font-size: 18px;
-        }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow" style="border-radius: 10px">
     <a class="navbar-brand" href="#">
         <i class="fa fa-home fa-lg" aria-hidden="true"></i>
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-expanded="false">
-                    Dropdown
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled">Disabled</a>
-            </li>
-<<<<<<< Updated upstream
-=======
             {{#if auth}}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
@@ -107,135 +91,83 @@
                     </a>
                 </li>
             {{/if}}
->>>>>>> Stashed changes
         </ul>
         <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="/account/register">
-                    <i class="fa fa-user-plus"></i>
-                    Register
-                </a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="/account/login">
-                    <i class="fa fa-sign-in"></i>
-                    Sign In
-                </a>
-            </li>
-            <li class="nav-item active dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                   aria-expanded="false">
-                    Hi, <b>nvdkhuong!</b>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="/account/profile">
-                        <i class="fa fa-user"></i>
-                        Profile
+            {{#if auth}}
+
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Chào,  <b>{{authUser.Username}}!</b>
                     </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="javascript:;">
-                        <i class="fa fa-sign-out"></i>Sign Out</a>
-                </div>
-            </li>
+                    <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/account/profile">
+                            <i class="fa fa-user"></i>
+                            Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <!--Khang: View Watch List to layout-->
+                        <a class="dropdown-item" href="/products/WatchList">
+                            <i class="fa fa-heart"></i>
+                            Watch List: <span><b>{{lengthOfWatchList}} item(s)</b></span>
+                        </a>
+                        <!--Khang: View Watch List to layout-->
+                        <div class="dropdown-divider"></div>
+                        <form action="/account/logout" method="post" id="formLogout"></form>
+                        <a class="dropdown-item" href="javascript: $('#formLogout').submit();">
+                            <i class="fa fa-sign-out"></i> Sign Out
+                        </a>
+                    </div>
+                </li>
+            {{else}}
+                <li class="nav-item active">
+                    <a class="nav-link" href="/account/register">
+                        <i class="fa fa-user-plus"></i>
+                        Register
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/account/login">
+                        <i class="fa fa-sign-in"></i>
+                        Sign In
+                    </a>
+                </li>
+            {{/if}}
         </ul>
     </div>
 </nav>
 <div class="container-fluid mt-4">
     <div class="row">
         <div class="col-sm-3">
-            <div class="card">
-                {{#if isAdmin}}
-                    <h4 class="card-header">
-                        Admin
-                    </h4>
-                    <div class="just-padding">
-                        <div class="list-group list-group-root well">
-                            <a href="#typeCategory" class="list-group-item list-group-item-action list-group-item-primary"  data-toggle="collapse">
+            <div class="card" style="border-radius: 10px">
+                <h4 class="card-header">
+                    Danh mục
+                </h4>
+                <div class="just-padding">
+                    <div class="list-group list-group-root well">
+                        {{#each CategoryL1}}
+                            <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if isActive}}style="color: blue" {{/if}} data-toggle="collapse">
                                 <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                Categories
+                                {{CatName1}}
+                                {{#if numberPro}}
+                                    <span class="badge badge-pill badge-danger float-right">{{numberPro}}</span>
+                                {{/if}}
                             </a>
-                            <div class="list-group collapse" id="typeCategory">
-                                <a href="admin/categories/" class="list-group-item list-group-item-action">Categories
-                                    Level1</a>
-                                <a href="admin/categories/" class="list-group-item list-group-item-action">Categories
-                                    Level2</a>
-                            </div>
-                        </div>
-                        <a href="#" class="list-group-item list-group-item-action list-group-item-warning">
-                           <i class=" fa fa-male" aria-hidden="true"></i>
-                            User
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action list-group-item-dark">
-                           <i class=" fa fa-product-hunt" aria-hidden="true"></i>
-                            Product
-                        </a>
-                    </div>
-                    <h4 class="card-header">
-                        Categories
-                    </h4>
-                    <div class="just-padding">
-                        <div class="list-group list-group-root well">
-                            {{#each CategoryL1}}
-                                <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if
-                                        isActive}}style="color: blue" {{/if}} data-toggle="collapse">
-                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                    {{CatName1}}
-                                    {{#if numberPro}}
-                                        <span class="badge badge-pill badge-danger float-right">{{numberPro}}</span>
-                                    {{/if}}
-                                </a>
-                                <div class="list-group collapse" id="{{CatID1}}">
-                                    {{#each ../lcCategories}}
-                                        {{#ifCond ../this.CatID1 this.CatID1}}
-                                            <a href="/products/byCat/{{CatID2}}"
-                                               class="list-group-item list-group-item-action" {{#if  this.isActive}}
-                                               style="color: blue" {{/if}}>
-                                                <i class="fa fa-caret-right" aria-hidden="true"></i>
-                                                {{CatName2}}
-                                                {{#if ProductCount}}
-                                                    <span class="badge badge-pill badge-success float-right">{{ProductCount}}</span>
-                                                {{/if}}
-                                            </a>
-                                        {{/ifCond}}
-                                    {{/each}}
-                                </div>
+                        <div class="list-group collapse" id="{{CatID1}}">
+                            {{#each ../lcCategories}}
+                                {{#ifCond ../this.CatID1 this.CatID1}}
+                                    <a href="/products/byCat/{{CatID2}}" class="list-group-item list-group-item-action" {{#if  this.isActive}} style="color: blue" {{/if}}>
+                                        <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                        {{CatName2}}
+                                        {{#if ProductCount}}
+                                            <span class="badge badge-pill badge-success float-right">{{ProductCount}}</span>
+                                        {{/if}}
+                                    </a>
+                                {{/ifCond}}
                             {{/each}}
                         </div>
+                        {{/each}}
                     </div>
-                {{else}}
-                    <h4 class="card-header">
-                        Categories
-                    </h4>
-                    <div class="just-padding">
-                        <div class="list-group list-group-root well">
-                            {{#each CategoryL1}}
-                                <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if
-                                        isActive}}style="color: blue" {{/if}} data-toggle="collapse">
-                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                    {{CatName1}}
-                                    {{#if numberPro}}
-                                        <span class="badge badge-pill badge-danger float-right">{{numberPro}}</span>
-                                    {{/if}}
-                                </a>
-                                <div class="list-group collapse" id="{{CatID1}}">
-                                    {{#each ../lcCategories}}
-                                        {{#ifCond ../this.CatID1 this.CatID1}}
-                                            <a href="/products/byCat/{{CatID2}}"
-                                               class="list-group-item list-group-item-action" {{#if  this.isActive}}
-                                               style="color: blue" {{/if}}>
-                                                <i class="fa fa-caret-right" aria-hidden="true"></i>
-                                                {{CatName2}}
-                                                {{#if ProductCount}}
-                                                    <span class="badge badge-pill badge-success float-right">{{ProductCount}}</span>
-                                                {{/if}}
-                                            </a>
-                                        {{/ifCond}}
-                                    {{/each}}
-                                </div>
-                            {{/each}}
-                        </div>
-                    </div>
-                {{/if}}
+                </div>
             </div>
         </div>
         <div class="col-sm-9">
@@ -244,12 +176,8 @@
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"
-        integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2"
-        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
 {{{_sections.js}}}
 </body>
 </html>

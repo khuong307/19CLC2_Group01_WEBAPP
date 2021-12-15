@@ -1,17 +1,130 @@
+{{#section 'css'}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-countdown/2.1.0/css/jquery.countdown.min.css">
+    <style>
+        .carousel-control-prev-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
+        }
+
+        .carousel-control-next-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
+        }
+    </style>
+{{/section}}
+{{#section 'js'}}
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/hilios/jQuery.countdown@2.0.4/dist/jquery.countdown.min.js"></script>
+    <script>
+        $(function(){
+            $('[data-countdown]').each(function() {
+                var $this = $(this), finalDate = $(this).data('countdown');
+                $this.countdown(finalDate, function(event) {
+                    $this.html(event.strftime('%D days %H:%M:%S'))}).on('finish.countdown', function() {
+                    alert("Finish");
+                });
+            });
+        });
+    </script>
+
+{{/section}}
 <div class="card">
     <h4 class="card-header">
         {{this.product.ProName}}
     </h4>
     <div class="card-body">
-        <img  width="250px" height="250px" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
-        <p class="card-text mt-4">
-            Giá hiện tại: <span class = "font-weight-bold text-danger">{{format_number this.product.CurrentPrice}}</span>
-        </p>
-        <p class="card-text">
-            Giá tăng tối thiểu: {{format_number this.product.StepPrice}}
-        </p>
-        <p class="card-text">
-            {{{this.product.FullDes}}}
-        </p>
+        <div class="row">
+            <div class="col-md-6" style="padding-top: 20px">
+                <div id="{{this.product.ProID}}" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="card-img-top" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" alt="{{ProName}}" title="{{this.product.ProName}}">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="card-img-top" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_1.jpg" alt="{{ProName}}" title="{{this.product.ProName}}">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="card-img-top" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" alt="{{ProName}}" title="{{this.product.ProName}}">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-target="#{{this.product.ProID}}" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-target="#{{this.product.ProID}}" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6" style="text-align: justify-all; padding-top: 20px">
+                <p class="card-text mt-4">
+                    Giá hiện tại: <span class = "font-weight-bold text-danger">{{format_number this.product.CurrentPrice}}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fa fa-user"></i>
+                    Người bán: {{this.product.UploadUser}}
+                </p>
+                <p class="card-text">
+                    <i class="fa fa-clock-o"></i>
+                    <span style="font-weight: bold">Ngày đăng:</span> {{formatDate this.product.UploadDate}}
+                </p>
+                <p class="card-text">
+                    <span style="font-weight: bold"> <i class="fa fa-clock-o"></i>
+                        Thời gian hết hạn:  </span>
+                    <span style="color:#181f5e; font-weight: bold" data-countdown="{{formatDateCountdown this.product.EndDate}}"></span>
+                </p>
+                <p style="font-weight: bold">Thông tin chi tiết: </p>
+                <p class="card-text">
+                    {{{this.product.TinyDes}}}
+                </p>
+                <p class="card-text">
+                    {{{this.product.FullDes}}}
+                </p>
+            </div>
+        </div>
+        <div class="row justify-content-md-left row-cols-6" style="padding-left: 20px; padding-top: 30px">
+            <img  width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+            <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_1.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+            <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+        </div>
+        <h5 style="padding-top: 25px; font-weight: bold; text-decoration: underline; padding-bottom: 10px">Các sản phẩm liên quan:</h5>
+        <div class="container">
+            <div class="row" style="padding-left: 40px">
+            {{#each this.list5Relate}}
+                <div class="col-sm-4 mb-3">
+                        <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main.jpg" alt="{{ProName}}" title="{{ProName}}">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main_1.jpg" alt="{{ProName}}" title="{{ProName}}">
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main_2.jpg" alt="{{ProName}}" title="{{ProName}}">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-target="#{{ProID}}" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-target="#{{ProID}}" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </button>
+                        </div>
+
+                    <div class="card-footer" style="justify-content: center; padding-top: 5px; align-items: center">
+                        <p style="text-align: center" >{{ProName}}</p>
+                        <div style="padding-left: 68px">
+                            <a class="btn btn-md btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                                <i class="fa fa-eye"></i>
+                                Details
+                            </a>
+                        </div>
+                    </div>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
     </div>
 </div>
