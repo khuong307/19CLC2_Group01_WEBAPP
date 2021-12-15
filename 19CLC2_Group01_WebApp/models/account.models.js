@@ -48,5 +48,18 @@ export default {
     },
     async UpdateActivateAccountByUserID(UserId){
         return db('Account').where('UserID', UserId).update({Activate: '1'})
+    },
+
+    async getAccountInfoByUsername(username){
+        const user = await db('Account').where({
+            Username: username,
+            Activate:  1
+        })
+        console.log(user)
+        if(user.length === 0){
+            return null
+        }
+        else
+            return user[0]
     }
 }

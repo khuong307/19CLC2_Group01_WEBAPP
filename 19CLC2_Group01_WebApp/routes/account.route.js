@@ -3,7 +3,7 @@ import accountModel from '../models/account.models.js'
 import BCrypt from 'bcrypt'
 import moment from "moment";
 import mails from 'nodemailer'
-import productModel from "../models/product.models.js";
+import auth from '../middlewares/auth.mdw.js'
 const router = express.Router();
 //register.
 router.get('/register', async function(req, res){
@@ -115,6 +115,7 @@ router.get('/is_available_account', async function(req, res){
     res.json(true);
 })
 
+//OTP CHECK.
 router.get('/OTP/:email', async function(req, res){
     res.render('vWAccount/OTPConfirm')
 
@@ -123,26 +124,72 @@ router.get('/OTP/:email', async function(req, res){
 router.post('/OTP/:email', async function(req, res){
     const email = req.params.email || 0
     const data = await accountModel.findOTPByEmail(email);
-    console.log(req.body.OTP)
-    const OTP = parseInt(req.body.OTP);
+    const OTP = req.body.OTP;
+    const OTP_length = OTP.length;
+    const OTP_value = parseInt(OTP);
 
-    if (OTP === data.OTPCode){
+    if (OTP_value === data.OTPCode && OTP_length === 4){
         const username = await accountModel.findUserIDByEmail(email)
         accountModel.UpdateActivateAccountByUserID(username.UserID)
+        return res.redirect('/account/login')
+    }else{
+        return res.render('vWAccount/OTPConfirm',{
+            err_message: 'OTP code does not match'
+        })
     }
-    res.render('vWAccount/OTPConfirm')
-
 })
+
 
 //login.
 router.get('/login', async function(req, res){
-    res.render('vWAccount/login')
+    res.render('vWAccount/login', {
+        layout:false
+    })
 })
 
-//login.
-router.get('/profile', async function(req, res){
+router.post('/login', async function(req, res){
+    const username = req.body.Username
+    const password = req.body.Password
 
+    const user = await accountModel.getAccountInfoByUsername(username)
+    if(user === null){
+        return res.render('vwAccount/login', {
+            layout: false,
+            err_message: 'Invalid username or password.'
+        })
+    }
+
+    const checkPass = BCrypt.compareSync(password, user.Password)
+    if(checkPass===false){
+        return res.render('vwAccount/login', {
+            layout: false,
+            err_message: 'Invalid username or password.'
+        })
+    }
+
+    delete user.Password;
+
+    req.session.auth = true
+    req.session.authUser = user
+    const url = req.session.retURL || req.originalUrl;
+    res.redirect(url)
+})
+
+//profile.
+//phục vụ chức năng chưa đăng nhập mà xem profile.
+
+router.get('/profile', auth, async function(req, res){
     res.render('vWAccount/profile')
+})
+
+//logout.
+router.post('/logout', async function(req, res){
+    req.session.auth = false
+    req.session.authUser = null
+    req.session.retURL = null
+
+    const url = req.headers.referer || '/'
+    res.redirect(url)
 })
 
 export default router;

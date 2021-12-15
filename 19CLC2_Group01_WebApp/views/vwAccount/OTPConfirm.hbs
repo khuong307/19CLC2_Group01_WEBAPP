@@ -1,3 +1,10 @@
+{{#section 'js'}}
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.js"></script>
+    <script>
+        $('#OTP').select();
+    </script>
+{{/section}}
 {{#section 'css'}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css">
     <style>
@@ -99,9 +106,17 @@
     </style>
 {{/section}}
 <div class="container" style="border-radius: 20px">
+    {{#if err_message}}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center">
+            <strong>Wrong: </strong> {{err_message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {{/if}}
     <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #9b59b6);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Registration</div>
-    <form method="POST" style="align-items: center">
+    <form id="formOTP"method="POST" style="align-items: center">
         <div class="row" style="justify-content: center">
             <div class="user-details" >
                 <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 30px;">

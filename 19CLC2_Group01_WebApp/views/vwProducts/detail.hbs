@@ -86,7 +86,7 @@
             <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_1.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
             <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
         </div>
-        <p style="padding-top: 25px; font-weight: bold">Các sản phẩm liên quan:</p>
+        <h5 style="padding-top: 25px; font-weight: bold; text-decoration: underline; padding-bottom: 10px">Các sản phẩm liên quan:</h5>
         <div class="container">
             <div class="row" style="padding-left: 40px">
             {{#each this.list5Relate}}
@@ -115,10 +115,12 @@
 
                     <div class="card-footer" style="justify-content: center; padding-top: 5px; align-items: center">
                         <p style="text-align: center" >{{ProName}}</p>
-                        <a class="btn btn-sm btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
-                            <i class="fa fa-eye"></i>
-                            Details
-                        </a>
+                        <div style="padding-left: 68px">
+                            <a class="btn btn-md btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                                <i class="fa fa-eye"></i>
+                                Details
+                            </a>
+                        </div>
                     </div>
                     </div>
                 {{/each}}
