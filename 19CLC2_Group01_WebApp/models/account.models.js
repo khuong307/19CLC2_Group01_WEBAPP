@@ -31,8 +31,20 @@ export default {
         return db('OTP').insert(entity)
     },
 
+    async InsertForgetPassOTP(entity){
+        return db('OTPForgetPass').insert(entity)
+    },
+
     async findOTPByEmail(email){
         const list = await db('OTP').where('Email', email)
+        if(list.length === 0){
+            return null
+        }
+        return list[0]
+    },
+
+    async findOTPByEmailForgetPass(email){
+        const list = await db('OTPForgetPass').where('Email', email)
         if(list.length === 0){
             return null
         }
@@ -71,7 +83,7 @@ export default {
     },
 
     async checkEmailInUser(email){
-        const list = await db('UserID').where('Email', email);
+        const list = await db('User').where('Email', email);
         if(list.length === 0){
             return null
         }
@@ -87,5 +99,10 @@ export default {
     },
     async UpdatePassByUserID(userID, newPass){
         return db('Account').where('UserID', userID).update({Password: newPass})
+    },
+
+    async DelOTPCodeForget(email){
+        return db('OTPForgetPass').where('Email', email).del()
     }
+
 }

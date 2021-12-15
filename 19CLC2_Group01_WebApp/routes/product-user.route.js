@@ -107,6 +107,20 @@ router.get('/detail/:id', async function(req, res){
     if(product===null){
         return res.redirect('/')
     }
+
+    // Khang
+    const WatchList = res.locals.WatchListByUSerID;
+    if (WatchList != undefined){
+        for (var i = 0; i < WatchList.length; i++){
+            if (WatchList[i].ProID === product.ProID){
+                product.isActive = true;
+            }
+        }
+        if (product.isActive === undefined)
+            product.isActive = null;
+    }
+    // Khang
+
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
