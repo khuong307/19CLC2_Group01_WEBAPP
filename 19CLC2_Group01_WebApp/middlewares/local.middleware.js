@@ -7,10 +7,10 @@ export default function(app){
     //khuong.
     app.use(async function(req, res, next){
         if(typeof (req.session.auth) === 'undefined'){
-            req.session.auth = false;
+            req.session.auth = null;
         }
         if(typeof (req.session.authUser) === 'undefined'){
-            req.session.authUser = false;
+            req.session.authUser = null;
         }
 
         res.locals.auth = req.session.auth
@@ -37,6 +37,7 @@ export default function(app){
 
         // Khang
         if(res.locals.authUser != null){
+            //console.log(res.locals.authUser)
             const userID = res.locals.authUser.UserID
             res.locals.lengthOfWatchList = await productModels.countWatchList(userID);
             res.locals.WatchListByUSerID = await productModels.getWatchListByUserID(userID)

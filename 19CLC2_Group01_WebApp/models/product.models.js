@@ -75,6 +75,7 @@ export default {
 
     async countWatchList(userID){
         if(userID === null){
+            console.log(userID)
             return null
         }
         const lst = await db('WatchList').count({ WatchListCount: 'UserID' }).where('UserID',userID);
