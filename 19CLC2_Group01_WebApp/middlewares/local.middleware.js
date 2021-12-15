@@ -41,9 +41,7 @@ export default function(app){
             res.locals.lengthOfWatchList = await productModels.countWatchList(userID);
             res.locals.WatchListByUSerID = await productModels.getWatchListByUserID(userID)
         }
-
         // Khang
-
         next()
     })
 

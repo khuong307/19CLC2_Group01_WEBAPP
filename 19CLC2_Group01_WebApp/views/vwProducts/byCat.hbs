@@ -98,15 +98,16 @@
                                     Cart
                                 </a>
                                 <!--Khang: Add to watch list-->
-                                <div class="float-right">
-                                    <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
-                                        <input type="hidden" name="ProID" value={{ProID}}>
-                                        <button class="btn btn{{#if isWatchList}}-danger{{else}}-outline-danger{{/if}}" type="submit">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                                <!--Khang: Add to watch list-->
+
+                                    <div class="float-right">
+                                        <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
+                                            <input type="hidden" name="ProID" value={{ProID}}>
+                                            <button class="btn btn{{#if isWatchList}}-danger{{else}}-outline-danger{{/if}}" type="submit">
+                                                <i class="fa fa-heart-o"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <!--Khang: Add to watch list-->
                             </div>
                         </div>
                     </div>
