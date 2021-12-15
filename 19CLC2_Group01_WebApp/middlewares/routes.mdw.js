@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+// Minh
+>>>>>>> Stashed changes
 // import categoryRoute from "../routes/category.route.js";
 // import productRoute from "../routes/product.route.js";
 import productUserRoute from "../routes/product-user.route.js";
@@ -37,6 +41,10 @@ export default function(app){
     app.use('/admin/products', productAdminRoute)
     //[END]
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     //product under user view.
     app.use('/products', productUserRoute)
     //account related file.

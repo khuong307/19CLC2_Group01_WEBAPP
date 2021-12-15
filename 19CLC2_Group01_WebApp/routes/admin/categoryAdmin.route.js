@@ -1,6 +1,10 @@
 //admin/categories
 import express from 'express';
 import categoryModel from '../../models/categories.models.js'
+<<<<<<< Updated upstream
+=======
+import CategoriesModels from "../../models/categories.models.js";
+>>>>>>> Stashed changes
 
 const router = express.Router();
 
@@ -53,6 +57,14 @@ router.get('/lv1/edit', async function(req, res){
     })
 })
 
+<<<<<<< Updated upstream
+=======
+//add category lv1
+router.get('/lv1/add', function(req, res){
+    res.render('admin/vwAdminCategory/addCategoryLV1',{isAdmin:true})
+})
+
+>>>>>>> Stashed changes
 
 //post update category lv1.
 router.post('/lv1/patch', async function(req, res){
@@ -61,19 +73,34 @@ router.post('/lv1/patch', async function(req, res){
     res.redirect('/admin/categories/lv1')
 })
 
+<<<<<<< Updated upstream
 //post delete category lv1.
+=======
+//post delete category lv1 in a form
+>>>>>>> Stashed changes
 router.post('/lv1/del', async function(req, res){
     const quantity=req.body.QuantityLV1;
     if(quantity!='0'){
         console.log("You cannot delete this item");
     }
     else{
+<<<<<<< Updated upstream
+=======
+        // Đầu tiên hủy toàn bộ category ở khóa ngoại ( Category Lv2)
+        const refList=await CategoriesModels.deleteRelateCate1ToCategoryLV2(req.body);
+        console.log(refList);
+        //  Hủy category lv1
+>>>>>>> Stashed changes
         const ret = await categoryModel.deleteCategoryLV1(req.body);
         res.redirect('/admin/categories/lv1')
     }
 })
 
 
+<<<<<<< Updated upstream
+=======
+// CATEGORY LV2
+>>>>>>> Stashed changes
 // View Category lv2
 router.get('/lv2', async function(req, res){
     const list = await categoryModel.findAllWithDetails();
@@ -94,8 +121,14 @@ router.get('/lv2', async function(req, res){
     })
 })
 
+<<<<<<< Updated upstream
 //add category lv2
 router.get('/lv2/add', function(req, res){
+=======
+
+//add category lv2
+router.get('/lv2/add', async function(req, res){
+>>>>>>> Stashed changes
     res.render('admin/vwAdminCategory/addCategoryLV2',{isAdmin:true})
 })
 

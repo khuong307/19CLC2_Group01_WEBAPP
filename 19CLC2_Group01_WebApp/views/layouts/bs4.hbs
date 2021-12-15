@@ -81,6 +81,33 @@
             <li class="nav-item">
                 <a class="nav-link disabled">Disabled</a>
             </li>
+<<<<<<< Updated upstream
+=======
+            {{#if auth}}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {{#if actorBidder}}
+                            Bidder
+                        {{/if}}
+                        {{#if actorSeller}}
+                            Seller
+                        {{/if}}
+                        {{#if actorAdmin}}
+                            Admin
+                        {{/if}}
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/admin/categories/lv1">Categories
+                                Level1</a>
+                            <a class="dropdown-item" href="/admin/categories/lv2">Categories
+                                Level2</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">User</a>
+                            <a class="dropdown-item" href="#">Product</a>
+                        </div>
+                    </a>
+                </li>
+            {{/if}}
+>>>>>>> Stashed changes
         </ul>
         <ul class="navbar-nav">
             <li class="nav-item active">
