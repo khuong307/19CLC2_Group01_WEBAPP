@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Commerce Web App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body{
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+            font-family: "Pacifico", sans-serif;
+            font-size: 18px;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            max-width: 700px;
+            width: 100%;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 5px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        .container .title{
+            font-size: 25px;
+            font-weight: 500;
+            position: relative;
+        }
+        .container .title::before{
+            content: '';
+            postion: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 30px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+        }
+        .container form .user-details{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 20px 0 12px 0;
+        }
+        form .user-details .input-box{
+            margin-bottom: 15px;
+            width: calc(90%);
+        }
+        .user-details .input-box span.details{
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .user-details .input-box input{
+            height: 45px;
+            width: 100%;
+            outline: none;
+            padding-left: 15px;
+            font-size: 16px;
+            border-bottom-width: 2px;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            color: #0b409c;
+        }
+        .user-details .input-box input:focus,
+        .user-details .input-box input:valid{
+            border-color: #39d48c;
+        }
+        form .button{
+            height: 45px;
+            margin: 45px 0;
+
+        }
+        form .button input{
+            height: 100%;
+            width: 100%;
+            outline: none;
+            color: #fff;
+            border: none;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 5px;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+        }
+        form .button input:hover{
+            background: linear-gradient(-135deg, #71b7e6, #39d48c);
+        }
+        @media (max-width: 584px){
+            .container{
+                max-width: 100%;
+            }
+            form .user-details .input-box{
+                margin-bottom: 15px;
+                width: 100%;
+            }
+            .container form .user-details{
+                max-height: 300px;
+                overflow-y: scroll;
+            }
+            .user-details::-webkit-scrollbar{
+                width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="container" >
+        {{#if err_message}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center">
+                <strong>Login failed: </strong> {{err_message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {{/if}}
+        <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #39d48c);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Sign In</div>
+        <div class="row justify-content-center">
+            <form method="POST">
+                <div class="user-details">
+                    <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                        <div class="input-box">
+                            <!--                        <span class="details">Username</span>-->
+                            <i class="fa fa-user-circle-o"></i>
+                            <input type="text" placeholder="Enter your username" name="Username" id = "username" required>
+                        </div>
+                        <div class="input-box">
+                            <i class="fa fa-lock"></i>
+                            <input type="password" placeholder="Enter your password" name="Password" id="password">
+                        </div>
+                    </div>
+                </div>
+                <input type="checkbox" onclick="showPassword()"> Show Password
+                <div class="button">
+                    <input type="submit" value="Sign In" id="subMitSignIn">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+<script>
+    function showPassword() {
+        var x = document.getElementById("password");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+</script>
+</body>
+</html>

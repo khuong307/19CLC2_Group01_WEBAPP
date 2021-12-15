@@ -59,6 +59,8 @@ export default {
         return CatID1[0]
     },
 
+
+
     // Khang
     addToWatchList(entity){
         return db('WatchList').insert(entity);
@@ -71,15 +73,16 @@ export default {
         }).del();
     },
 
-    async countWatchList(){
-        const lst = await db('WatchList').select();
-        return lst.length;
-    },
-
     async getWatchListFromUserID(id, limit, offset){
         const lst = await db('Product').join('WatchList', 'Product.ProID',
             '=', 'WatchList.ProID').where('WatchList.UserID', id).limit(limit).offset(offset).select();
         return lst;
-    }
+    },
     // Khang
+
+    async getWatchListByUserID(userID){
+        const list = await db('WatchList').where('UserID', userID)
+        return list
+    }
+
 }

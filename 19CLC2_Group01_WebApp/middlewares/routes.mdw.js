@@ -9,16 +9,19 @@ const __dirname = dirname(fileURLToPath(import.meta.url)) //lấy đường dẫ
 
 export default function(app){
     app.get('/', function(req, res){
+        req.session.retURL = req.originalUrl
         res.render('home');
     });
 
     //about.hbs
     app.get('/about', function(req, res){
+        req.session.retURL = req.originalUrl
         res.render('about');
     });
 
     //bs4.
     app.get('/bs4', function(req, res){
+        req.session.retURL = req.originalUrl
         res.sendFile(__dirname + '/bs4.html')
     })
 

@@ -20,14 +20,12 @@
                 var $this = $(this), finalDate = $(this).data('countdown');
                 $this.countdown(finalDate, function(event) {
                     $this.html(event.strftime('%D days %H:%M:%S'))}).on('finish.countdown', function() {
-                    alert("Finish");
                 });
             });
         });
     </script>
 
 {{/section}}
-
 <div class="card text">
     <h4 class="card-header d-flex justify-content-between">
         Products
@@ -74,7 +72,7 @@
                                 </h7>
                                 <h7 class="card-text">
                                     <p>
-                                        <i class="fa fa-money"></i>
+                                    <i class="fa fa-money"></i>
                                         <span style="font-weight: bold">Mua ngay:</span> {{format_number PriceBuyNow}}
                                     </p>
                                 </h7>
@@ -95,21 +93,22 @@
                                     <i class="fa fa-eye"></i>
                                     Details
                                 </a>
-
                                 <a class="btn btn-outline-success" href="#" role="button">
-                                    <i class="fa fa-cart-plus"></i>
+                                    <i class="fa fa-eye"></i>
                                     Cart
                                 </a>
 
                                 <!--Khang: Add to watch list-->
-                                <div class="float-right">
-                                    <form action="/products/addWatchList" method="post">
-                                        <input type="hidden" name="ProID" value={{ProID}}>
-                                        <button class="btn btn-outline-danger" type="submit">
-                                            <i class="fa fa-heart-o"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                                {{#if ../auth}}
+                                    <div class="float-right">
+                                        <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
+                                            <input type="hidden" name="ProID" value={{ProID}}>
+                                            <button class="btn btn{{#if isWatchList}}-danger{{else}}-outline-danger{{/if}}" type="submit">
+                                                <i class="fa fa-heart-o"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                {{/if}}
                                 <!--Khang: Add to watch list-->
 
                             </div>
@@ -148,4 +147,3 @@
         {{/if}}
     </div>
 </div>
-

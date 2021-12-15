@@ -29,17 +29,32 @@
 <div class="card">
     <h4 class="card-header">
         {{this.product.ProName}}
+
         <!--Khang: Add to watch list-->
-        <div class="float-right">
-            <form action="/products/addWatchList" method="post">
-                <input type="hidden" name="ProID" value={{this.product.ProID}}>
-                <input type="hidden" name="ProStatus" value="detail">
-                <button class="btn btn-outline-danger" type="submit">
-                    <i class="fa fa-heart-o"></i>
-                </button>
-            </form>
-        </div>
+        {{#if auth}}
+            {{#if this.product.isActive}}
+                <div class="float-right">
+                    <form action="/products/delWatchList" method="post">
+                        <input type="hidden" name="ProID" value={{this.product.ProID}}>
+                        <button class="btn btn-danger" type="submit">
+                            <i class="fa fa-heart-o"></i>
+                        </button>
+                    </form>
+                </div>
+            {{else}}
+                <div class="float-right">
+                    <form action="/products/addWatchList" method="post">
+                        <input type="hidden" name="ProID" value={{this.product.ProID}}>
+                        <input type="hidden" name="ProStatus" value="detail">
+                        <button class="btn btn-outline-danger" type="submit">
+                            <i class="fa fa-heart-o"></i>
+                        </button>
+                    </form>
+                </div>
+            {{/if}}
+        {{/if}}
         <!--Khang: Add to watch list-->
+
     </h4>
     <div class="card-body">
         <div class="row">
@@ -97,7 +112,7 @@
             <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_1.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
             <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
         </div>
-        <p style="padding-top: 25px; font-weight: bold">Các sản phẩm liên quan:</p>
+        <h5 style="padding-top: 25px; font-weight: bold; text-decoration: underline; padding-bottom: 10px">Các sản phẩm liên quan:</h5>
         <div class="container">
             <div class="row" style="padding-left: 40px">
             {{#each this.list5Relate}}
@@ -126,12 +141,13 @@
 
                     <div class="card-footer" style="justify-content: center; padding-top: 5px; align-items: center">
                         <p style="text-align: center" >{{ProName}}</p>
-                        <a class="btn btn-sm btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
-                            <i class="fa fa-eye"></i>
-                            Details
-                        </a>
+                        <div style="padding-left: 68px">
+                            <a class="btn btn-md btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                                <i class="fa fa-eye"></i>
+                                Details
+                            </a>
+                        </div>
                     </div>
-
                     </div>
                 {{/each}}
             </div>
