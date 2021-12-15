@@ -1,7 +1,13 @@
-import categoryRoute from "../routes/category.route.js";
-import productRoute from "../routes/product.route.js";
+// import categoryRoute from "../routes/category.route.js";
+// import productRoute from "../routes/product.route.js";
 import productUserRoute from "../routes/product-user.route.js";
 import accountRoute from "../routes/account.route.js";
+
+//[ADD][MINH][15/12/2021]
+import indexAdminRoute from "../routes/admin/indexAdmin.route.js";
+import categoryAdminRoute from "../routes/admin/categoryAdmin.route.js";
+import productAdminRoute from "../routes/admin/productAdmin.route.js";
+//[END]
 
 import {dirname} from "path";
 import {fileURLToPath} from "url";
@@ -23,9 +29,14 @@ export default function(app){
     })
 
     //admin/categories
-    app.use('/admin/categories', categoryRoute)
+    //[ADD][MINH][15/12/2021]
+    app.use('/admin/',indexAdminRoute)
+    // admin/products
+    app.use('/admin/categories', categoryAdminRoute)
     //admin/products
-    app.use('/admin/products', productRoute)
+    app.use('/admin/products', productAdminRoute)
+    //[END]
+
     //product under user view.
     app.use('/products', productUserRoute)
     //account related file.
