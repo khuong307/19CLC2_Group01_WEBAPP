@@ -175,12 +175,7 @@ router.post('/login', async function(req, res){
     res.redirect(url)
 })
 
-//profile.
-//phục vụ chức năng chưa đăng nhập mà xem profile.
 
-router.get('/profile', auth, async function(req, res){
-    res.render('vWAccount/profile')
-})
 
 //logout.
 router.post('/logout', async function(req, res){
@@ -192,4 +187,55 @@ router.post('/logout', async function(req, res){
     res.redirect(url)
 })
 
+
+//profile.
+//phục vụ chức năng chưa đăng nhập mà xem profile.
+
+router.get('/profile', auth, async function(req, res){
+    const userID = req.session.authUser.UserID
+
+    const UserInfo = await accountModel.getUserInfo(userID)
+    console.log(UserInfo)
+    res.render('vWAccount/profile',{
+        UserInfo
+    })
+})
+//update usser information
+router.post('/profile', auth, async function(req, res){
+    const userID = req.session.authUser.UserID
+})
+
+//change password.
+router.get('/changePassword', auth, async function(req, res){
+    const userID = req.session.authUser.UserID || "0"
+
+    const UserInfo = await accountModel.getUserInfo(userID)
+    console.log(UserInfo)
+    res.render('vWAccount/changePassword',{
+        UserInfo
+    })
+})
+
+router.post('/changePassword', auth, async function(req, res){
+    const userID = req.session.authUser.UserID
+
+    const UserInfo = await accountModel.getPasswordByUserID(userID)
+    console.log(UserInfo.Password)
+    const oldPass = req.body.oldPassword;
+    const newPass = req.body.newPassword;
+    const checkPass = BCrypt.compareSync(oldPass, UserInfo.Password)
+    if(checkPass === false){
+        return res.render('vWAccount/changePassword',{
+            err_message: 'Old password does not match!'
+        })
+    }
+    else{
+        const newHashPass = BCrypt.hashSync(newPass, 10);
+        accountModel.UpdatePassByUserID(userID, newHashPass);
+        req.session.authUser = null;
+        req.session.auth = null;
+        res.redirect('/account/login')
+
+    }
+})
 export default router;

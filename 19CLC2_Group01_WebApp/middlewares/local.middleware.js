@@ -15,6 +15,18 @@ export default function(app){
 
         res.locals.auth = req.session.auth
         res.locals.authUser = req.session.authUser
+
+        if(res.locals.authUser != null){
+            if(res.locals.authUser.Type === 1){
+                res.locals.actorBidder = 1;
+            }
+            else if (res.locals.authUser.Type === 2){
+                res.locals.actorSeller = 1;
+            }
+            else if (res.locals.authUser.Type === 3){
+                res.locals.actorAdmin = 1;
+            }
+        }
         next()
     })
     //khuong

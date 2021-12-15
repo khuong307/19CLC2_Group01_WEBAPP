@@ -98,7 +98,7 @@
                                     Cart
                                 </a>
                                 <!--Khang: Add to watch list-->
-
+                                {{#if ../this.isLogin}}
                                     <div class="float-right">
                                         <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
                                             <input type="hidden" name="ProID" value={{ProID}}>
@@ -108,7 +108,8 @@
                                         </form>
                                     </div>
                                     <!--Khang: Add to watch list-->
-                            </div>
+                                {{/if}}
+                                </div>
                         </div>
                     </div>
                 {{/each}}

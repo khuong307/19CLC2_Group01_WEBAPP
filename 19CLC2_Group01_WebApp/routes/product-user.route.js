@@ -56,6 +56,8 @@ router.get('/byCat/:id', async function(req, res){
             }
         }
     }
+    const isLogin = req.session.auth || false
+    console.log(isLogin)
 
     res.render('vwProducts/byCat', {
         products: list,
@@ -63,7 +65,8 @@ router.get('/byCat/:id', async function(req, res){
         pageNumbers,
         currentPageIndex: page,
         isFirstPage: +page != 1,
-        isLastPage: +page != nPages
+        isLastPage: +page != nPages,
+        isLogin
     })
 })
 
@@ -108,7 +111,8 @@ router.get('/detail/:id', async function(req, res){
         product,
         empty: product.length === 0,
         list5Relate,
-        Category1: catID1.CatID1
+        Category1: catID1.CatID1,
+
     })
 })
 //Khuong.

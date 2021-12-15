@@ -61,5 +61,31 @@ export default {
         }
         else
             return user[0]
+    },
+
+    async getUserInfo(userID){
+        const list = await db('User').where('UserID', userID);
+        if(list.length === 0)
+            return null
+        return list[0]
+    },
+
+    async checkEmailInUser(email){
+        const list = await db('UserID').where('Email', email);
+        if(list.length === 0){
+            return null
+        }
+        return list[0]
+    },
+
+    async getPasswordByUserID(userID){
+        const list = await db('Account').where('UserID', userID).select('Password')
+        if(list.length === null){
+            return null
+        }
+        return list[0]
+    },
+    async UpdatePassByUserID(userID, newPass){
+        return db('Account').where('UserID', userID).update({Password: newPass})
     }
 }
