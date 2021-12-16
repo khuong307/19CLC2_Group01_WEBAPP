@@ -132,6 +132,8 @@ router.post('/OTP/:email', async function(req, res){
     if (OTP_value === data.OTPCode && OTP_length === 4){
         const username = await accountModel.findUserIDByEmail(email)
         accountModel.UpdateActivateAccountByUserID(username.UserID)
+        accountModel.deleteOTPLogin(email)
+
         return res.redirect('/account/login')
     }else{
         return res.render('vWAccount/OTPConfirm',{

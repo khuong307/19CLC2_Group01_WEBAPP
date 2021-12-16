@@ -19,12 +19,10 @@
                 var $this = $(this), finalDate = $(this).data('countdown');
                 $this.countdown(finalDate, function(event) {
                     $this.html(event.strftime('%D days %H:%M:%S'))}).on('finish.countdown', function() {
-                    alert("Finish");
                 });
             });
         });
     </script>
-
 {{/section}}
 <div class="card">
     <h4 class="card-header">
@@ -80,13 +78,30 @@
                 </div>
             </div>
             <div class="col-md-6" style="text-align: justify-all; padding-top: 20px">
-                <p class="card-text mt-4">
-                    Giá hiện tại: <span class = "font-weight-bold text-danger">{{format_number this.product.CurrentPrice}}</span>
+                <p class="card-text mt-4" style="font-size: 30px; text-align: center">
+                    Giá hiện tại: <span class = "font-weight-bold text-danger" >{{format_number this.product.CurrentPrice}}</span>
                 </p>
                 <p class="card-text">
-                    <i class="fa fa-user"></i>
-                    Người bán: {{this.product.UploadUser}}
+                    <div>
+                        <i class="fa fa-user"></i>
+                        <span>
+                            Người bán:
+                            <a href="/ProductsOf/{{this.product.sellerUsername}}" style="color: #1747a6">{{this.product.sellerUsername}}
+                                (<i class="fa fa-thumbs-up"></i>: {{this.UploadUserPoint.LikePoint}}/
+                                <i class="fa fa-thumbs-down"></i>: {{this.UploadUserPoint.DislikePoint}})
+                            </a>
+                        </span>
+                    </div>
                 </p>
+                <p class="card-text">
+                    <i class="fa fa-arrow-up"></i>
+                    <i class="fa fa-user"></i>
+                    Bidder: <span class="card-title" style="font-weight: bold; color: #f0842b">{{this.highestBidder}}
+                    (<i class="fa fa-thumbs-up"></i>: {{this.highestBidderPoint.LikePoint}}/
+                    <i class="fa fa-thumbs-down"></i>: {{this.highestBidderPoint.DislikePoint}})</span>
+
+                </p>
+
                 <p class="card-text">
                     <i class="fa fa-clock-o"></i>
                     <span style="font-weight: bold">Ngày đăng:</span> {{formatDate this.product.UploadDate}}
@@ -94,7 +109,7 @@
                 <p class="card-text">
                     <span style="font-weight: bold"> <i class="fa fa-clock-o"></i>
                         Thời gian hết hạn:  </span>
-                    <span style="color:#181f5e; font-weight: bold" data-countdown="{{formatDateCountdown this.product.EndDate}}"></span>
+                    <span class="card-title text-success" style="font-weight: bold" data-countdown="{{formatDateCountdown this.product.EndDate}}"></span>
                 </p>
                 <p style="font-weight: bold">Thông tin chi tiết: </p>
                 <p class="card-text">

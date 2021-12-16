@@ -110,10 +110,6 @@
                         <input type="text" name="Name" id = "Name" value = "{{UserInfo.Name}}" required>
                     </div>
                     <div class="input-box">
-                        <span class="details">Email</span>
-                        <input type="email" name="Email" id="Email"value = "{{UserInfo.Email}}" required >
-                    </div>
-                    <div class="input-box">
                         <span class="details">Năm sinh</span>
                         <input data-toggle="datepicker" type="text" value = "{{formatDate UserInfo.Dob}}" required name="Dob">
                     </div>
@@ -134,12 +130,11 @@
                         <span class="details">Username</span>
                         <input type="text" name="Username" id="Username" value="{{authUser.Username}}" required>
                     </div>
+                    <div>
+                        <a class="nav-link" href="/account/changePassword"><h5>Đổi mật khẩu</h5> <span class="sr-only">(current)</span></a>
+                    </div>
                 </div>
-                <div class="button">
-                    <a href="/account/changePassword">
-                        <input  value="Đổi mật khẩu" style="text-align: center">
-                    </a>
-                </div>
+
             </div>
         </div>
     </form>

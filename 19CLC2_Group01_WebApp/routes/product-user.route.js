@@ -1,6 +1,7 @@
 //admin/categories
 import express from 'express';
 import productModel from '../models/product.models.js'
+import accountModels from "../models/account.models.js";
 import auth from '../middlewares/auth.mdw.js'
 const router = express.Router();
 //Khuong.
@@ -46,7 +47,7 @@ router.get('/byCat/:id', async function(req, res){
 
     const list = await productModel.findPageByCatID(catID2, limit, offset)
 
-    //check wwhich product selected in watch list
+    //check which product selected in watch list
     if (res.locals.WatchListByUSerID != null){
         for(const c of list){
             for (const d of res.locals.WatchListByUSerID){
@@ -56,8 +57,28 @@ router.get('/byCat/:id', async function(req, res){
             }
         }
     }
+
+    //get highest bidder + number of auction
+    for(const c of list){
+        const highestBidder =  await productModel.getUsernameMaxPriceByProID(c.ProID)
+        if (highestBidder === null){
+            c.highestBidder = 'None'
+        }else{
+            c.highestBidder = highestBidder.Username
+        }
+
+        const numberofAuction = await productModel.getNumberofAuctionByProID(c.ProID)
+        if(numberofAuction === null){
+            c.numberAuction = 0
+        }else{
+            c.numberAuction = numberofAuction.NumberOfAuction
+        }
+    }
+
+
+
+
     const isLogin = req.session.auth || false
-    console.log(isLogin)
 
     res.render('vwProducts/byCat', {
         products: list,
@@ -121,12 +142,29 @@ router.get('/detail/:id', async function(req, res){
     }
     // Khang
 
+    //check upload user.
+    const sellerUsername = await productModel.getSellerNamebyUploadUserID(product.UploadUser);
+    product.sellerUsername = sellerUsername.Username
+
+    var highestBidder = "0"
+    var highestBidderPoint = ""
+    const UploadUserPoint = await accountModels.getPointByUserID(product.UploadUser)
+    const Bidder =  await productModel.getUsernameMaxPriceByProID(product.ProID)
+    if (Bidder === null){
+        highestBidder = 'None'
+    }else{
+        highestBidder = Bidder.Username
+        highestBidderPoint = await accountModels.getPointByUserID(Bidder.UserID)
+    }
+
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
         list5Relate,
         Category1: catID1.CatID1,
-
+        UploadUserPoint,
+        highestBidder,
+        highestBidderPoint
     })
 })
 //Khuong.
@@ -193,12 +231,14 @@ router.post('/addWatchList', async function (req, res){
         ProID: id
     };
     const ret = await productModel.addToWatchList(entity);
-    if (req.body.ProStatus === undefined){
-        const obj = await productModel.getCatID2FromProID(id);
-        res.redirect(`/products/byCat/${obj.CatID2}`);
-    }
-    else
-        res.redirect(`/products/detail/${id}`)
+    // if (req.body.ProStatus === undefined){
+    //     const obj = await productModel.getCatID2FromProID(id);
+    //     res.redirect(`/products/byCat/${obj.CatID2}`);
+    // }
+    // else
+    //     res.redirect(`/products/detail/${id}`)
+    const url = req.headers.referer || '/'
+    res.redirect(url)
 });
 
 router.post('/delWatchList', async function(req, res){

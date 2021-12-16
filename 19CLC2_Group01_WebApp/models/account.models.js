@@ -62,6 +62,10 @@ export default {
         return db('Account').where('UserID', UserId).update({Activate: '1'})
     },
 
+    async deleteOTPLogin(email){
+        return db('OTP').where('Email', email).del()
+    },
+
     async getAccountInfoByUsername(username){
         const user = await db('Account').where({
             Username: username,
@@ -103,6 +107,13 @@ export default {
 
     async DelOTPCodeForget(email){
         return db('OTPForgetPass').where('Email', email).del()
+    },
+
+    async getPointByUserID(userID){
+        const userPoint = await db('User').where('UserID', userID).select('LikePoint', 'DislikePoint')
+        if(userPoint.length === 0)
+            return null;
+        return userPoint[0]
     }
 
 }

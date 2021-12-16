@@ -21,7 +21,6 @@ export default {
     },
 
     deleteCate(id){
-        console.log(id)
         return db('Product').where('ProID', id).del()
     },
 
@@ -75,7 +74,6 @@ export default {
 
     async countWatchList(userID){
         if(userID === null){
-            console.log(userID)
             return null
         }
         const lst = await db('WatchList').count({ WatchListCount: 'UserID' }).where('UserID',userID);
@@ -95,6 +93,45 @@ export default {
             return null
         }
         return list
+    },
+
+    //top5.
+    //top 5 price.
+    async getTop5ByPrice(){
+        return db('Product').orderBy('CurrentPrice', 'desc').limit(5);
+    },
+    async getTop5byClose(){
+        return db('Product').orderBy('EndDate').limit(5);
+    },
+    async getTop5ByAuction(){
+        return db('Auction').count('Auction.ProID', {as: 'NumberOfAuction'}).groupBy('Auction.ProID').orderBy('NumberOfAuction', 'desc').limit(5).select('Auction.ProID', 'Product.*').join('Product', 'Product.ProID', '=', 'Auction.ProID')
+    },
+
+
+    //checkUploadUserbyProid.
+    async getSellerNamebyUploadUserID(Userid){
+        const user = await db('Account').where('UserID', Userid)
+        if (user.length === 0){
+            return null;
+        }
+        return user[0]
+    },
+
+    //check highes bidder.
+    async getUsernameMaxPriceByProID(proID){
+        const pro = await db('MaxPrice').join('Account', 'MaxPrice.UserID', '=', 'Account.UserID').andWhere('ProID', proID).select('Account.Username', 'Account.UserID')
+        if (pro.length === 0){
+            return null;
+        }
+        return pro[0]
+    },
+
+    //count luot ra gia.
+    async getNumberofAuctionByProID(proID){
+        const num = await db('Auction').count('ProID', {as: 'NumberOfAuction'}).where('ProID', proID)
+        if (num.length === 0)
+            return null
+        return num[0]
     }
 
 }
