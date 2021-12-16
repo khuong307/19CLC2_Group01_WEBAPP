@@ -56,7 +56,36 @@ router.get('/lv1/edit', async function(req, res){
 
 //add category lv1
 router.get('/lv1/add', function(req, res){
-    res.render('admin/vwAdminCategory/addCategoryLV1',{isAdmin:true})
+    res.render('admin/vwAdminCategory/addCategoryLV1')
+})
+
+// post add category lv1
+router.post('/lv1/add',async function(req,res){
+    if(req.body.CatName===''){
+        console.log("Data is not here");
+    }
+    else{
+        // Lấy catName ở form nhập
+        const CatName1=req.body.CatName;
+        // Truy vấn toàn bộ phẩn tử trong Category L1
+        const list = await categoryModel.findALlCategoryL1();
+        // Lấy ra CatID1 của phần tử cuối trong bảng CategoryL1
+        const lastCatID=list[list.length-1].CatID1;
+        // Cắt CatID1 của phần tử cuối ra hai phần chuỗi + số
+        const firstLetter=lastCatID.slice(0,1);
+        const numberID=lastCatID.slice(1);
+
+        // Tạo CatID1 cho phần tử mới
+        const newNumberID=parseInt(numberID)+1;
+        const CatID1=firstLetter+newNumberID;
+        // Tạo phần tử mới
+        const entity={};
+        entity["CatID1"]=CatID1;
+        entity["CatName1"]=CatName1;
+        // Insert vào bảng CategoryL1 và redirect về trang trước
+        const ret=await CategoriesModels.insertCategoryL1(entity);
+        res.redirect('/admin/categories/lv1');
+    }
 })
 
 
@@ -100,20 +129,52 @@ router.get('/lv2', async function(req, res){
     }
 
     res.render('admin/vwAdminCategory/categoryLV2List', {
-        categories: list,
-        isAdmin:true
+        categories: list
     })
 })
 
 
 //add category lv2
-router.get('/lv2/add', async function(req, res){
-    res.render('admin/vwAdminCategory/addCategoryLV2',{isAdmin:true})
+router.get('/lv2/add', function(req, res){
+    res.render('admin/vwAdminCategory/addCategoryLV2')
 })
 
+
+// Post category lv2
 router.post('/lv2/add', async function(req, res){
-    await categoryModel.add(req.body);
-    res.render('admin/vwAdminCategory/addCategoryLV2',{isAdmin:true})
+    const CatName2=req.body.CatName2;
+    const CatID1=req.body.CatID1;
+    const ret=await CategoriesModels.findByIdLV1(CatID1);
+    if(CatName2==='' || CatID1===''){
+        console.log("Data is not here");
+    }
+    else if(ret===null)
+    {
+        console.log("Input wrong CatID1");
+    }
+    else{
+        //Lấy danh sách những item trong CategoryL2
+        const listL2 = await categoryModel.findAllWithDetails();
+        // Lấy ra CatID2 của phần tử cuối trong bảng CategoryL1
+        const lastCatID=listL2[listL2.length-1].CatID2;
+        // Cắt CatID2 của phần tử cuối ra hai phần chuỗi + số
+        const firstLetter=lastCatID.slice(0,1);
+        const numberID=lastCatID.slice(1);
+
+        // Tạo CatID2 cho phần tử mới
+        const newNumberID=parseInt(numberID)+1;
+        const CatID2=firstLetter+newNumberID;
+        console.log(CatID2);
+
+        // Tạo phần tử mới
+        const entity={};
+        entity["CatID2"]=CatID2;
+        entity["CatName2"]=CatName2;
+        entity["CatID1"]=CatID1;
+        // Insert vào bảng CategoryL2 và redirect về trang trước
+        const result=await CategoriesModels.insertCategoryL2(entity);
+        res.redirect('/admin/categories/lv2')
+    }
 })
 
 //edit category lv2
@@ -130,8 +191,7 @@ router.get('/lv2/edit', async function(req, res){
     category["QuantityLV2"]=quantity;
 
     res.render('admin/vwAdminCategory/editCategoryLV2', {
-        category,
-        isAdmin:true
+        category
     })
 })
 

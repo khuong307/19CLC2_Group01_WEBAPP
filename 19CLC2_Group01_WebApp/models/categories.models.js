@@ -1,5 +1,6 @@
 import db from '../utils/db.js'
 export default {
+    // CATEGORY LV1
     // Minh
     async findByIdLV1(id){
         const list =  await db('CategoryL1').where('CatID1', id)
@@ -15,6 +16,11 @@ export default {
     },
 
     // Minh
+    insertCategoryL1(entity){
+        return db('CategoryL1').insert(entity);
+    },
+
+    // Minh
     updateCategoryLV1(entity){
         const id = entity.CatID1;
         delete entity.QuantityLV1;
@@ -26,6 +32,8 @@ export default {
         const id=entity.CatID1;
         return db('CategoryL1').where('CatID1', id).del()
     },
+
+    // CATEGORY LV2
 
     // Minh
     findAll(){
@@ -49,6 +57,11 @@ export default {
                      group by c.CatID2, c.CatName2`;
         const raw = await db.raw(sql);
         return raw[0];
+    },
+
+    // Minh
+    insertCategoryL2(entity){
+        return db('CategoryL2').insert(entity);
     },
 
     // Minh
