@@ -3,6 +3,7 @@ import express from 'express';
 import productModel from '../models/product.models.js'
 import accountModels from "../models/account.models.js";
 import auth from '../middlewares/auth.mdw.js'
+import moment from 'moment'; //format date.
 const router = express.Router();
 //Khuong.
 router.get('/byCat/:id', async function(req, res){
@@ -73,6 +74,19 @@ router.get('/byCat/:id', async function(req, res){
         }else{
             c.numberAuction = numberofAuction.NumberOfAuction
         }
+
+        //check í new product. (3 days)
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(c.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            c.isNew = true
+        }
+        else
+            c.isNew = false
     }
 
     const isLogin = req.session.auth || false
@@ -154,6 +168,11 @@ router.get('/detail/:id', async function(req, res){
         highestBidderPoint = await accountModels.getPointByUserID(Bidder.UserID)
     }
 
+    const desHistory = await productModel.getDescriptionHistoryByProID(proID);
+
+    //check user is owner;
+
+
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
@@ -161,7 +180,9 @@ router.get('/detail/:id', async function(req, res){
         Category1: catID1.CatID1,
         UploadUserPoint,
         highestBidder,
-        highestBidderPoint
+        highestBidderPoint,
+        desHistory,
+        isOwner: product.UploadUser === res.locals.authUser.UserID
     })
 })
 //Khuong.
@@ -205,6 +226,26 @@ router.get('/WatchList', auth, async function (req, res){
         const CatID2 = obj.CatID2;
         const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
         obj.CatID1 = CatID1.CatID1;
+        //check í new product. (3 days)
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(obj.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            obj.isNew = true
+        }
+        else
+            obj.isNew = false
+
+        //number of auction.
+        const numberofAuction = await productModel.getNumberofAuctionByProID(obj.ProID)
+        if(numberofAuction === null){
+            obj.numberAuction = 0
+        }else{
+            obj.numberAuction = numberofAuction.NumberOfAuction
+        }
     }
 
     res.render('vwProducts/watchList', {
@@ -215,6 +256,16 @@ router.get('/WatchList', auth, async function (req, res){
         isFirstPage: +page != 1,
         isLastPage: +page != nPages
     })
+})
+
+router.post('/appendDescription/:id', async function(req, res){
+    const url = req.headers.referer || '/'
+    const info = req.body.Info
+    const proID = req.params.id
+    const now = new Date()
+    productModel.InsertNewDescriptionByProID(proID, now, info)
+
+    res.redirect(url)
 })
 
 router.post('/addWatchList', async function (req, res){

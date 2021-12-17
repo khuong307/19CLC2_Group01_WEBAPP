@@ -260,6 +260,19 @@ export default {
         else{
             return list[0]
         }
+    },
+
+    async getDescriptionHistoryByProID(proID){
+        const listHistory = await db('DescriptionHistory').where('ProID', proID).orderBy('Time')
+        if (listHistory.length === 0){
+            return null;
+        }
+        else
+            return listHistory
+    },
+
+    async InsertNewDescriptionByProID(proID, now, info){
+        return db('DescriptionHistory').insert({ProID: proID, Time: now, Description: info})
     }
 
 }

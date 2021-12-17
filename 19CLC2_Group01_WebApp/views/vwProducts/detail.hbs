@@ -76,6 +76,11 @@
                         <span class="sr-only">Next</span>
                     </button>
                 </div>
+                <div class="row justify-content-center row-cols-3" style="padding-left: 20px; padding-top: 30px">
+                    <img  width="100%" height="100%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+                    <img  style="padding-left: 20px" width="100%" height="100%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_1.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+                    <img  style="padding-left: 20px" width="100%" height="100%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+                </div>
             </div>
             <div class="col-md-6" style="text-align: justify-all; padding-top: 20px">
                 <p class="card-text mt-4" style="font-size: 30px; text-align: center">
@@ -118,13 +123,27 @@
                 <p class="card-text">
                     {{{this.product.FullDes}}}
                 </p>
+                <p style="font-weight: bold; text-decoration: underline">Thông tin bổ sung</p>
+                {{#each this.desHistory}}
+                    <p><i class="fa fa-pencil"></i>
+                        {{formatDate Time}}: {{Description}}
+                    </p>
+                {{/each}}
+                {{#if isOwner}}
+                    <div>
+                        <form method="POST" action="/products/appendDescription/{{this.product.ProID}}">
+                            <div class="search">
+                                <input type="text" class="searchTerm" placeholder="Nhập thông tin bổ sung thêm" style="color: black" name="Info"required>
+                                <button type="submit" class="searchButton">
+                                    <i class="fa fa-check"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                {{/if}}
             </div>
         </div>
-        <div class="row justify-content-md-left row-cols-6" style="padding-left: 20px; padding-top: 30px">
-            <img  width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
-            <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_1.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
-            <img  style="padding-left: 20px" width="20%" height="20%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
-        </div>
+
         <h5 style="padding-top: 25px; font-weight: bold; text-decoration: underline; padding-bottom: 10px">Các sản phẩm liên quan:</h5>
         <div class="container">
             <div class="row" style="padding-left: 40px">

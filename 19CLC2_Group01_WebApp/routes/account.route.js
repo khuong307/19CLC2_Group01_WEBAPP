@@ -407,7 +407,18 @@ router.get('/search/:content', async function(req, res){
             }else{
                 d.numberAuction = numberofAuction.NumberOfAuction
             }
+            //check í new product. (3 days)
+            const now = new Date();
+            const date1 = moment.utc(now).format('MM/DD/YYYY')
+            const date2 = moment.utc(d.UploadDate).format('MM/DD/YYYY')
+            const diffTime = Math.abs(new Date(date1)- new Date(date2));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+            if (diffDays <= 3){
+                d.isNew = true
+            }
+            else
+                d.isNew = false
         }
 
         if (res.locals.WatchListByUSerID != null){
@@ -499,6 +510,19 @@ router.get('/search', async function(req, res){
             }else{
                 d.numberAuction = numberofAuction.NumberOfAuction
             }
+
+            //check í new product. (3 days)
+            const now = new Date();
+            const date1 = moment.utc(now).format('MM/DD/YYYY')
+            const date2 = moment.utc(d.UploadDate).format('MM/DD/YYYY')
+            const diffTime = Math.abs(new Date(date1)- new Date(date2));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 3){
+                d.isNew = true
+            }
+            else
+                d.isNew = false
 
         }
 

@@ -107,7 +107,7 @@
                                     <span style="font-weight: bold"> <i class="fa fa-clock-o"></i> Thời gian hết hạn: </span>
                                     <div class="card-title text-success" style="text-align: center; font-weight: bold; font-size: 25px" id="example1" data-countdown="{{formatDateCountdown EndDate}}"></div>
                                 </h7>
-                                <p class="card-text" style="font-weight: bold">Số lượt ra giá: <span>{{numberAuction}}</span></p>
+                                <p class="card-text" style="font-weight: bold">Số lượt ra giá: <span>{{numberAuction}}</span><span class="float-right" style="color: #00B4CC">{{#if isNew}}<i class="fa fa-2x fa-check-circle-o" title="Sản phẩm mới đăng 72h qua"></i>{{/if}}</span></p>
                             </div>
                             <div class="card-footer text-muted" style="text-align: center">
                                 <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">

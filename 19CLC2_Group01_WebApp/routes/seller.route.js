@@ -1,6 +1,7 @@
 import express from 'express';
 import sellerModel from '../models/seller.models.js'
 import productModel from "../models/product.models.js";
+import moment from "moment";
 
 const router = express.Router();
 //register.
@@ -47,6 +48,25 @@ router.get('/ProductsOf/:sellerUsername', async function(req, res){
         //insert CatID1
         const catID1 = await productModel.getCatID1FromCatID2(c.CatID2)
         c.CatID1 = catID1.CatID1
+
+        const numberofAuction = await productModel.getNumberofAuctionByProID(c.ProID)
+        if(numberofAuction === null){
+            c.numberAuction = 0
+        }else{
+            c.numberAuction = numberofAuction.NumberOfAuction
+        }
+
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(c.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            c.isNew = true
+        }
+        else
+            c.isNew = false
 
         if (res.locals.WatchListByUSerID != null){
             for (const d of res.locals.WatchListByUSerID) {
