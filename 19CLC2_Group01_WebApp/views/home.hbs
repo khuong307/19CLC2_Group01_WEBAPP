@@ -37,7 +37,7 @@
                 {{#each this.top5Date}}
                     <div class="col-sm-2-1qtr ml-sm-auto">
                         <div class="card h-100">
-                            <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
+                            <div id="Top5Date{{ProID}}" class="carousel slide" data-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
                                         <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main.jpg" alt="{{ProName}}" title="{{ProName}}">
@@ -49,11 +49,11 @@
                                         <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main_2.jpg" alt="{{ProName}}" title="{{ProName}}">
                                     </div>
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-target="#{{ProID}}" data-slide="prev">
+                                <button class="carousel-control-prev" type="button" data-target="#Top5Date{{ProID}}" data-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-target="#{{ProID}}" data-slide="next">
+                                <button class="carousel-control-next" type="button" data-target="#Top5Date{{ProID}}" data-slide="next">
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Next</span>
                                 </button>
@@ -62,9 +62,9 @@
                             <div class="card-footer justify-item-center" style="padding-top: 5px;">
                                 <p style="text-align: center; font-size: 18px" >{{ProName}}</p>
                                 <p>
-                                    <div class="card-text text-success" style="font-weight: bold; text-align: center" data-countdown="{{formatDateCountdown EndDate}}"></div>
+                                    <div class="card-text text-success" style="font-weight: bold; text-align: center; font-size: 20px" data-countdown="{{formatDateCountdown EndDate}}"></div>
                                 </p>
-                                <div>
+                                <div {{#if ../this.isLogin}} {{else}}style="text-align: center" {{/if}}>
                                     <a class="btn btn-sm btn-outline-primary" href="/products/detail/{{ProID}}" role="button" style="margin: auto;">
                                         <i class="fa fa-eye"></i>
                                         Details
@@ -101,7 +101,7 @@
                 {{#each this.top5Price}}
                     <div class="col-sm-2-1qtr ml-sm-auto">
                         <div class="card h-100">
-                            <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
+                            <div id="Top5Price{{ProID}}" class="carousel slide" data-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
                                         <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main.jpg" alt="{{ProName}}" title="{{ProName}}">
@@ -113,11 +113,11 @@
                                         <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main_2.jpg" alt="{{ProName}}" title="{{ProName}}">
                                     </div>
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-target="#{{ProID}}" data-slide="prev">
+                                <button class="carousel-control-prev" type="button" data-target="#Top5Price{{ProID}}" data-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-target="#{{ProID}}" data-slide="next">
+                                <button class="carousel-control-next" type="button" data-target="#Top5Price{{ProID}}" data-slide="next">
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Next</span>
                                 </button>
@@ -126,7 +126,7 @@
                             <div class="card-footer justify-item-center" style="padding-top: 5px;">
                                 <p style="text-align: center; font-size: 18px" >{{ProName}}</p>
                                 <p class="card-title text-danger" style="text-align: center;font-weight: bold; font-size: 20px" >{{format_number CurrentPrice}}</p>
-                                <div>
+                                <div {{#if ../this.isLogin}} {{else}}style="text-align: center" {{/if}}>
                                     <a class="btn btn-sm btn-outline-primary" href="/products/detail/{{ProID}}" role="button" style="margin: auto;">
                                         <i class="fa fa-eye"></i>
                                         Details
@@ -163,7 +163,7 @@
                 {{#each this.top5Auction}}
                     <div class="col-sm-2-1qtr ml-sm-auto">
                         <div class="card h-100">
-                            <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
+                            <div id="Top5Auction{{ProID}}" class="carousel slide" data-ride="carousel">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
                                         <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main.jpg" alt="{{ProName}}" title="{{ProName}}">
@@ -175,11 +175,11 @@
                                         <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main_2.jpg" alt="{{ProName}}" title="{{ProName}}">
                                     </div>
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-target="#{{ProID}}" data-slide="prev">
+                                <button class="carousel-control-prev" type="button" data-target="#Top5Auction{{ProID}}" data-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-target="#{{ProID}}" data-slide="next">
+                                <button class="carousel-control-next" type="button" data-target="#Top5Auction{{ProID}}" data-slide="next">
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Next</span>
                                 </button>
@@ -191,7 +191,7 @@
                                     <i class="fa fa-arrow-up"></i>
                                     {{format_number NumberOfAuction}}
                                 </p>
-                                <div>
+                                <div {{#if ../this.isLogin}} {{else}}style="text-align: center" {{/if}}>
                                     <a class="btn btn-sm btn-outline-primary" href="/products/detail/{{ProID}}" role="button" style="margin: auto;">
                                         <i class="fa fa-eye"></i>
                                         Details

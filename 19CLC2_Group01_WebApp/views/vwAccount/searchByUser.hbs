@@ -27,16 +27,37 @@
 
 {{/section}}
 <div class="card text">
-    <h4 class="card-header d-flex justify-content-between">
-        Products
+    <h4 class="card-header d-flex justify-content-between" style="text-align: center">
+        <span class="mt-2">Sản phẩm theo từ khóa "{{this.content}}"
+            <span style="color:#00B4CC ">{{#if this.isLowtoHighPrice}} - Giá tăng dần{{/if}} {{#if this.isDateClose}} - Thời gian kết thúc giảm dần{{/if}}</span>
+            </span>
+        <ul class="navbar-nav">
+            <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" style="color: #00B4CC" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                    Sắp xếp</b>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/account/search?content={{this.content}}&type=1">
+                        <i class="fa fa-money"></i>
+                        Giá tăng dần
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/account/search?content={{this.content}}&type=2">
+                        <i class="fa fa-clock-o"></i>
+                        Thời gian kết thúc giảm dần
+                    </a>
+                </div>
+            </li>
+        </ul>
     </h4>
+
     <div class="card-body">
         {{#if this.empty}}
-            <h5 class="card-title">No Information</h5>
+            <h5 class="card-title">Không tồn tại sản phẩm liên quan.</h5>
             <p class="card-text">With supporting text below as a natural lead-in to additional content</p>
         {{else}}
             <div class="row">
-                {{#each this.products}}
+                {{#each this.resultList}}
                     <div class="col-sm-4 mb-3">
                         <div class="card h-100">
                             <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
@@ -118,7 +139,7 @@
                 <ul class="pagination justify-content-end">
                     <li class="page-item">
                         {{#if this.isFirstPage}}
-                            <a class="page-link" href="?page={{decrease_one this.currentPageIndex}}">
+                            <a class="page-link" {{#if this.type}}href="/account/search?content={{this.content}}&type={{this.type}}&page={{decrease_one this.currentPageIndex}}" {{else}} href="?page={{decrease_one this.currentPageIndex}}{{/if}}">
                             Previous
                             </a>
                         {{/if}}
@@ -127,16 +148,16 @@
                     {{#each this.pageNumbers}}
                         {{#if isCurrentPage}}
                             <li class="page-item active">
-                                <a class="page-link" href="javascript:;">{{value}}</a>
+                            <a class="page-link" {{#if ../this.type}}href="/account/search?content={{../this.content}}&type={{../this.type}}&page={{value}}"{{else}} href="?page={{value}}"{{/if}}>{{value}}</a>
                             </li>
                         {{else}}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{value}}">{{value}}</a>
+                                <a class="page-link" {{#if ../this.type}}href="/account/search?content={{../this.content}}&type={{../this.type}}&page={{value}}"{{else}} href="?page={{value}}"{{/if}}>{{value}}</a>
                             </li>
                         {{/if}}
                     {{/each}}
                     {{#if this.isLastPage}}
-                        <a class="page-link" href="?page={{increase_one this.currentPageIndex}}">
+                        <a class="page-link" {{#if this.type}}href="/account/search?content={{this.content}}&type={{this.type}}&page={{increase_one this.currentPageIndex}}"{{else}}href="?page={{increase_one this.currentPageIndex}}{{/if}}">
                         Next
                         </a>
                     {{/if}}

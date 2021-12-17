@@ -3,6 +3,7 @@ import productRoute from "../routes/product.route.js";
 import productUserRoute from "../routes/product-user.route.js";
 import accountRoute from "../routes/account.route.js";
 import productModels from "../models/product.models.js";
+import sellerRoute from "../routes/seller.route.js";
 
 import {dirname} from "path";
 import {fileURLToPath} from "url";
@@ -57,7 +58,6 @@ export default function(app){
                 }
             }
         }
-        console.log(top5Auction)
 
 
 
@@ -90,4 +90,6 @@ export default function(app){
     app.use('/products', productUserRoute)
     //account related file.
     app.use('/account', accountRoute)
+    //seller
+    app.use('/seller', sellerRoute)
 }

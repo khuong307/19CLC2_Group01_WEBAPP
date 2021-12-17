@@ -30,7 +30,6 @@ export default function(app){
             },
 
             formatDate(val){
-                console.log(moment.utc(val).format('DD/MM/YYYY'))
                 return moment.utc(val).format('DD/MM/YYYY')
             },
             formatDateCountdown(val){

@@ -71,7 +71,6 @@ export default {
             Username: username,
             Activate:  1
         })
-        console.log(user)
         if(user.length === 0){
             return null
         }

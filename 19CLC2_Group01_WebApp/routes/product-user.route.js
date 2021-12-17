@@ -75,9 +75,6 @@ router.get('/byCat/:id', async function(req, res){
         }
     }
 
-
-
-
     const isLogin = req.session.auth || false
 
     res.render('vwProducts/byCat', {
@@ -223,7 +220,6 @@ router.get('/WatchList', auth, async function (req, res){
 router.post('/addWatchList', async function (req, res){
     req.session.retURL = req.originalUrl
     const id = req.body.ProID;
-    console.log(id);
 
     const userid = req.session.authUser.UserID || ''
     const entity = {
@@ -254,4 +250,7 @@ router.post('/delWatchList', async function(req, res){
     res.redirect(url)
 });
 // Khang
+
+
+
 export default router;

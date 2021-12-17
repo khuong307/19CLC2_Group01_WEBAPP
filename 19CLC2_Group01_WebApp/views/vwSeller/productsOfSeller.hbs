@@ -27,16 +27,16 @@
 
 {{/section}}
 <div class="card text">
-    <h4 class="card-header d-flex justify-content-between">
-        Products
+    <h4 class="card-header d-flex justify-content-between" style="color: #2b8f88">
+        Sản phẩm đăng bán bởi {{this.sellerUsername}}
     </h4>
     <div class="card-body">
         {{#if this.empty}}
-            <h5 class="card-title">No Information</h5>
+            <h5 class="card-title">Không có bất kỳ sản phẩm nào!</h5>
             <p class="card-text">With supporting text below as a natural lead-in to additional content</p>
         {{else}}
             <div class="row">
-                {{#each this.products}}
+                {{#each this.ProductOfSeller}}
                     <div class="col-sm-4 mb-3">
                         <div class="card h-100">
                             <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
@@ -88,7 +88,7 @@
                                 </h7>
                                 <p class="card-text" style="font-weight: bold">Số lượt ra giá: <span>{{numberAuction}}</span></p>
                             </div>
-                            <div class="card-footer text-muted" style="text-align: center">
+                            <div class="card-footer text-muted">
                                 <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
                                     <i class="fa fa-eye"></i>
                                     Details

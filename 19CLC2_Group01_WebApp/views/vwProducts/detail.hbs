@@ -86,7 +86,7 @@
                         <i class="fa fa-user"></i>
                         <span>
                             Người bán:
-                            <a href="/ProductsOf/{{this.product.sellerUsername}}" style="color: #1747a6">{{this.product.sellerUsername}}
+                            <a href="/seller/ProductsOf/{{this.product.sellerUsername}}" style="color: #1747a6">{{this.product.sellerUsername}}
                                 (<i class="fa fa-thumbs-up"></i>: {{this.UploadUserPoint.LikePoint}}/
                                 <i class="fa fa-thumbs-down"></i>: {{this.UploadUserPoint.DislikePoint}})
                             </a>
@@ -154,7 +154,7 @@
 
                     <div class="card-footer" style="justify-content: center; padding-top: 5px; align-items: center">
                         <p style="text-align: center" >{{ProName}}</p>
-                        <div style="padding-left: 68px">
+                        <div style="text-align: center">
                             <a class="btn btn-md btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
                                 <i class="fa fa-eye"></i>
                                 Details

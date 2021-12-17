@@ -38,6 +38,11 @@ export default {
         return db('Product').where('Product.CatID2', CatID).limit(limit).offset(offset ).join('CategoryL2', 'Product.CatID2', '=', 'CategoryL2.CatID2').select('Product.*', {CatID1: 'CategoryL2.CatID1'})
     },
 
+    findPageByUploadUser(UploadUserID, limit, offset){
+        return db('Product').where('Product.UploadUser', UploadUserID).limit(limit).offset(offset).select('Product.*')
+    },
+
+
     async countByCatID(CatID){
         const list = await db('Product').where('CatID2', CatID).count({amount: 'ProID' })
         return list[0].amount
@@ -132,6 +137,129 @@ export default {
         if (num.length === 0)
             return null
         return num[0]
+    },
+
+    async searchProductFulltext(content){
+        const sql = `select ProInfoSearch.ProID
+                     from ProInfoSearch
+                     where
+                         MATCH(ProName)
+                         AGAINST('${content}')
+                        or
+                         MATCH(TinyDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(FullDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName1)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName2)
+                         AGAINST('${content}')`;
+
+        const raw = await db.raw(sql);
+        if(raw.length === 0)
+            return null
+        else
+            return raw[0]
+    },
+
+    async searchProductFullTextSearchWithLimitOffset(content, limit, offset){
+        const sql = `select distinct ProInfoSearch.ProID
+                     from ProInfoSearch
+                     where
+                         MATCH(ProName)
+                         AGAINST('${content}')
+                        or
+                         MATCH(TinyDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(FullDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName1)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName2)
+                         AGAINST('${content}')
+                         LIMIT ${limit} 
+                         OFFSET ${offset}`;
+
+        const raw = await db.raw(sql);
+        if(raw.length === 0)
+            return null
+        else
+            return raw[0]
+    },
+
+    async searchProductFullTextSearchType1(content, limit, offset){
+        const sql = `select distinct ProInfoSearch.ProID
+                     from ProInfoSearch
+                     where
+                         MATCH(ProName)
+                         AGAINST('${content}')
+                        or
+                         MATCH(TinyDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(FullDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName1)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName2)
+                         AGAINST('${content}')
+                     ORDER BY ProInfoSearch.CurrentPrice ASC
+                         LIMIT ${limit} 
+                         OFFSET ${offset}`;
+
+        const raw = await db.raw(sql);
+        console.log(123456)
+        if(raw.length === 0)
+            return null
+        else
+            return raw[0]
+    },
+
+    async searchProductFullTextSearchType2(content, limit, offset){
+        const sql = `select distinct ProInfoSearch.ProID
+                     from ProInfoSearch
+                     where
+                         MATCH(ProName)
+                         AGAINST('${content}')
+                        or
+                         MATCH(TinyDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(FullDes)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName1)
+                         AGAINST('${content}')
+                        or
+                         MATCH(CatName2)
+                         AGAINST('${content}')
+                     ORDER BY ProInfoSearch.EndDate DESC
+                     LIMIT ${limit} 
+                     OFFSET ${offset}`;
+
+        const raw = await db.raw(sql);
+        console.log(raw[0])
+        if(raw.length === 0)
+            return null
+        else
+            return raw[0]
+    },
+
+    async getProductByProID(proID){
+        const list = await db('Product').where('ProID', proID);
+        if(list.length === 0)
+            return null
+        else{
+            return list[0]
+        }
     }
 
 }
