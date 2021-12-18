@@ -15,6 +15,18 @@ export default function(app){
 
         res.locals.auth = req.session.auth
         res.locals.authUser = req.session.authUser
+
+        if(res.locals.authUser != false){
+            if(res.locals.authUser.Type === 1){
+                res.locals.actorBidder = 1;
+            }
+            else if (res.locals.authUser.Type === 2){
+                res.locals.actorSeller = 1;
+            }
+            else if (res.locals.authUser.Type === 3){
+                res.locals.actorAdmin = 1;
+            }
+        }
         next()
     })
     //khuong
@@ -37,14 +49,13 @@ export default function(app){
 
         // Khang
         if(res.locals.authUser != false){
+            //console.log(res.locals.authUser)
             const userID = res.locals.authUser.UserID
             const list = await productModels.getWatchListByUserID(userID)
             res.locals.WatchListByUSerID = list
             res.locals.lengthOfWatchList = list.length
         }
-
         // Khang
-
         next()
     })
 

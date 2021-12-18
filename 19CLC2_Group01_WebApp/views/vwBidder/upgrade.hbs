@@ -1,0 +1,44 @@
+{{#section 'css'}}
+    <style>
+        .container-rm{
+            background-color: rgb(239, 230, 240);
+            height: 100%;
+            width: 100%;
+            border-radius: 20px;
+        }
+
+        .heading{
+            color: rgb(228, 81, 164);
+        }
+    </style>
+{{/section}}
+
+<div class="container-rm">
+    <div class="content ml-3">
+        <h1 class="heading h2 text-center">Điều khoản và Quy Định</h1>
+        <p>Các lưu ý từ người bán nâng cấp thành người mua:</p>
+        <ol>
+            <li>Sử dụng các tính năng của người bán chỉ có hiệu lực trong vòng 7 ngày</li>
+            <li>Tài khoản phải gửi yêu cầu đến quản trị viên và được chấp nhận thì việc chuyển đổi mới có hiệu lực</li>
+            <li>Trong thời gian chờ duyệt thì tài khoản không thể gửi yêu cầu khác</li>
+            <li>Người bán vẫn có các tính năng của người mua</li>
+        </ol>
+        <p>Một số quy định mà người bán cần tuân thủ:</p>
+        <ol>
+            <li>Người bán không được đăng bán các sản phẩm mang tính nguy hiểm, trái quy định pháp luật</li>
+            <li>Người bán khi bình luận về người mua phải dùng từ ngữ lịch sự, phù hợp</li>
+            <li>Người bán cần giao sản phẩm đúng với thông tin đã đấu giá</li>
+            <li>Người bán khi nhận tiền từ người mua thì cần kiểm tra kĩ lưỡng để bảo vệ quyền lợi cá nhân</li>
+        </ol>
+        <p>Để là một người bán vĩnh viễn, người dùng cần đăng ký tài khoản premium thay vì sử dụng tính năng này để bán trong 7 ngày. Các trường hợp vi phạm quy định sẽ bị trừng phạt bởi hệ thống theo các cấp độ khác nhau</p>
+        <form action="/bidder/send-request" method="post">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="isAccept">
+                <label class="form-check-label">Tôi đồng ý với quy định và điều khoản</label>
+            </div>
+            <div class="text-center">
+                <button type="submit" style="font-family: Georgia, serif;" class="btn-success btn-lg">REQUEST</button>
+            </div>
+        </form>
+    </div>
+</div>

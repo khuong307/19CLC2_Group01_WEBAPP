@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>E-Bidding Web App</title>
+    <title>E-Commerce Web App</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico">
@@ -67,30 +67,36 @@
             <li class="nav-item active">
                 <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                    Dropdown
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled">Disabled</a>
-            </li>
+            {{#if auth}}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                        {{#if actorBidder}}
+                            Bidder
+                        {{/if}}
+                        {{#if actorSeller}}
+                            Seller
+                        {{/if}}
+                        {{#if actorAdmin}}
+                            Admin
+                        {{/if}}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <!--Khang-->
+                        <a class="dropdown-item" href="/bidder/upgrade">Nâng cấp thành Seller</a>
+                        <!--Khang-->
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+            {{/if}}
         </ul>
         <ul class="navbar-nav">
             {{#if auth}}
 
                 <li class="nav-item active dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Hi,  <b>{{authUser.Username}}!</b>
+                        Chào,  <b>{{authUser.Username}}!</b>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/account/profile">
@@ -107,7 +113,7 @@
                         <div class="dropdown-divider"></div>
                         <form action="/account/logout" method="post" id="formLogout"></form>
                         <a class="dropdown-item" href="javascript: $('#formLogout').submit();">
-                            <i class="fa fa-sign-out"></i>Sign Out
+                            <i class="fa fa-sign-out"></i> Sign Out
                         </a>
                     </div>
                 </li>
@@ -133,7 +139,7 @@
         <div class="col-sm-3">
             <div class="card" style="border-radius: 10px">
                 <h4 class="card-header">
-                    Categories
+                    Danh mục
                 </h4>
                 <div class="just-padding">
                     <div class="list-group list-group-root well">

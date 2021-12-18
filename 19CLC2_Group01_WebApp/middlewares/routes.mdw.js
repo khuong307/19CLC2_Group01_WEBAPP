@@ -2,6 +2,7 @@ import categoryRoute from "../routes/category.route.js";
 import productRoute from "../routes/product.route.js";
 import productUserRoute from "../routes/product-user.route.js";
 import accountRoute from "../routes/account.route.js";
+import bidderRoute from "../routes/bidder.route.js";
 
 import {dirname} from "path";
 import {fileURLToPath} from "url";
@@ -33,4 +34,8 @@ export default function(app){
     app.use('/products', productUserRoute)
     //account related file.
     app.use('/account', accountRoute)
+
+    //Khang: route bidder
+    app.use('/bidder', bidderRoute)
+    //Khang: route bidder
 }

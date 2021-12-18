@@ -66,8 +66,8 @@ router.post('/register', async function(req, res){
     var transporter = mails.createTransport({
         service: 'gmail',
         auth: {
-            user: 'biddingwebapp01@gmail.com',
-            pass: '123456789zZ'
+            user: 'khuong16lop9a6@gmail.com',
+            pass: '0903024916'
         }
     });
     accountModel.addNewUser(newUser)
@@ -80,7 +80,7 @@ router.post('/register', async function(req, res){
     }
 
     var mailOptions = {
-        from: 'biddingwebapp01@gmail.com',
+        from: 'khuong16lop9a6@gmail.com',
         to: email,
         subject: 'Bidding Wep App: Confirm your email',
         text: 'Mã xác nhận OTP: ' + OTP
@@ -92,6 +92,7 @@ router.post('/register', async function(req, res){
             console.log('Email sent: ' + info.response);
         }
     });
+    transporter.close()
 
     const OTPConfirm = {
         Email: email,
@@ -134,7 +135,7 @@ router.post('/OTP/:email', async function(req, res){
         return res.redirect('/account/login')
     }else{
         return res.render('vWAccount/OTPConfirm',{
-            err_message: 'OTP code does not match'
+            err_message: 'Mã OTP không khớp!'
         })
     }
 })
@@ -155,7 +156,7 @@ router.post('/login', async function(req, res){
     if(user === null){
         return res.render('vwAccount/login', {
             layout: false,
-            err_message: 'Invalid username or password.'
+            err_message: 'Username và mật khẩu không hợp lệ!'
         })
     }
 
@@ -163,7 +164,7 @@ router.post('/login', async function(req, res){
     if(checkPass===false){
         return res.render('vwAccount/login', {
             layout: false,
-            err_message: 'Invalid username or password.'
+            err_message: 'Username và mật khẩu không hợp lệ!'
         })
     }
 
@@ -175,21 +176,173 @@ router.post('/login', async function(req, res){
     res.redirect(url)
 })
 
-//profile.
-//phục vụ chức năng chưa đăng nhập mà xem profile.
+//forget pass
+router.get('/forgetPass', async function(req, res){
+    res.render('vWAccount/forgetPass', {
+        layout: false
+    })
+})
 
-router.get('/profile', auth, async function(req, res){
-    res.render('vWAccount/profile')
+router.post('/forgetPass', async function(req, res){
+    const email = req.body.Email;
+    console.log(email)
+
+    const email_check = await accountModel.checkEmailInUser(email);
+    if (email_check === null){
+        res.render('vWAccount/forgetPass', {
+            layout: false,
+            err_message: 'Email không tồn tại!'
+        })
+    }
+    else{
+        //send OTP emails.
+        var transporter = mails.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'khuong16lop9a6@gmail.com',
+                pass: '0903024916'
+            }
+        });
+
+        //random OTP:
+        var digits = '0123456789';
+        let OTP = '';
+        for (let i = 0; i < 4; i++ ) {
+            OTP += digits[Math.floor(Math.random() * 10)];
+        }
+
+        var mailOptions = {
+            from: 'khuong16lop9a6@gmail.com',
+            to: email,
+            subject: 'Bidding Wep App: Sửa đổi mật khẩu',
+            text: 'Mã xác nhận OTP: ' + OTP
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+        const OTPConfirm = {
+            Email: email,
+            OTPCode: OTP
+        }
+        accountModel.InsertForgetPassOTP(OTPConfirm)
+        res.redirect(`OTPPassword/${email}`)
+    }
+
+    res.render('vWAccount/forgetPass', {
+        layout: false
+    })
+})
+
+//OTP CHECK.
+router.get('/OTPPassword/:email', async function(req, res){
+    res.render('vWAccount/OTPPassConfirm', {
+        layout: false
+    })
+
+})
+
+router.post('/OTPPassword/:email', async function(req, res){
+    const email = req.params.email || 0
+    const data = await accountModel.findOTPByEmailForgetPass(email);
+    const OTP = req.body.OTP;
+    const OTP_length = OTP.length;
+    const OTP_value = parseInt(OTP);
+
+    if (OTP_value === data.OTPCode && OTP_length === 4){
+        const username = await accountModel.findUserIDByEmail(email)
+        return res.redirect(`/account/newPassword/${email}`)
+    }else{
+        return res.render('vWAccount/OTPPassConfirm',{
+            layout: false,
+            err_message: 'Mã OTP không hợp lệ'
+        })
+    }
+})
+
+//OTP new pass.
+router.get('/newPassword/:email', async function(req, res){
+    res.render('vWAccount/newPassword', {
+        layout: false
+    })
+
+})
+router.post('/newPassword/:email', async function(req, res){
+    const email = req.params.email
+    console.log(email)
+    const password = req.body.newPassword;
+    const hashPass = BCrypt.hashSync(password, 10);
+    const userID = await accountModel.findUserIDByEmail(email)
+
+    accountModel.UpdatePassByUserID(userID.UserID, hashPass);
+    accountModel.DelOTPCodeForget(email)
+    res.redirect('/account/login');
+
 })
 
 //logout.
 router.post('/logout', async function(req, res){
     req.session.auth = false
-    req.session.authUser = false
-    req.session.retURL = false
+    req.session.authUser = null
+    req.session.retURL = null
 
     const url = req.headers.referer || '/'
     res.redirect(url)
 })
 
+
+//profile.
+//phục vụ chức năng chưa đăng nhập mà xem profile.
+
+router.get('/profile', auth, async function(req, res){
+    const userID = req.session.authUser.UserID
+
+    const UserInfo = await accountModel.getUserInfo(userID)
+    console.log(UserInfo)
+    res.render('vWAccount/profile',{
+        UserInfo
+    })
+})
+//update usser information
+router.post('/profile', auth, async function(req, res){
+    const userID = req.session.authUser.UserID
+})
+
+//change password.
+router.get('/changePassword', auth, async function(req, res){
+    const userID = req.session.authUser.UserID || "0"
+
+    const UserInfo = await accountModel.getUserInfo(userID)
+    console.log(UserInfo)
+    res.render('vWAccount/changePassword',{
+        UserInfo
+    })
+})
+
+router.post('/changePassword', auth, async function(req, res){
+    const userID = req.session.authUser.UserID
+
+    const UserInfo = await accountModel.getPasswordByUserID(userID)
+    console.log(UserInfo.Password)
+    const oldPass = req.body.oldPassword;
+    const newPass = req.body.newPassword;
+    const checkPass = BCrypt.compareSync(oldPass, UserInfo.Password)
+    if(checkPass === false){
+        return res.render('vWAccount/changePassword',{
+            err_message: 'Mật khẩu cũ không đúng!'
+        })
+    }
+    else{
+        const newHashPass = BCrypt.hashSync(newPass, 10);
+        accountModel.UpdatePassByUserID(userID, newHashPass);
+        req.session.authUser = null;
+        req.session.auth = null;
+        res.redirect('/account/login')
+
+    }
+})
 export default router;

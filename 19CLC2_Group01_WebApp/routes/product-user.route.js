@@ -56,6 +56,8 @@ router.get('/byCat/:id', async function(req, res){
             }
         }
     }
+    const isLogin = req.session.auth || false
+    console.log(isLogin)
 
     res.render('vwProducts/byCat', {
         products: list,
@@ -63,7 +65,8 @@ router.get('/byCat/:id', async function(req, res){
         pageNumbers,
         currentPageIndex: page,
         isFirstPage: +page != 1,
-        isLastPage: +page != nPages
+        isLastPage: +page != nPages,
+        isLogin
     })
 })
 
@@ -116,14 +119,14 @@ router.get('/detail/:id', async function(req, res){
         if (product.isActive === undefined)
             product.isActive = null;
     }
-
     // Khang
 
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
         list5Relate,
-        Category1: catID1.CatID1
+        Category1: catID1.CatID1,
+
     })
 })
 //Khuong.
@@ -198,14 +201,11 @@ router.post('/delWatchList', async function(req, res){
     req.session.retURL = req.originalUrl
     const id = req.body.ProID;
     const userid = req.session.authUser.UserID || ''
-    console.log(id)
-    console.log(userid)
     const entity = {
         UserID: userid,
         ProID: id
     };
     const ret = await productModel.delFromWatchList(entity);
-
     const url = req.headers.referer || '/'
     res.redirect(url)
 });

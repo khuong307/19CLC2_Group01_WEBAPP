@@ -137,27 +137,27 @@
 {{/section}}
 <div class="container">
     <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #9b59b6);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Registration</div>
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Đăng ký</div>
     <form id="formRegister" method="POST">
         <div class="user-details">
             <div class="col-md-6">
                 <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px"> User Info</h4>
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px; padding-bottom: 10px"> Thông tin người dùng</h4>
                     <div class="input-box">
-                        <span class="details">Full Name</span>
+                        <span class="details">Họ tên</span>
                         <input type="text" placeholder="Enter your name" name="Name" id = "Name" required>
                     </div>
                     <div class="input-box">
                         <span class="details">Email</span>
-                        <input type="email" placeholder="Enter your email" name="Email" id="Email">
+                        <input type="email" placeholder="Enter your email" name="Email" id="Email" required>
                     </div>
                     <div class="input-box">
-                        <span class="details">Date Of Birth</span>
+                        <span class="details">Năm sinh</span>
                         <input data-toggle="datepicker" type="text" placeholder="Enter your date of birth " required name="Dob">
                     </div>
                     <div class="input-box">
-                        <span class="details">Address</span>
+                        <span class="details">Địa chỉ</span>
                         <input type="text" placeholder="Enter your address" name="Address"required>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
             <div class="col-md-6">
                 <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px"> Account Info</h4>
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px; padding-bottom: 10px">Thông tin tài khoản</h4>
                     <div class="input-box">
                         <span class="details">Username</span>
                         <input type="text" placeholder="Enter your username" name="Username" id="Username" required>
@@ -180,7 +180,8 @@
                         <input type="password" placeholder="Confirm password" id="ConfirmPassword" required>
                     </div>
                 </div>
-                <div style="align-items: center; padding-top: 17px" class="g-recaptcha" data-sitekey="6Lckcp8dAAAAAAbvyqqMea0j5O4MdoDkL2b0Ca8P" data-callback="recaptcha_callback"></div>
+                <div style="align-items: center; padding-top: 17px" class="g-recaptcha" data-sitekey="6LcBnaQdAAAAAE5JVlofp-twIKK0o6d2x4AczT1L
+" data-callback="recaptcha_callback"></div>
             </div>
         </div>
         <div class="button">
