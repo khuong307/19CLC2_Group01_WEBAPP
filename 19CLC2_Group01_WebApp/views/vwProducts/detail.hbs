@@ -106,6 +106,16 @@
                     <i class="fa fa-thumbs-down"></i>: {{this.highestBidderPoint.DislikePoint}})</span>
 
                 </p>
+                <p class="card-text">
+                    <i class="fa fa-money"></i>
+                    <span style="font-weight: bold;">Mua ngay:</span>
+                    {{#if this.product.PriceBuyNow}}
+                        {{format_number this.product.PriceBuyNow}}
+                    {{else}}
+                        Không có
+                    {{/if}}
+                </p>
+
 
                 <p class="card-text">
                     <i class="fa fa-clock-o"></i>

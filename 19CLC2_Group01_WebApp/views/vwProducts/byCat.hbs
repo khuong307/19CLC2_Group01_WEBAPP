@@ -73,7 +73,12 @@
                                 <h7 class="card-text">
                                     <p>
                                     <i class="fa fa-money"></i>
-                                        <span style="font-weight: bold;">Mua ngay:</span> {{format_number PriceBuyNow}}
+                                        <span style="font-weight: bold;">Mua ngay:</span>
+                                        {{#if PriceBuyNow}}
+                                            {{format_number PriceBuyNow}}
+                                        {{else}}
+                                            Không có
+                                        {{/if}}
                                     </p>
                                 </h7>
                                 <h7 class="card-text">

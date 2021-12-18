@@ -189,7 +189,7 @@ router.post('/addProduct', async function(req,res){
                 EndDate,
                 CurrentPrice
             }
-
+            sellerModel.InsertProInfo(newEntity)
             const newProduct = {
                 ProID: newProID,
                 CatID2: catid2.CatID2,
@@ -206,7 +206,7 @@ router.post('/addProduct', async function(req,res){
                 FullDes
             }
             sellerModel.InsertProduct(newProduct)
-            res.redirect(`/seller/addProduct`)
+            res.redirect(`/seller/productsOf/${username}`)
         }
     })
 })
