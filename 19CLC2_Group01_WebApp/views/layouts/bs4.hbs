@@ -115,20 +115,22 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                         {{#if actorBidder}}
                             Bidder
+                        </a>
                         {{/if}}
                         {{#if actorSeller}}
                             Seller
+                        </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="/seller/addProduct">Đăng bán sản phẩm</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
                         {{/if}}
                         {{#if actorAdmin}}
                             Admin
+                            </a>
                         {{/if}}
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
                 </li>
             {{/if}}
             <li style="text-align: center">

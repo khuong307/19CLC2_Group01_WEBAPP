@@ -310,6 +310,16 @@ router.get('/profile', auth, async function(req, res){
 //update usser information
 router.post('/profile', auth, async function(req, res){
     const userID = req.session.authUser.UserID
+    console.log(userID)
+    const name = req.body.Name
+    const address = req.body.Address
+    const dob = req.body.Dob
+    accountModel.updateProfileByUserID(userID, name, dob, address)
+    const UserInfo = await accountModel.getUserInfo(userID)
+    res.render('vWAccount/profile',{
+        UserInfo
+    })
+
 })
 
 //change password.
@@ -558,4 +568,6 @@ router.get('/search', async function(req, res){
         })
     }
 });
+
+
 export default router;

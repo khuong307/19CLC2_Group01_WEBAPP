@@ -39,7 +39,7 @@ export default {
     },
 
     findPageByUploadUser(UploadUserID, limit, offset){
-        return db('Product').where('Product.UploadUser', UploadUserID).limit(limit).offset(offset).select('Product.*')
+        return db('Product').where('Product.UploadUser', UploadUserID).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
     },
 
 

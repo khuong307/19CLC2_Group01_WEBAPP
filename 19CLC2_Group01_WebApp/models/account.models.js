@@ -113,6 +113,11 @@ export default {
         if(userPoint.length === 0)
             return null;
         return userPoint[0]
+    },
+
+    //update user profile.
+    async updateProfileByUserID(userID, name, dob, address){
+        return db('User').where('UserID', userID).update({Name: name, Address: address, Dob: dob})
     }
 
 }

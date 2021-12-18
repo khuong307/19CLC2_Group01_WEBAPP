@@ -171,6 +171,12 @@ router.get('/detail/:id', async function(req, res){
     const desHistory = await productModel.getDescriptionHistoryByProID(proID);
 
     //check user is owner;
+    var isOwner = 0
+    if(res.locals.authUser != null){
+        if(product.UploadUser === res.locals.authUser.UserID && res.locals.authUser.Type === 2){
+            isOwner = 1
+        }
+    }
 
 
     res.render('vwProducts/detail', {
@@ -182,7 +188,7 @@ router.get('/detail/:id', async function(req, res){
         highestBidder,
         highestBidderPoint,
         desHistory,
-        isOwner: product.UploadUser === res.locals.authUser.UserID
+        isOwner
     })
 })
 //Khuong.
@@ -245,6 +251,14 @@ router.get('/WatchList', auth, async function (req, res){
             obj.numberAuction = 0
         }else{
             obj.numberAuction = numberofAuction.NumberOfAuction
+        }
+
+        //hisghest bidder.
+        const highestBidder =  await productModel.getUsernameMaxPriceByProID(obj.ProID)
+        if (highestBidder === null){
+            obj.highestBidder = 'None'
+        }else{
+            obj.highestBidder = highestBidder.Username
         }
     }
 
