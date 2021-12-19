@@ -3,6 +3,27 @@
         <h4 class="card-header">
             Edit Category
         </h4>
+        {{#if isViewEdit}}
+        {{else}}
+            {{#if isSuccess}}
+            {{else}}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> You should fill in the Category.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {{/if}}
+            {{#if isDelete}}
+            {{else}}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> You only can delete item with 0 quantity.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {{/if}}
+        {{/if}}
         <div class="card-body">
             <div class="form-group">
                 <label for="CatID">ID</label>

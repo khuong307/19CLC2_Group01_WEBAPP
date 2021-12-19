@@ -1,5 +1,18 @@
 <form method="POST">
     <div class="card">
+        {{#if isViewEdit}}
+        {{else}}
+            {{#if isSuccess}}
+            {{else}}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> You should fill in the Category.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {{/if}}
+        {{/if}}
+
         <h4 class="card-header">
             New Category
         </h4>

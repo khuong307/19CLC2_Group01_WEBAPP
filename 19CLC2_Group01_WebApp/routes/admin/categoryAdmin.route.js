@@ -1,7 +1,6 @@
 //admin/categories
 import express from 'express';
 import categoryModel from '../../models/categories.models.js'
-import CategoriesModels from "../../models/categories.models.js";
 
 const router = express.Router();
 
@@ -50,19 +49,25 @@ router.get('/lv1/edit', async function(req, res){
     console.log(category);
     res.render('admin/vwAdminCategory/editCategoryLV1', {
         category,
-        isAdmin:true
+        isViewEdit:true,
     })
 })
 
 //add category lv1
 router.get('/lv1/add', function(req, res){
-    res.render('admin/vwAdminCategory/addCategoryLV1')
+    res.render('admin/vwAdminCategory/addCategoryLV1',{
+        isViewEdit:true,
+    })
 })
 
 // post add category lv1
 router.post('/lv1/add',async function(req,res){
     if(req.body.CatName===''){
         console.log("Data is not here");
+        res.render('admin/vwAdminCategory/addCategoryLV1', {
+            isViewEdit:false,
+            isSuccess:false,
+        })
     }
     else{
         // Lấy catName ở form nhập
@@ -83,8 +88,8 @@ router.post('/lv1/add',async function(req,res){
         entity["CatID1"]=CatID1;
         entity["CatName1"]=CatName1;
         // Insert vào bảng CategoryL1 và redirect về trang trước
-        const ret=await CategoriesModels.insertCategoryL1(entity);
-        res.redirect('/admin/categories/lv1');
+        const ret=await categoryModel.insertCategoryL1(entity);
+        res.redirect('/admin/categories/lv1/');
     }
 })
 
@@ -92,23 +97,42 @@ router.post('/lv1/add',async function(req,res){
 //post update category lv1.
 router.post('/lv1/patch', async function(req, res){
     console.log(req.body);
-    const ret = await categoryModel.updateCategoryLV1(req.body);
-    res.redirect('/admin/categories/lv1')
+    let checkValid=isValidCategoryL1(req.body);
+    let category = {CatID1:req.body.CatID1,QuantityLV1:req.body.QuantityLV1,CatName1:req.body.CatName1};
+    if(checkValid.status==-1){
+        return res.render('admin/vwAdminCategory/editCategoryLV1', {
+            category,
+            isViewEdit:false,
+            isSuccess:false,
+            isDelete:true,
+        })
+    }
+    else{
+        const ret = await categoryModel.updateCategoryLV1(req.body);
+        return res.redirect('/admin/categories/lv1/');
+    }
 })
 
 //post delete category lv1 in a form
 router.post('/lv1/del', async function(req, res){
+    let category = {CatID1:req.body.CatID1,QuantityLV1:req.body.QuantityLV1,CatName1:req.body.CatName1};
     const quantity=req.body.QuantityLV1;
     if(quantity!='0'){
         console.log("You cannot delete this item");
+        res.render('admin/vwAdminCategory/editCategoryLV1', {
+            category,
+            isViewEdit:false,
+            isSuccess:true,
+            isDelete:false,
+        })
     }
     else{
         // Đầu tiên hủy toàn bộ category ở khóa ngoại ( Category Lv2)
-        const refList=await CategoriesModels.deleteRelateCate1ToCategoryLV2(req.body);
+        const refList=await categoryModel.deleteRelateCate1ToCategoryLV2(req.body);
         console.log(refList);
         //  Hủy category lv1
         const ret = await categoryModel.deleteCategoryLV1(req.body);
-        res.redirect('/admin/categories/lv1')
+        res.redirect('/admin/categories/lv1/');
     }
 })
 
@@ -117,7 +141,6 @@ router.post('/lv1/del', async function(req, res){
 // View Category lv2
 router.get('/lv2', async function(req, res){
     const list = await categoryModel.findAllWithDetails();
-
 
     for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
         d.numberPro = 0;
@@ -136,21 +159,33 @@ router.get('/lv2', async function(req, res){
 
 //add category lv2
 router.get('/lv2/add', function(req, res){
-    res.render('admin/vwAdminCategory/addCategoryLV2')
+    res.render('admin/vwAdminCategory/addCategoryLV2',{
+        isViewEdit:true,
+    })
 })
 
 
 // Post category lv2
 router.post('/lv2/add', async function(req, res){
+    // let isValid=false;
     const CatName2=req.body.CatName2;
     const CatID1=req.body.CatID1;
-    const ret=await CategoriesModels.findByIdLV1(CatID1);
+    const ret=await categoryModel.findByIdLV1(CatID1);
+
     if(CatName2==='' || CatID1===''){
         console.log("Data is not here");
+        return res.render('admin/vwAdminCategory/addCategoryLV2', {
+            isViewEdit:false,
+            isSuccess:false,
+        })
     }
     else if(ret===null)
     {
         console.log("Input wrong CatID1");
+        return res.render('admin/vwAdminCategory/addCategoryLV2', {
+            isViewEdit:false,
+            isSuccess:false,
+        })
     }
     else{
         //Lấy danh sách những item trong CategoryL2
@@ -172,7 +207,7 @@ router.post('/lv2/add', async function(req, res){
         entity["CatName2"]=CatName2;
         entity["CatID1"]=CatID1;
         // Insert vào bảng CategoryL2 và redirect về trang trước
-        const result=await CategoriesModels.insertCategoryL2(entity);
+        const result=await categoryModel.insertCategoryL2(entity);
         res.redirect('/admin/categories/lv2')
     }
 })
@@ -191,15 +226,23 @@ router.get('/lv2/edit', async function(req, res){
     category["QuantityLV2"]=quantity;
 
     res.render('admin/vwAdminCategory/editCategoryLV2', {
-        category
+        category,
+        isViewEdit:true,
     })
 })
 
 //post delete admin categories lv2
 router.post('/lv2/del', async function(req, res){
+    let category = {CatID2:req.body.CatID2,QuantityLV2:req.body.QuantityLV2,CatName2:req.body.CatName2};
     const quantity=req.body.QuantityLV2;
     if(quantity!='0'){
         console.log("You cannot delete this item");
+        return res.render('admin/vwAdminCategory/editCategoryLV2', {
+            category,
+            isViewEdit:false,
+            isSuccess:true,
+            isDelete:false,
+        })
     }
     else{
         const ret = await categoryModel.deleteCategoryLV2(req.body);
@@ -209,9 +252,36 @@ router.post('/lv2/del', async function(req, res){
 
 //post update admin categories lv2.
 router.post('/lv2/patch', async function(req, res){
-    const ret = await categoryModel.updateCategoryLV2(req.body);
-    res.redirect('/admin/categories/lv2')
+    console.log(req.body);
+    let checkValid=isValidCategoryL2(req.body);
+    let category = {CatID2:req.body.CatID2,QuantityLV2:req.body.QuantityLV2,CatName2:req.body.CatName2};
+    if(checkValid.status==-1){
+        return res.render('admin/vwAdminCategory/editCategoryLV2', {
+            category,
+            isViewEdit:false,
+            isSuccess:false,
+            isDelete:true,
+        })
+    }
+    else{
+        const ret = await categoryModel.updateCategoryLV2(req.body);
+        return res.redirect('/admin/categories/lv2/');
+    }
 })
 
+
+function isValidCategoryL1(obj){
+    if(obj.CatName1==''){
+        return {status:-1,msg:"CatName1 is missing"};
+    }
+    return {status:1,msg:"Successfully"};
+}
+
+function isValidCategoryL2(obj){
+    if(obj.CatName2==''){
+        return {status:-1,msg:"CatName1 is missing"};
+    }
+    return {status:1,msg:"Successfully"};
+}
 
 export default router;

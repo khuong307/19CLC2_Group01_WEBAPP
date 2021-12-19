@@ -8,6 +8,7 @@ import accountRoute from "../routes/account.route.js";
 import indexAdminRoute from "../routes/admin/indexAdmin.route.js";
 import categoryAdminRoute from "../routes/admin/categoryAdmin.route.js";
 import productAdminRoute from "../routes/admin/productAdmin.route.js";
+import userAdminRoute from "../routes/admin/userAdmin.route.js";
 //[END]
 
 import {dirname} from "path";
@@ -39,7 +40,10 @@ export default function(app){
     app.use('/admin/categories', categoryAdminRoute)
     //admin/products
     app.use('/admin/products', productAdminRoute)
+    //user
+    app.use('/admin/user',userAdminRoute);
     //[END]
+
 
 
     //product under user view.
