@@ -124,7 +124,7 @@ export default {
 
     //check highes bidder.
     async getUsernameMaxPriceByProID(proID){
-        const pro = await db('MaxPrice').join('Account', 'MaxPrice.UserID', '=', 'Account.UserID').andWhere('ProID', proID).select('Account.Username', 'Account.UserID')
+        const pro = await db('MaxPrice').join('Account', 'MaxPrice.UserID', '=', 'Account.UserID').andWhere('ProID', proID).select('Account.Username', 'Account.UserID').orderBy('MaxPrice.MaxPrice', 'DESC')
         if (pro.length === 0){
             return null;
         }
@@ -273,6 +273,33 @@ export default {
 
     async InsertNewDescriptionByProID(proID, now, info){
         return db('DescriptionHistory').insert({ProID: proID, Time: now, Description: info})
+    },
+
+    //get bidderinfo
+    async getBidderInfoByProID(proID){
+        const list = await db('Auction').where('ProID', proID).orderBy('Price').join('Account', 'Account.UserID', '=', 'Auction.UserID').select('Account.UserID','Auction.Price', 'Account.Username', 'Auction.Header', 'Auction.Status')
+        if(list.length === 0){
+            return null;
+        }else{
+            return list;
+        }
+    },
+
+    async getUsernameByUserID(userID){
+        const list = await db('Account').where('UserID', userID).select('Username')
+        if(list.length === 0){
+            return null;
+        }else{
+            return list[0]
+        }
+    },
+
+    async getMaxBidderByProID(proID){
+        return await db('MaxPrice').where('ProID', proID).orderBy('MaxPrice').select('UserID')
+    },
+
+    async updateStatusAuctionByUserID(userID){
+        return db('Auction').where('UserID', userID).update('Status', 0)
     }
 
 }

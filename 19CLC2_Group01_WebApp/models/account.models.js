@@ -118,6 +118,17 @@ export default {
     //update user profile.
     async updateProfileByUserID(userID, name, dob, address){
         return db('User').where('UserID', userID).update({Name: name, Address: address, Dob: dob})
+    },
+
+    //check time for seller.
+    async getSellerTimeValidByUserID(userID){
+        const user = await db('ChangeLevel').where('UserID', userID).select('ChangeLevel.AcceptTime')
+        if(user.length === 0)
+            return null
+        return user[0]
+    },
+    async updateSellerOutDate(userID){
+        return db('Account').where('UserID', userID).update('Type', 1)
     }
 
 }

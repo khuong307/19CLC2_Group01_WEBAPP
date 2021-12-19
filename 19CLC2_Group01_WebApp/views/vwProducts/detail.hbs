@@ -1,12 +1,46 @@
 {{#section 'css'}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-countdown/2.1.0/css/jquery.countdown.min.css">
     <style>
+        .strikeout {
+            line-height: 1em;
+            position: relative;
+        }
+        .strikeout::after {
+            border-bottom: 0.125em solid red;
+            content: "";
+            left: 0;
+            margin-top: calc(0.125em / 2 * -1);
+            position: absolute;
+            right: 0;
+            top: 50%;
+        }
         .carousel-control-prev-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
         }
 
         .carousel-control-next-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
+        }
+
+        #bidderInfo {
+            border-collapse: collapse;
+        }
+
+        #bidderInfo td, #bidderInfo th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #bidderInfo tr:nth-child(even){background-color: #f2f2f2;}
+
+        #bidderInfo tr:hover {background-color: #ddd;}
+
+        #bidderInfo th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #c91e18;
+            color: white;
         }
     </style>
 {{/section}}
@@ -80,6 +114,35 @@
                     <img  width="100%" height="100%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
                     <img  style="padding-left: 20px" width="100%" height="100%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_1.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
                     <img  style="padding-left: 20px" width="100%" height="100%" src="/public/imgs/sp/{{this.product.CatID1}}/{{this.product.CatID2}}/{{this.product.ProID}}/main_2.jpg" atl="{{this.product.ProName}}" title = "{{this.product.ProName}}">
+                </div>
+                <div class="card-body"n style="justify-items: center; text-align: center">
+                    <h5 class="mt-3" style="text-decoration: underline; font-weight: bold">Thông tin đấu giá</h5>
+                    <table id="bidderInfo" style="margin-left: auto; margin-right: auto">
+                        <tr>
+                            <th style="font-weight: lighter">Bidder</th>
+                            <th style="font-weight: lighter">Giá vào</th>
+                            <th style="font-weight: lighter">Người giữ giá</th>
+                        </tr>
+                        {{#each this.bidderInfo}}
+                            <tr>
+                                <td {{#if Status}}{{else}}class="strikeout"{{/if}}>{{MaskCharacter Username}}</td>
+                                <td style="color: #c42e23">{{format_number Price}}</td>
+                                <td {{#if Status}}{{else}}class="strikeout"{{/if}}>{{MaskCharacter HeaderUsername}}</td>
+                                {{#if ../this.isOwner}}
+                                <td>
+                                    <div class="float-right">
+                                        <form action="/products/denyRequest?ProID={{../this.proID}}&UserID={{UserID}}" method="post">
+                                            <input type="hidden" name="ProID" value={{ProID}}>
+                                            <button class="btn btn{{#if Status}}-outline-danger{{else}}-danger{{/if}}" type="submit">
+                                                <i class="fa fa-trash-o"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                                {{/if}}
+                            </tr>
+                        {{/each}}
+                    </table>
                 </div>
             </div>
             <div class="col-md-6" style="text-align: justify-all; padding-top: 20px">
@@ -158,7 +221,8 @@
         <div class="container">
             <div class="row" style="padding-left: 40px">
             {{#each this.list5Relate}}
-                <div class="col-sm-4 mb-3">
+                <div class="col-sm-2-1qtr mb-3">
+                    <div class="card h-100">
                         <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
@@ -180,17 +244,19 @@
                                 <span class="sr-only">Next</span>
                             </button>
                         </div>
-
-                    <div class="card-footer" style="justify-content: center; padding-top: 5px; align-items: center">
-                        <p style="text-align: center" >{{ProName}}</p>
-                        <div style="text-align: center">
-                            <a class="btn btn-md btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
-                                <i class="fa fa-eye"></i>
-                                Details
-                            </a>
+                        <div class="card-body">
+                            <p style="text-align: center" >{{ProName}}</p>
+                        </div>
+                        <div class="card-footer" style="justify-content: center; padding-top: 5px; align-items: center">
+                            <div style="text-align: center">
+                                <a class="btn btn-md btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                                    <i class="fa fa-eye"></i>
+                                    Details
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    </div>
+                </div>
                 {{/each}}
             </div>
         </div>

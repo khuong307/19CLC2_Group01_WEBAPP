@@ -121,10 +121,10 @@
                             Seller
                         </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/seller/addProduct">Đăng bán sản phẩm</a>
-                                <a class="dropdown-item" href="/seller/productsOf/{{authUser.Username}}">Sản phẩm của bạn</a>
+                                <a class="dropdown-item" style="color: #0f3596" href="/seller/addProduct">Đăng bán sản phẩm</a>
+                                <a class="dropdown-item" style="color: #0f3596" href="/seller/productsOf/{{authUser.Username}}">Sản phẩm của bạn</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item"><span style="color: #0f3596">Thời gian còn lại:</span> <span style="color: #c47237; font-weight: bold">{{authUser.validTime}} ngày</span></a>
                             </div>
                         {{/if}}
                         {{#if actorAdmin}}
@@ -150,7 +150,7 @@
             {{#if auth}}
                 <li class="nav-item active dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Chào,  <b>{{authUser.Username}}!</b>
+                        Chào,  <b style="color: #0f3596">{{authUser.Username}}!</b>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/account/profile">

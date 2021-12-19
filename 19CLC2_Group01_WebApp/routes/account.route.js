@@ -172,9 +172,27 @@ router.post('/login', async function(req, res){
     }
 
     delete user.Password;
-
     req.session.auth = true
     req.session.authUser = user
+    //check if seller still have time left
+    if(user.Type === 2){
+        //getAcceptDate.
+        const validDate = await accountModel.getSellerTimeValidByUserID(user.UserID)
+        console.log(validDate)
+        //check í new product. (3 days)
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(validDate.AcceptTime).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        req.session.authUser.validTime = diffDays;
+        if (diffDays === 0){
+            accountModel.updateSellerOutDate(user.UserID)
+            req.session.authUser.Type = 1
+        }
+    }
+
+
     const url = req.session.retURL || req.originalUrl;
     res.redirect(url)
 })

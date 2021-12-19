@@ -168,14 +168,23 @@ router.get('/detail/:id', async function(req, res){
         highestBidderPoint = await accountModels.getPointByUserID(Bidder.UserID)
     }
 
+
     const desHistory = await productModel.getDescriptionHistoryByProID(proID);
 
     //check user is owner;
     var isOwner = 0
     if(res.locals.authUser != null){
-        if(product.UploadUser === res.locals.authUser.UserID && res.locals.authUser.Type === 2){
+        if(product.UploadUser === res.locals.authUser.UserID){
             isOwner = 1
         }
+    }
+
+    //get bidder information.
+    const bidderInfo = await productModel.getBidderInfoByProID(proID)
+
+    for(const c of bidderInfo){
+        const tmp = await productModel.getUsernameByUserID(c.Header)
+        c.HeaderUsername = tmp.Username
     }
 
 
@@ -188,7 +197,9 @@ router.get('/detail/:id', async function(req, res){
         highestBidder,
         highestBidderPoint,
         desHistory,
-        isOwner
+        isOwner,
+        bidderInfo,
+        proID
     })
 })
 //Khuong.
@@ -316,6 +327,21 @@ router.post('/delWatchList', async function(req, res){
 });
 // Khang
 
+//deny request.
+router.post('/denyRequest', async function(req, res){
+    const proID = req.query.ProID
+    const userID = req.query.UserID
+    console.log(proID)
+    console.log(userID)
+
+    const MaxBidder = await productModel.getMaxBidderByProID(proID)
+    productModel.updateStatusAuctionByUserID(userID)
+
+
+
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+})
 
 
 export default router;

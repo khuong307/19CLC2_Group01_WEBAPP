@@ -139,6 +139,24 @@ router.post('/addProduct', async function(req,res){
         newProID = 'P' + stt
     }
 
+    const folderCat1 = './public/imgs/sp/'+catid1.CatID1
+    try {
+        if (!existsSync(folderCat1)) {
+            mkdirSync(folderCat1)
+        }
+    } catch (err) {
+        console.error(err)
+    }
+
+    const folderCat2 = './public/imgs/sp/'+catid1.CatID1+'/'+catid2.CatID2
+    try {
+        if (!existsSync(folderCat2)) {
+            mkdirSync(folderCat2)
+        }
+    } catch (err) {
+        console.error(err)
+    }
+
     const folderName = './public/imgs/sp/'+catid1.CatID1+'/'+catid2.CatID2+'/'+newProID
     try {
         if (!existsSync(folderName)) {
