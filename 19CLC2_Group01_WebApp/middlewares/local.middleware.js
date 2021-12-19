@@ -1,9 +1,50 @@
 //middle-ware: sẽ được khởi động chạy trước khi vào file hbs,  để lên trước các app.get
 import categoryModel from "../models/categories.models.js";
 import productModels from "../models/product.models.js";
+import BidderModels from "../models/bidder.models.js";
+import accountModels from "../models/account.models.js";
 
 
 export default function(app){
+    //Khang
+    app.use(async function(req, res, next){
+        if(typeof (req.session.auth) === 'undefined'){
+            req.session.auth = false;
+        }
+        if(typeof (req.session.authUser) === 'undefined'){
+            req.session.authUser = false;
+        }
+
+        res.locals.auth = req.session.auth
+        res.locals.authUser = req.session.authUser
+
+        if(res.locals.authUser != false){
+            const userid = res.locals.authUser.UserID;
+            const obj = await BidderModels.findById(userid);
+            res.locals.upgrade = "Can upgrade";
+            if (obj !== undefined && obj.Change === 1){
+                if (obj.AcceptTime === null)
+                    res.locals.upgrade = "Yêu cầu của bạn đã được gửi và đang chờ xử lý";
+                else{
+                    const now = new Date();
+                    const sendDate = new Date(obj.AcceptTime);
+                    const diffTime = now.getTime() - sendDate.getTime();
+                    console.log(diffTime)
+                    if (diffTime > 604800000){
+                        const ret = await accountModels.updateActorById(userid, 1);
+                        res.locals.authUser.Type = 1;
+                    }
+                    else{
+                        res.locals.upgrade = "Bạn đã trở thành seller";
+                    }
+                }
+            }
+        }
+
+        next();
+    });
+    // Khang
+
     //khuong.
     app.use(async function(req, res, next){
         if(typeof (req.session.auth) === 'undefined'){

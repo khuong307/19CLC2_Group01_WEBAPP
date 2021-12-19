@@ -287,7 +287,7 @@ router.post('/newPassword/:email', async function(req, res){
 //logout.
 router.post('/logout', async function(req, res){
     req.session.auth = false
-    req.session.authUser = null
+    req.session.authUser = false
     req.session.retURL = null
 
     const url = req.headers.referer || '/'

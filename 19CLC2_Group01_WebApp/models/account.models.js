@@ -103,6 +103,12 @@ export default {
 
     async DelOTPCodeForget(email){
         return db('OTPForgetPass').where('Email', email).del()
+    },
+
+    async updateActorById(userid, level){
+        return db('Account').where('UserID', userid).update({
+            Type: level
+        })
     }
 
 }
