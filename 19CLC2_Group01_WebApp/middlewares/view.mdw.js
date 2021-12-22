@@ -35,6 +35,11 @@ export default function(app){
             },
             formatDateCountdown(val){
                 return moment.utc(val).format('MM/DD/YYYY')
+            },
+            MaskCharacter(str) {
+                var tmp = str;
+                var result = tmp.slice(4, str.length-1)
+                return "####"+result
             }
         }
     }));

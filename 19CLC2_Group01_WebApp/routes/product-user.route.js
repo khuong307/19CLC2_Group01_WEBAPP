@@ -2,6 +2,8 @@
 import express from 'express';
 import productModel from '../models/product.models.js'
 import auth from '../middlewares/auth.mdw.js'
+import ProductModels from "../models/product.models.js";
+import moment from "moment";
 const router = express.Router();
 //Khuong.
 router.get('/byCat/:id', async function(req, res){
@@ -208,6 +210,20 @@ router.post('/delWatchList', async function(req, res){
     const ret = await productModel.delFromWatchList(entity);
     const url = req.headers.referer || '/'
     res.redirect(url)
+});
+
+router.get('/history/:id', async function (req, res){
+    const ProID = req.params.id;
+    const lst = await ProductModels.getAuctionByProID(ProID);
+    lst.reverse();
+    for (var i = 0; i < lst.length; i++) {
+        lst[i].No = i + 1;
+        lst[i].Time = moment(lst[i].Time).format('DD/MM/YYYY HH:mm:ss');
+    }
+    console.log(lst)
+    res.render('vwProducts/history', {
+        Users: lst
+    });
 });
 // Khang
 export default router;

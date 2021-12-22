@@ -78,6 +78,12 @@ export default {
             '=', 'WatchList.ProID').where('WatchList.UserID', id).limit(limit).offset(offset).select();
         return lst;
     },
+
+    async getAuctionByProID(id){
+        const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
+            '=', 'Account.UserID').where('ProID', id).select();
+        return lst;
+    },
     // Khang
 
     async getWatchListByUserID(userID){
