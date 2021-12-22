@@ -212,17 +212,24 @@ router.post('/delWatchList', async function(req, res){
     res.redirect(url)
 });
 
-router.get('/history/:id', async function (req, res){
-    const ProID = req.params.id;
-    const lst = await ProductModels.getAuctionByProID(ProID);
-    lst.reverse();
+router.get('/history', async function (req, res){
+    const ProID = req.query.ProID;
+    const type = req.query.show;
+    var lst = [];
+    if (type === undefined || type === "top-5"){
+        lst = await ProductModels.getAuctionByProIDWithLimit(ProID, 5);
+    }
+    else{
+        lst = await ProductModels.getAuctionByProID(ProID);
+    }
     for (var i = 0; i < lst.length; i++) {
         lst[i].No = i + 1;
         lst[i].Time = moment(lst[i].Time).format('DD/MM/YYYY HH:mm:ss');
     }
     console.log(lst)
     res.render('vwProducts/history', {
-        Users: lst
+        Users: lst,
+        ProID
     });
 });
 // Khang

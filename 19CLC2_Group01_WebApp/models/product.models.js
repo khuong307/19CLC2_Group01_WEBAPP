@@ -79,9 +79,15 @@ export default {
         return lst;
     },
 
+    async getAuctionByProIDWithLimit(id, limit){
+        const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
+            '=', 'Account.UserID').where('ProID', id).orderBy('Auction.Time', 'desc').offset(0).limit(limit).select();
+        return lst;
+    },
+
     async getAuctionByProID(id){
         const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
-            '=', 'Account.UserID').where('ProID', id).select();
+            '=', 'Account.UserID').where('ProID', id).orderBy('Auction.Time', 'desc').select();
         return lst;
     },
     // Khang
