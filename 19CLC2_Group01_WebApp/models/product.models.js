@@ -1,4 +1,5 @@
 import db from '../utils/db.js'
+import moment from 'moment'; //format date.
 export default {
     findAll(){
         return db.select().table('Product');
@@ -35,21 +36,28 @@ export default {
     },
 
     findPageByCatID(CatID, limit, offset){
-        return db('Product').where('Product.CatID2', CatID).limit(limit).offset(offset ).join('CategoryL2', 'Product.CatID2', '=', 'CategoryL2.CatID2').select('Product.*', {CatID1: 'CategoryL2.CatID1'})
+        return db('Product').where('Product.CatID2', CatID).andWhere('Product.EndDate', '>', new Date()).whereNull('Winner').limit(limit).offset(offset ).join('CategoryL2', 'Product.CatID2', '=', 'CategoryL2.CatID2').select('Product.*', {CatID1: 'CategoryL2.CatID1'})
     },
 
     findPageByUploadUser(UploadUserID, limit, offset){
-        return db('Product').where('Product.UploadUser', UploadUserID).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
+        return db('Product').where('Product.UploadUser', UploadUserID).andWhere('Product.EndDate', '>', new Date()).whereNull('Winner').orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
+    },
+
+    findOutDatePageByUploadUser(UploadUserID, limit, offset){
+        return db('Product').where('Product.UploadUser', UploadUserID).andWhere('Product.EndDate', '<', new Date()).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
+    },
+    findSoldPageByUploadUser(UploadUserID, limit, offset){
+        return db('Product').where('Product.UploadUser', UploadUserID).whereNotNull('Winner').orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
     },
 
 
     async countByCatID(CatID){
-        const list = await db('Product').where('CatID2', CatID).count({amount: 'ProID' })
+        const list = await db('Product').where('CatID2', CatID).andWhere('Product.EndDate', '>', new Date()).count({amount: 'ProID' })
         return list[0].amount
     },
 
     async getRelateProduct(CatID2, ProID){
-        const list = await db('Product').where('CatID2', CatID2).andWhereNot('ProID', ProID).limit(5);
+        const list = await db('Product').where('CatID2', CatID2).andWhere('Product.EndDate', '>', new Date()).andWhereNot('ProID', ProID).whereNull('Winner').limit(5);
         return list;
     },
 
@@ -86,8 +94,9 @@ export default {
     },
 
     async getWatchListFromUserID(id, limit, offset){
+        const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const lst = await db('Product').join('WatchList', 'Product.ProID',
-            '=', 'WatchList.ProID').where('WatchList.UserID', id).limit(limit).offset(offset).select();
+            '=', 'WatchList.ProID').where('WatchList.UserID', id).andWhere('Product.EndDate','>', now ).limit(limit).offset(offset).select();
         return lst;
     },
     // Khang
@@ -103,13 +112,13 @@ export default {
     //top5.
     //top 5 price.
     async getTop5ByPrice(){
-        return db('Product').orderBy('CurrentPrice', 'desc').limit(5);
+        return db('Product').where('Product.EndDate', '>', new Date()).whereNull('Winner').orderBy('CurrentPrice', 'desc').limit(5);
     },
     async getTop5byClose(){
-        return db('Product').orderBy('EndDate').limit(5);
+        return db('Product').where('Product.EndDate', '>', new Date()).whereNull('Winner').orderBy('EndDate').limit(5);
     },
     async getTop5ByAuction(){
-        return db('Auction').count('Auction.ProID', {as: 'NumberOfAuction'}).groupBy('Auction.ProID').orderBy('NumberOfAuction', 'desc').limit(5).select('Auction.ProID', 'Product.*').join('Product', 'Product.ProID', '=', 'Auction.ProID')
+        return db('Auction').where('Product.EndDate', '>', new Date()).whereNull('Winner').count('Auction.ProID', {as: 'NumberOfAuction'}).groupBy('Auction.ProID').orderBy('NumberOfAuction', 'desc').limit(5).select('Auction.ProID', 'Product.*').join('Product', 'Product.ProID', '=', 'Auction.ProID')
     },
 
 
@@ -140,9 +149,12 @@ export default {
     },
 
     async searchProductFulltext(content){
+        const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select ProInfoSearch.ProID
                      from ProInfoSearch
                      where
+                         ProInfoSearch.EndDate > '${now}'
+                     AND
                          MATCH(ProName)
                          AGAINST('${content}')
                         or
@@ -166,10 +178,12 @@ export default {
     },
 
     async searchProductFullTextSearchWithLimitOffset(content, limit, offset){
+        const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select distinct ProInfoSearch.ProID
                      from ProInfoSearch
                      where
-                         MATCH(ProName)
+                         ProInfoSearch.EndDate > '${now}'
+                        AND (MATCH(ProName)
                          AGAINST('${content}')
                         or
                          MATCH(TinyDes)
@@ -182,11 +196,12 @@ export default {
                          AGAINST('${content}')
                         or
                          MATCH(CatName2)
-                         AGAINST('${content}')
+                         AGAINST('${content}'))
                          LIMIT ${limit} 
                          OFFSET ${offset}`;
 
         const raw = await db.raw(sql);
+        console.log(sql)
         if(raw.length === 0)
             return null
         else
@@ -194,10 +209,13 @@ export default {
     },
 
     async searchProductFullTextSearchType1(content, limit, offset){
+        const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select distinct ProInfoSearch.ProID
                      from ProInfoSearch
                      where
-                         MATCH(ProName)
+                        ProInfoSearch.EndDate > '${now}'
+                         AND
+                         (MATCH(ProName)
                          AGAINST('${content}')
                         or
                          MATCH(TinyDes)
@@ -210,13 +228,12 @@ export default {
                          AGAINST('${content}')
                         or
                          MATCH(CatName2)
-                         AGAINST('${content}')
+                         AGAINST('${content}'))
                      ORDER BY ProInfoSearch.CurrentPrice ASC
                          LIMIT ${limit} 
                          OFFSET ${offset}`;
 
         const raw = await db.raw(sql);
-        console.log(123456)
         if(raw.length === 0)
             return null
         else
@@ -224,10 +241,13 @@ export default {
     },
 
     async searchProductFullTextSearchType2(content, limit, offset){
+        const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select distinct ProInfoSearch.ProID
                      from ProInfoSearch
                      where
-                         MATCH(ProName)
+                         ProInfoSearch.EndDate > '${now}'
+                     AND
+                         (MATCH(ProName)
                          AGAINST('${content}')
                         or
                          MATCH(TinyDes)
@@ -240,13 +260,12 @@ export default {
                          AGAINST('${content}')
                         or
                          MATCH(CatName2)
-                         AGAINST('${content}')
+                         AGAINST('${content}'))
                      ORDER BY ProInfoSearch.EndDate DESC
                      LIMIT ${limit} 
                      OFFSET ${offset}`;
 
         const raw = await db.raw(sql);
-        console.log(raw[0])
         if(raw.length === 0)
             return null
         else
@@ -300,6 +319,76 @@ export default {
 
     async updateStatusAuctionByUserID(userID){
         return db('Auction').where('UserID', userID).update('Status', 0)
-    }
+    },
 
+    async getProNameByProID(proID){
+        const ans = await db('Product').where('ProID', proID).select('ProName')
+        if(ans.length === 0)
+            return null
+        return ans[0]
+    },
+
+    async getEmailByUserID(userID){
+        const email = await db('User').where('UserID', userID)
+        if(email.length === 0)
+            return null
+        return email[0]
+    },
+    async getMaxPriceByUserIDProID(proID, userID){
+        const ans = await db('MaxPrice').where('ProID', proID).andWhere('UserID', userID).select('MaxPrice')
+        if(ans.length === 0)
+            return null
+        return ans[0]
+    },
+    async getMaxPriceByProID(proID){
+        const ans = await db('MaxPrice').where('ProID', proID).select('MaxPrice').orderBy('MaxPrice', 'DESC')
+        if(ans.length === 0)
+            return null
+        return ans[0]
+    },
+    async getUserIDHasMaxPrice(proID, maxPrice){
+        const ans = await db('MaxPrice').where('ProID', proID).andWhere('MaxPrice', maxPrice).select('UserID')
+        if(ans.length === 0)
+            return null;
+        return ans[0]
+    },
+    async delByUserIDInMaxPrice(userID){
+        return db('MaxPrice').where('UserID', userID).del()
+    },
+    async getSecondPriceInAuction(proID){
+        const ans = await db('Auction').where('ProID', proID).orderBy('Price', 'DESC')
+        if(ans.length === 0)
+            return null
+        else
+            return ans[ans.length - 2]
+    },
+    async updateCurrentPriceByProID(proID, newPrice){
+        return db('Product').update('CurrentPrice', newPrice).where('ProID', proID)
+    },
+
+    async delWatchListOutDate(){
+        const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
+        const watch = await db('Product').where('EndDate', '<', now).select('ProID')
+        if (watch.length > 0){
+            for(const c of watch){
+                const outDateProID = await db('WatchList').where('ProID', c.ProID)
+                for(const d of outDateProID){
+                    const outDateProID = await db('WatchList').where('ProID', d.ProID).andWhere('UserID', d.UserID).del()
+                }
+            }
+        }
+    },
+    //get review
+    async getReviewSellerSide(sellerID, bidderID, proID){
+        const ans = await db('Review').where('SenderID', sellerID).andWhere('ReceiverID', bidderID).andWhere('ProID', proID)
+        if (ans.length === 0)
+            return null;
+        return ans[0]
+    },
+    async getReviewBidderSide(bidderID,sellerID, proID){
+        const ans = await db('Review').where('SenderID', bidderID).andWhere('ReceiverID', sellerID).andWhere('ProID', proID)
+        if (ans.length === 0)
+            return null;
+        return ans[0]
+    }
 }

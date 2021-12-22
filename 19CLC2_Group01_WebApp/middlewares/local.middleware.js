@@ -1,6 +1,8 @@
 //middle-ware: sẽ được khởi động chạy trước khi vào file hbs,  để lên trước các app.get
 import categoryModel from "../models/categories.models.js";
 import productModels from "../models/product.models.js";
+import BidderModels from "../models/bidder.models.js";
+import accountModels from "../models/account.models.js";
 
 
 export default function(app){
@@ -27,6 +29,28 @@ export default function(app){
                 res.locals.actorAdmin = 1;
             }
         }
+
+        if(res.locals.authUser != null){
+            const userid = res.locals.authUser.UserID;
+            const obj = await BidderModels.findById(userid);
+            res.locals.upgrade = "Can upgrade";
+            if (obj !== undefined && obj.Change === 1){
+                if (obj.AcceptTime === null)
+                    res.locals.upgrade = "Yêu cầu của bạn đã được gửi và đang chờ xử lý";
+                else{
+                    const now = new Date();
+                    const sendDate = new Date(obj.AcceptTime);
+                    const diffTime = now.getTime() - sendDate.getTime();
+                    if (diffTime > 604800000){
+                        const ret = await accountModels.updateActorById(userid, 1);
+                        res.locals.authUser.Type = 1;
+                    }
+                    else{
+                        res.locals.upgrade = "Bạn đã trở thành seller";
+                    }
+                }
+            }
+        }
         next()
     })
     //khuong
@@ -49,8 +73,8 @@ export default function(app){
 
         // Khang
         if(res.locals.authUser != null){
-            //console.log(res.locals.authUser)
             const userID = res.locals.authUser.UserID
+            productModels.delWatchListOutDate()
             res.locals.lengthOfWatchList = await productModels.countWatchList(userID);
             res.locals.WatchListByUSerID = await productModels.getWatchListByUserID(userID)
         }

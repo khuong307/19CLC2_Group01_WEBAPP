@@ -7,8 +7,22 @@ export default {
         return list
     },
 
+    async getOutDateProductsBySellerUsername(username, limit, offset){
+        const list = await db.select('*').from('Product').where('Product.EndDate', '<', new Date()).join('Account', {'Account.UserID': 'Product.UploadUser'}).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset ).where('Account.Username', username)
+        if(list.length === 0)
+            return null;
+        return list
+    },
+
+    async getSoldProductsBySellerUsername(username, limit, offset){
+        const list = await db.select('*').from('Product').whereNotNull('Winner').join('Account', {'Account.UserID': 'Product.UploadUser'}).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset ).where('Account.Username', username)
+        if(list.length === 0)
+            return null;
+        return list
+    },
+
     async countProductByUserID(userID){
-        const list = await db('Product').where('UploadUser', userID).count({total: 'ProID' })
+        const list = await db('Product').where('UploadUser', userID).andWhere('Product.EndDate', '>', new Date()).count({total: 'ProID' })
         if(list.length === 0)
             return null
         return list[0]
@@ -49,5 +63,45 @@ export default {
     },
     async InsertProduct(entity){
         return db('Product').insert(entity)
+    },
+
+    //outdate
+    async countOutdateProductByUserID(userID){
+        const list = await db('Product').where('UploadUser', userID).andWhere('Product.EndDate', '<', new Date()).count({total: 'ProID' })
+        if(list.length === 0)
+            return null
+        return list[0]
+    },
+
+    //sold
+    async countSoldProductByUserID(userID){
+        const list = await db('Product').where('UploadUser', userID).whereNotNull('Winner').count({total: 'ProID' })
+        if(list.length === 0)
+            return null
+        return list[0]
+    },
+
+    async addNewReviewBySeller(newReview){
+        return db('Review').insert(newReview)
+    },
+
+    //
+    async checkReview(seller, bidder, pro){
+        const ans = await db('Review').where('SenderID', seller).andWhere('ReceiverID', bidder).andWhere('ProID', pro)
+        if(ans.length === 0)
+            return null
+        return ans[0]
+    },
+    async updateReview(newReview){
+        return db('Review').where('SenderID', newReview.SenderID).andWhere('ReceiverID', newReview.ReceiverID).andWhere('ProID', newReview.ProID).update(newReview)
+    },
+
+    //update like point
+    async updateLikePoint(userID){
+        return db('User').where('UserID', userID).increment('LikePoint')
+    },
+
+    async updateDisLikePoint(userID){
+        return db('User').where('UserID', userID).increment('DislikePoint')
     }
 }

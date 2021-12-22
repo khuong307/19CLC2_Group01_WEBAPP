@@ -129,6 +129,11 @@ export default {
     },
     async updateSellerOutDate(userID){
         return db('Account').where('UserID', userID).update('Type', 1)
+    },
+    async updateActorById(userid, level){
+        return db('Account').where('UserID', userid).update({
+            Type: level
+        })
     }
 
 }

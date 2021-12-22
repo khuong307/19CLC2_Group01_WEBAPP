@@ -30,10 +30,13 @@ export default function(app){
             },
 
             formatDate(val) {
-                return moment.utc(val).format('DD/MM/YYYY')
+                return moment(val).utcOffset('+0700').format('DD/MM/YYYY')
+            },
+            formatDateTime(val) {
+                return moment(val).utcOffset('+0700').format('DD/MM/YYYY HH:mm:ss')
             },
             formatDateCountdown(val) {
-                return moment.utc(val).format('MM/DD/YYYY')
+                return moment(val).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
             },
             MaskCharacter(str) {
                 var tmp = str;

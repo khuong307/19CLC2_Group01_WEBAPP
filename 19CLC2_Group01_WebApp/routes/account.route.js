@@ -178,7 +178,6 @@ router.post('/login', async function(req, res){
     if(user.Type === 2){
         //getAcceptDate.
         const validDate = await accountModel.getSellerTimeValidByUserID(user.UserID)
-        console.log(validDate)
         //check í new product. (3 days)
         const now = new Date();
         const date1 = moment.utc(now).format('MM/DD/YYYY')
@@ -328,7 +327,6 @@ router.get('/profile', auth, async function(req, res){
 //update usser information
 router.post('/profile', auth, async function(req, res){
     const userID = req.session.authUser.UserID
-    console.log(userID)
     const name = req.body.Name
     const address = req.body.Address
     const dob = req.body.Dob
@@ -375,7 +373,6 @@ router.post('/changePassword', auth, async function(req, res){
 //post search.
 router.post('/search', async function(req, res){
     const content = req.body.content || "0"
-    console.log(content)
     res.redirect(`search/${content}`)
 })
 
@@ -384,6 +381,7 @@ router.get('/search/:content', async function(req, res){
     req.session.retURL = req.originalUrl
     const content = req.params.content
     const proIDs = await productModel.searchProductFulltext(content)
+    console.log(proIDs)
 
     if( proIDs.length === 0){
         return res.render('vwAccount/searchByUser',{
@@ -410,7 +408,7 @@ router.get('/search/:content', async function(req, res){
         }
 
         const list = await productModel.searchProductFullTextSearchWithLimitOffset(content, limit, offset)
-
+        console.log(list)
         const resultList = [];
         for (const c of list){
             const d = await productModel.getProductByProID(c.ProID);
@@ -506,14 +504,11 @@ router.get('/search', async function(req, res){
             })
         }
         var list = []
-        console.log(type)
         if(type === '1'){
             list = await productModel.searchProductFullTextSearchType1(content, limit, offset)
-            console.log(list)
         }
         else if (type === '2')
             list = await productModel.searchProductFullTextSearchType2(content, limit, offset)
-        console.log(list)
         const resultList = [];
         for (const c of list){
             const d = await productModel.getProductByProID(c.ProID);

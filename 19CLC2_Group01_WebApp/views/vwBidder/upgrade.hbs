@@ -1,0 +1,63 @@
+{{#section 'css'}}
+    <style>
+        .container-rm{
+            background-color: #dfffd1;
+            height: 100%;
+            width: 100%;
+            border-radius: 20px;
+        }
+        .heading{
+            color: #1a8257;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .description{
+            color: #810F50;
+        }
+        .detail{
+            color: #5B2251;
+        }
+    </style>
+{{/section}}
+
+{{#if view}}
+    <div class="container-rm">
+        <div class="content ml-3">
+            <h1 class="heading h2 text-center">Điều khoản và Quy Định</h1>
+            <p class="description" style="text-decoration: underline;">Các lưu ý từ người bán nâng cấp thành người mua:</p>
+            <ol class="detail">
+                <li>Sử dụng các tính năng của người bán chỉ có hiệu lực trong vòng 7 ngày.</li>
+                <li>Tài khoản phải gửi yêu cầu đến quản trị viên và được chấp nhận thì việc chuyển đổi mới có hiệu lực.</li>
+                <li>Trong thời gian chờ duyệt thì tài khoản không thể gửi yêu cầu khác.</li>
+                <li>Người bán vẫn có các tính năng của người mua.</li>
+            </ol>
+            <p class="description" style="text-decoration: underline;">Một số quy định mà người bán cần tuân thủ:</p>
+            <ol class="detail">
+                <li>Người bán không được đăng bán các sản phẩm mang tính nguy hiểm, trái quy định pháp luật.</li>
+                <li>Người bán khi bình luận về người mua phải dùng từ ngữ lịch sự, phù hợp.</li>
+                <li>Người bán cần giao sản phẩm đúng với thông tin đã đấu giá.</li>
+                <li>Người bán khi nhận tiền từ người mua thì cần kiểm tra kĩ lưỡng để bảo vệ quyền lợi cá nhân.</li>
+            </ol>
+            <p class="description">Để là một người bán vĩnh viễn, người dùng cần đăng ký tài khoản premium thay vì sử dụng tính năng này để bán trong 7 ngày. Các trường hợp vi phạm quy định sẽ bị xóa tài khoản bởi hệ thống theo các cấp độ khác nhau</p>
+            <form action="/bidder/send-request" method="post">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="isAccept">
+                    <label class="form-check-label" style="color: #1a2f75; font-weight: bold">Tôi đồng ý với các quy định và điều khoản.</label>
+                </div>
+                {{#if this.ncheck}}
+                    <div class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                        <strong>Người dùng cần đồng ý với điều khoản để tiếp tục</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {{/if}}
+                <div class="text-center">
+                    <button type="submit" class="btn btn-md mb-2" style="background: #1a8257; color: white; font-size: 20px">Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{{else}}
+    <h1 class="text-center" style="background-color: #dfffd1; height: 15%; color: #52A2B2; border-radius: 10px; margin: auto">{{upgrade}}</h1>
+{{/if}}

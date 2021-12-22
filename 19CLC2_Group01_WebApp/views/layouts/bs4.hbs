@@ -116,13 +116,24 @@
                         {{#if actorBidder}}
                             Bidder
                         </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <!--Khang-->
+                                <a class="dropdown-item" href="/bidder/upgrade">Nâng cấp thành Seller</a>
+                                <!--Khang-->
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
                         {{/if}}
                         {{#if actorSeller}}
                             Seller
                         </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" style="color: #0f3596" href="/seller/addProduct">Đăng bán sản phẩm</a>
-                                <a class="dropdown-item" style="color: #0f3596" href="/seller/productsOf/{{authUser.Username}}">Sản phẩm của bạn</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" style="color: #0f3596; font-weight: bold" href="/seller/productsOf/{{authUser.Username}}">Sản phẩm còn hạn</a>
+                                <a class="dropdown-item" style="color: #0aa33a; font-weight: bold" href="/seller/productsSold/{{authUser.Username}}">Sản phẩm đã bán</a>
+                                <a class="dropdown-item" style="color:#b51907; font-weight: bold" href="/seller/productsOutDate/{{authUser.Username}}">Sản phẩm hết hạn</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item"><span style="color: #0f3596">Thời gian còn lại:</span> <span style="color: #c47237; font-weight: bold">{{authUser.validTime}} ngày</span></a>
                             </div>

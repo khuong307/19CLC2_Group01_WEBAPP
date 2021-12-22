@@ -229,5 +229,271 @@ router.post('/addProduct', async function(req,res){
     })
 })
 
+//product out Date.
+router.get('/productsOutDate/:sellerUsername', auth,async function(req, res){
+    req.session.retURL = req.originalUrl
+    const isLogin = req.session.auth || false
+    const sellerUsername = req.params.sellerUsername || 0
 
+    const limit = 6
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const tmp = await sellerModel.getOutDateProductsBySellerUsername(sellerUsername, limit, offset);
+    const uploadUser = await sellerModel.getUserIDByUsername(sellerUsername)
+    const productCount = await sellerModel.countOutdateProductByUserID(uploadUser.UserID)
+
+    if(tmp === null){
+        return res.render('vWSeller/productsOutDate',{
+            empty: 1,
+            sellerUsername
+        })
+    }
+
+    var isOwner = 0
+    if(res.locals.authUser != null){
+        if(uploadUser.UserID === res.locals.authUser.UserID){
+            isOwner = 1
+        }
+        else{
+            res.redirect('/')
+        }
+    }
+
+    const total = productCount.total
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const ProductOfSeller = await productModel.findOutDatePageByUploadUser(uploadUser.UserID, limit, offset)
+
+    for(const c of ProductOfSeller) {
+        const highestBidder = await productModel.getUsernameMaxPriceByProID(c.ProID)
+        if (highestBidder === null) {
+            c.highestBidder = 'None'
+        } else {
+            c.highestBidder = highestBidder.Username
+        }
+        //insert CatID1
+        const catID1 = await productModel.getCatID1FromCatID2(c.CatID2)
+        c.CatID1 = catID1.CatID1
+
+        const numberofAuction = await productModel.getNumberofAuctionByProID(c.ProID)
+        if(numberofAuction === null){
+            c.numberAuction = 0
+        }else{
+            c.numberAuction = numberofAuction.NumberOfAuction
+        }
+
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(c.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            c.isNew = true
+        }
+        else
+            c.isNew = false
+
+        if (res.locals.WatchListByUSerID != null){
+            for (const d of res.locals.WatchListByUSerID) {
+                if (c.ProID === d.ProID) {
+                    c.isWatchList = 1;
+                }
+            }
+        }
+    }
+
+
+    res.render('vWSeller/productsOutDate',{
+        ProductOfSeller,
+        sellerUsername,
+        empty: ProductOfSeller.length === 0,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        isLogin,
+        isOwner
+    })
+})
+
+//sold product.
+//product out Date.
+router.get('/productsSold/:sellerUsername', auth,async function(req, res){
+    req.session.retURL = req.originalUrl
+    const isLogin = req.session.auth || false
+    const sellerUsername = req.params.sellerUsername || 0
+
+    const limit = 3
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const tmp = await sellerModel.getSoldProductsBySellerUsername(sellerUsername, limit, offset);
+    const uploadUser = await sellerModel.getUserIDByUsername(sellerUsername)
+    const productCount = await sellerModel.countSoldProductByUserID(uploadUser.UserID)
+
+    if(tmp === null){
+        return res.render('vWSeller/productsSold',{
+            empty: 1,
+            sellerUsername
+        })
+    }
+
+    var isOwner = 0
+    if(res.locals.authUser != null){
+        if(uploadUser.UserID === res.locals.authUser.UserID){
+            isOwner = 1
+        }
+        else{
+            res.redirect('/')
+        }
+    }
+
+    const total = productCount.total
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const ProductOfSeller = await productModel.findSoldPageByUploadUser(uploadUser.UserID, limit, offset)
+
+    for(const c of ProductOfSeller) {
+        const highestBidder = await productModel.getUsernameByUserID(c.Winner)
+        if (highestBidder === null) {
+            c.highestBidder = 'None'
+        } else {
+            c.highestBidder = highestBidder.Username
+        }
+        //insert CatID1
+        const catID1 = await productModel.getCatID1FromCatID2(c.CatID2)
+        c.CatID1 = catID1.CatID1
+
+        const review = await productModel.getReviewSellerSide(c.UploadUser, c.Winner, c.ProID)
+        if (review === null){
+            c.hasReview = 0;
+        }
+        else{
+            c.hasReview = 1;
+            c.reviewContent = review;
+        }
+
+        const bidderRevew = await productModel.getReviewBidderSide(c.Winner, c.UploadUser, c.ProID)
+        if (bidderRevew === null){
+            c.hasBidderReview = 0;
+        }
+        else{
+            c.hasBidderReview = 1;
+            c.BidderReviewContent = bidderRevew;
+        }
+
+    }
+
+
+    res.render('vWSeller/productsSold',{
+        ProductOfSeller,
+        sellerUsername,
+        empty: ProductOfSeller.length === 0,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        isLogin,
+        isOwner
+    })
+})
+
+//review seller -> bidder
+router.post('/reviewBidder', async function(req, res){
+    const sellerID = req.query.seller;
+    const bidderID = req.query.bidder;
+    const proID = req.query.proid;
+    const comment = req.body.Comment
+    const now = new Date()
+    const newReview = {
+        SenderID: sellerID,
+        ReceiverID: bidderID,
+        ProID: proID,
+        Comment: comment,
+        Time: now,
+        Status: 1
+    }
+    console.log(newReview)
+    const tmp = await sellerModel.checkReview(sellerID, bidderID, proID)
+    if(tmp === null){
+        sellerModel.addNewReviewBySeller(newReview)
+    }else{
+        sellerModel.updateReview(newReview)
+    }
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+
+})
+//seller like dislike bidder.
+//like
+router.post('/sellerLike', async function(req, res){
+    const sellerID = req.query.seller;
+    const bidderID = req.query.bidder;
+    const proID = req.query.proid;
+    const now = new Date()
+    const newReview = {
+        SenderID: sellerID,
+        ReceiverID: bidderID,
+        ProID: proID,
+        Status: 1
+    }
+    const tmp = await sellerModel.checkReview(sellerID, bidderID, proID)
+    console.log(tmp)
+    if(tmp === null){
+        sellerModel.addNewReviewBySeller(newReview)
+    }else{
+        sellerModel.updateReview(newReview)
+    }
+    sellerModel.updateLikePoint(bidderID)
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+
+})
+//dislike
+router.post('/sellerDisLike', async function(req, res){
+    const sellerID = req.query.seller;
+    const bidderID = req.query.bidder;
+    const proID = req.query.proid;
+    const now = new Date()
+    const newReview = {
+        SenderID: sellerID,
+        ReceiverID: bidderID,
+        ProID: proID,
+        Status: 0
+    }
+    const tmp = await sellerModel.checkReview(sellerID, bidderID, proID)
+    if(tmp === null){
+        sellerModel.addNewReviewBySeller(newReview)
+    }else{
+        sellerModel.updateReview(newReview)
+    }
+    sellerModel.updateDisLikePoint(bidderID)
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+
+})
 export default router;

@@ -61,30 +61,30 @@
 <div class="card">
     <h4 class="card-header">
         {{this.product.ProName}}
-        <!--Khang: Add to watch list-->
         {{#if auth}}
-            {{#if this.product.isActive}}
-                <div class="float-right">
-                    <form action="/products/delWatchList" method="post">
-                        <input type="hidden" name="ProID" value={{this.product.ProID}}>
-                        <button class="btn btn-danger" type="submit">
-                            <i class="fa fa-heart-o"></i>
-                        </button>
-                    </form>
-                </div>
-            {{else}}
-                <div class="float-right">
-                    <form action="/products/addWatchList" method="post">
-                        <input type="hidden" name="ProID" value={{this.product.ProID}}>
-                        <input type="hidden" name="ProStatus" value="detail">
-                        <button class="btn btn-outline-danger" type="submit">
-                            <i class="fa fa-heart-o"></i>
-                        </button>
-                    </form>
-                </div>
+            {{#if this.hasWinner}}
+                {{#if this.product.isActive}}
+                        <div class="float-right">
+                            <form action="/products/delWatchList" method="post">
+                                <input type="hidden" name="ProID" value={{this.product.ProID}}>
+                                <button class="btn btn-danger" type="submit">
+                                    <i class="fa fa-heart-o"></i>
+                                </button>
+                            </form>
+                        </div>
+                {{else}}
+                    <div class="float-right">
+                        <form action="/products/addWatchList" method="post">
+                            <input type="hidden" name="ProID" value={{this.product.ProID}}>
+                            <input type="hidden" name="ProStatus" value="detail">
+                            <button class="btn btn-outline-danger" type="submit">
+                                <i class="fa fa-heart-o"></i>
+                            </button>
+                        </form>
+                    </div>
+                {{/if}}
             {{/if}}
         {{/if}}
-        <!--Khang: Add to watch list-->
     </h4>
     <div class="card-body">
         <div class="row">
@@ -219,9 +219,9 @@
 
         <h5 style="padding-top: 25px; font-weight: bold; text-decoration: underline; padding-bottom: 10px">Các sản phẩm liên quan:</h5>
         <div class="container">
-            <div class="row" style="padding-left: 40px">
+            <div class="row" >
             {{#each this.list5Relate}}
-                <div class="col-sm-2-1qtr mb-3">
+                <div class="col-sm-2-1qtr mb-3" style="margin: auto">
                     <div class="card h-100">
                         <div id="{{ProID}}" class="carousel slide" data-ride="carousel">
                             <div class="carousel-inner">

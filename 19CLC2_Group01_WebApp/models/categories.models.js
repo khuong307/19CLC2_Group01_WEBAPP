@@ -1,4 +1,5 @@
 import db from '../utils/db.js'
+import moment from "moment";
 export default {
     findAll(){
         return db.select().table('CategoryL2');
@@ -13,9 +14,12 @@ export default {
     },
 
     async findAllWithDetails(){
+        const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select c.*, count(p.ProID) as ProductCount
                      from CategoryL2 c
                               left join Product p on c.CatID2 = p.CatID2
+                     where
+                         p.EndDate > '${now}' and p.Winner IS NULL
                      group by c.CatID2, c.CatName2`;
         const raw = await db.raw(sql);
         return raw[0];

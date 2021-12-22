@@ -4,6 +4,7 @@ import productUserRoute from "../routes/product-user.route.js";
 import accountRoute from "../routes/account.route.js";
 import productModels from "../models/product.models.js";
 import sellerRoute from "../routes/seller.route.js";
+import bidderRoute from "../routes/bidder.route.js";
 
 import {dirname} from "path";
 import {fileURLToPath} from "url";
@@ -92,4 +93,6 @@ export default function(app){
     app.use('/account', accountRoute)
     //seller
     app.use('/seller', sellerRoute)
+    //Khang: route bidder
+    app.use('/bidder', bidderRoute)
 }

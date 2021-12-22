@@ -3,7 +3,8 @@ import express from 'express';
 import productModel from '../models/product.models.js'
 import accountModels from "../models/account.models.js";
 import auth from '../middlewares/auth.mdw.js'
-import moment from 'moment'; //format date.
+import moment from 'moment';
+import mails from "nodemailer"; //format date.
 const router = express.Router();
 //Khuong.
 router.get('/byCat/:id', async function(req, res){
@@ -47,7 +48,6 @@ router.get('/byCat/:id', async function(req, res){
     }
 
     const list = await productModel.findPageByCatID(catID2, limit, offset)
-
     //check which product selected in watch list
     if (res.locals.WatchListByUSerID != null){
         for(const c of list){
@@ -181,13 +181,13 @@ router.get('/detail/:id', async function(req, res){
 
     //get bidder information.
     const bidderInfo = await productModel.getBidderInfoByProID(proID)
-
-    for(const c of bidderInfo){
-        const tmp = await productModel.getUsernameByUserID(c.Header)
-        c.HeaderUsername = tmp.Username
+    if (bidderInfo != null){
+        for(const c of bidderInfo){
+            const tmp = await productModel.getUsernameByUserID(c.Header)
+            c.HeaderUsername = tmp.Username
+        }
     }
-
-
+console.log(product.Winner)
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
@@ -199,7 +199,8 @@ router.get('/detail/:id', async function(req, res){
         desHistory,
         isOwner,
         bidderInfo,
-        proID
+        proID,
+        hasWinner: product.Winner === null
     })
 })
 //Khuong.
@@ -303,12 +304,6 @@ router.post('/addWatchList', async function (req, res){
         ProID: id
     };
     const ret = await productModel.addToWatchList(entity);
-    // if (req.body.ProStatus === undefined){
-    //     const obj = await productModel.getCatID2FromProID(id);
-    //     res.redirect(`/products/byCat/${obj.CatID2}`);
-    // }
-    // else
-    //     res.redirect(`/products/detail/${id}`)
     const url = req.headers.referer || '/'
     res.redirect(url)
 });
@@ -331,12 +326,45 @@ router.post('/delWatchList', async function(req, res){
 router.post('/denyRequest', async function(req, res){
     const proID = req.query.ProID
     const userID = req.query.UserID
-    console.log(proID)
-    console.log(userID)
 
     const MaxBidder = await productModel.getMaxBidderByProID(proID)
     productModel.updateStatusAuctionByUserID(userID)
 
+    //send OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'khuong16lop9a6@gmail.com',
+            pass: '0903024916'
+        }
+    });
+
+    //send deny request
+    const proName = await productModel.getProNameByProID(proID);
+    const mail = await productModel.getEmailByUserID(userID)
+    const maxPrice = await productModel.getMaxPriceByUserIDProID(proID, userID)
+
+    var mailOptions = {
+        from: 'khuong16lop9a6@gmail.com',
+        to: mail.Email,
+        subject: 'Bidding Wep App: Bạn bị từ chối lượt ra giá',
+        text: 'Sản phẩm có mã ('+ proID +'): ' + proName.ProName +' với giá tiền ' + maxPrice.MaxPrice +' đã bị người bán từ chối ra giá.\nNgoài ra bạn không thể tiếp tục đấu giá sản phẩm này.'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    //is highest bidder.
+    const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
+    const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID.MaxPrice);
+    if (userID === highestBidder.UserID){
+        const secondPrice = productModel.getSecondPriceInAuction(proID)
+        productModel.updateCurrentPriceByProID(proID, secondPrice.Price)
+    }
 
 
     const url = req.headers.referer || '/'
