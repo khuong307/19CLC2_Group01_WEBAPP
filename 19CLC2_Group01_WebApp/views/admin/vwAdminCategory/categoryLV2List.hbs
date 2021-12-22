@@ -7,7 +7,7 @@
         </a>
     </h4>
 
-    <table class="table" style="text-align: center">
+    <table class="table" id="CategoryTable" style="text-align: center">
         <thead>
         <tr class="table-active">
             <th scope="col">ID</th>
@@ -23,20 +23,14 @@
                 <th scope="row">{{CatID2}}</th>
                 <td>{{CatName2}}</td>
                 <td>{{CatID1}}</td>
-                <td>
-                    {{#if ProductCount}}
-                        {{ProductCount}}
-                    {{else}}
-                        0
-                    {{/if}}
-                </td>
+                <td>{{ProductCount}}</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/admin/categories/lv2/edit?id={{CatID2}}&quantity={{ProductCount}}" role="button">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Edit
                     </a>
 
-                    <a class="btn btn-sm btn-danger" href="/admin/categories/lv2/del?id={{CatID2}}&quantity={{ProductCount}}" role="button">
+                    <a class="btn btn-sm btn-danger" value="{{CatID2}}" value1="{{ProductCount}}" id="btnDelete" role="button">
                     <i class=" fa fa-trash" aria-hidden="true"></i>
                     Delete
                     </a>
@@ -46,3 +40,24 @@
         </tbody>
     </table>
 </div>
+
+{{#section 'js'}}
+    <script>
+        $("#CategoryTable tbody").on("click", "#btnDelete", function(e){
+            var CatID2=$(this).attr('value');
+            var ProductCount=parseInt($(this).attr('value1'));
+            var url=window.location+"/delrow?id="+CatID2;
+            if(ProductCount==0){
+                $.post( url, function( data ) {
+                    if(data.status==1){
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+            else{
+                alert("Bạn không thể xóa category L2 với quantity > 0");
+            }
+        });
+    </script>
+{{/section}}

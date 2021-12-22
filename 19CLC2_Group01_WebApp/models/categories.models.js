@@ -82,4 +82,19 @@ export default {
         const id=entity.CatID1;
         return db('CategoryL2').where('CatID1', id).del()
     },
+
+    // Minh
+    delCategoryL1ToL2ById(id){
+        return db('CategoryL2').where('CatID1', id).del()
+    },
+
+    // Minh
+    delCategoryL1ById(id){
+        return db('CategoryL1').where('CatID1', id).del()
+    },
+
+    // Minh
+    deleteCategoryL2ByID(id){
+        return db('CategoryL2').where('CatID2', id).del()
+    },
 }

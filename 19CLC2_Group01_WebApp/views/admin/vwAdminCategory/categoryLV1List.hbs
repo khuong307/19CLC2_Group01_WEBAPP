@@ -7,7 +7,7 @@
         </a>
     </h4>
 
-    <table class="table" style="text-align: center">
+    <table class="table" id="CategoryTable" style="text-align: center">
         <thead>
         <tr class="table-active">
             <th scope="col">ID</th>
@@ -21,20 +21,14 @@
             <tr class="table-info">
                 <th scope="row">{{CatID1}}</th>
                 <td>{{CatName1}}</td>
-                <td>
-                    {{#if ProductCount}}
-                        {{ProductCount}}
-                    {{else}}
-                        0
-                    {{/if}}
-                </td>
+                <td>{{ProductCount}}</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/admin/categories/lv1/edit?id={{CatID1}}&quantity={{ProductCount}}" role="button">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Edit
                     </a>
 
-                    <a class="btn btn-sm btn-danger" href="/admin/categories/lv1/del?id={{CatID1}}&quantity={{ProductCount}}" role="button">
+                    <a class="btn btn-sm btn-danger" value="{{CatID1}}" value1="{{ProductCount}}" id="btnDelete" role="button">
                     <i class=" fa fa-trash" aria-hidden="true"></i>
                     Delete
                     </a>
@@ -44,3 +38,24 @@
         </tbody>
     </table>
 </div>
+
+{{#section 'js'}}
+    <script>
+        $("#CategoryTable tbody").on("click", "#btnDelete", function(e){
+            var CatID1=$(this).attr('value');
+            var ProductCount=parseInt($(this).attr('value1'));
+            var url=window.location+"/delrow?id="+CatID1;
+            if(ProductCount==0){
+                $.post( url, function( data ) {
+                    if(data.status==1){
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+            else{
+                alert("Bạn không thể xóa category L1 với quantity > 0");
+            }
+        });
+    </script>
+{{/section}}

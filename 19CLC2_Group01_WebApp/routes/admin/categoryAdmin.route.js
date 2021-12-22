@@ -6,6 +6,7 @@ const router = express.Router();
 
 // View category lv1
 router.get('/lv1', async function(req, res){
+    req.session.retURL=req.originalUrl;
     const list = await categoryModel.findALlCategoryL1();
 
     for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
@@ -35,8 +36,9 @@ router.get('/lv1', async function(req, res){
 
 //edit category lv1
 router.get('/lv1/edit', async function(req, res){
+    req.session.retURL=req.originalUrl;
     const id = req.query.id || 0;
-    const quantity=req.query.quantity;
+    let quantity=req.query.quantity;
     const category = await categoryModel.findByIdLV1(id);
 
 
@@ -45,8 +47,10 @@ router.get('/lv1/edit', async function(req, res){
     }
 
     // Thêm thuộc tính quantity vào item category LV1
+    if(!quantity){
+        quantity=0;
+    }
     category["QuantityLV1"]=quantity;
-    console.log(category);
     res.render('admin/vwAdminCategory/editCategoryLV1', {
         category,
         isViewEdit:true,
@@ -55,6 +59,7 @@ router.get('/lv1/edit', async function(req, res){
 
 //add category lv1
 router.get('/lv1/add', function(req, res){
+    req.session.retURL=req.originalUrl;
     res.render('admin/vwAdminCategory/addCategoryLV1',{
         isViewEdit:true,
     })
@@ -89,7 +94,7 @@ router.post('/lv1/add',async function(req,res){
         entity["CatName1"]=CatName1;
         // Insert vào bảng CategoryL1 và redirect về trang trước
         const ret=await categoryModel.insertCategoryL1(entity);
-        res.redirect('/admin/categories/lv1/');
+        res.redirect('/admin/categories/lv1');
     }
 })
 
@@ -109,7 +114,7 @@ router.post('/lv1/patch', async function(req, res){
     }
     else{
         const ret = await categoryModel.updateCategoryLV1(req.body);
-        return res.redirect('/admin/categories/lv1/');
+        return res.redirect('/admin/categories/lv1');
     }
 })
 
@@ -132,16 +137,31 @@ router.post('/lv1/del', async function(req, res){
         console.log(refList);
         //  Hủy category lv1
         const ret = await categoryModel.deleteCategoryLV1(req.body);
-        res.redirect('/admin/categories/lv1/');
+        res.redirect('/admin/categories/lv1');
     }
+})
+
+
+// post delete category l1 in a table
+router.post('/lv1/delrow',async function(req,res){
+    let CatID1=req.query.id;
+    // Đầu tiên hủy toàn bộ category ở khóa ngoại ( Category Lv2)
+    const refList=await categoryModel.delCategoryL1ToL2ById(CatID1);
+    console.log(refList);
+    //  Hủy category lv1
+    const ret = await categoryModel.delCategoryL1ById(CatID1);
+    res.json({
+        msg:"Delete successfully",
+        status:1,
+    });
 })
 
 
 // CATEGORY LV2
 // View Category lv2
 router.get('/lv2', async function(req, res){
+    req.session.retURL=req.originalUrl;
     const list = await categoryModel.findAllWithDetails();
-
     for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
         d.numberPro = 0;
         for (const c of res.locals.lcCategories){
@@ -159,6 +179,7 @@ router.get('/lv2', async function(req, res){
 
 //add category lv2
 router.get('/lv2/add', function(req, res){
+    req.session.retURL=req.originalUrl;
     res.render('admin/vwAdminCategory/addCategoryLV2',{
         isViewEdit:true,
     })
@@ -214,6 +235,7 @@ router.post('/lv2/add', async function(req, res){
 
 //edit category lv2
 router.get('/lv2/edit', async function(req, res){
+    req.session.retURL=req.originalUrl;
     const id = req.query.id || 0;
     const quantity=req.query.quantity;
 
@@ -248,6 +270,17 @@ router.post('/lv2/del', async function(req, res){
         const ret = await categoryModel.deleteCategoryLV2(req.body);
         res.redirect('/admin/categories/lv2')
     }
+})
+
+
+// post delete category l1 in a table
+router.post('/lv2/delrow',async function(req,res){
+    let CatID2=req.query.id;
+    const ret = await categoryModel.deleteCategoryL2ByID(CatID2);
+    res.json({
+        msg:"Delete successfully",
+        status:1,
+    });
 })
 
 //post update admin categories lv2.
