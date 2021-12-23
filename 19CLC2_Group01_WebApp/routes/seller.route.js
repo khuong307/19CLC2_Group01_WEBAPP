@@ -30,6 +30,7 @@ router.get('/ProductsOf/:sellerUsername', async function(req, res){
     const uploadUser = await sellerModel.getUserIDByUsername(sellerUsername)
     const productCount = await sellerModel.countProductByUserID(uploadUser.UserID)
     const total = productCount.total
+    console.log(total)
     let nPages = Math.floor(total/limit)
     let pageNumbers = []
     if(total % limit > 0){
@@ -434,8 +435,7 @@ router.post('/reviewBidder', async function(req, res){
         ReceiverID: bidderID,
         ProID: proID,
         Comment: comment,
-        Time: now,
-        Status: 1
+        Time: now
     }
     console.log(newReview)
     const tmp = await sellerModel.checkReview(sellerID, bidderID, proID)
@@ -495,5 +495,26 @@ router.post('/sellerDisLike', async function(req, res){
     const url = req.headers.referer || '/'
     res.redirect(url)
 
+})
+
+router.post('/AutoCancel', async function(req, res){
+    const sellerID = req.query.seller;
+    const bidderID = req.query.bidder;
+    const proID = req.query.proid;
+    const now = new Date()
+    const newReview = {
+        SenderID: sellerID,
+        ReceiverID: bidderID,
+        ProID: proID,
+        Status: 0,
+        Time: new Date(),
+        Comment: 'Người thắng không thanh toán'
+    }
+
+    sellerModel.addNewReviewBySeller(newReview)
+    sellerModel.updateDisLikePoint(bidderID)
+    sellerModel.updateStatusProductByProID(proID)
+    const url = req.headers.referer || '/'
+    res.redirect(url)
 })
 export default router;

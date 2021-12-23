@@ -62,10 +62,25 @@
                                     </button>
                                 </div>
                                 <div class="card-footer text-muted" style="text-align: center">
-                                    <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                                    <a class="btn btn-outline-primary ml-md-5" href="/products/detail/{{ProID}}" role="button" style="margin:auto ;float: left;clear: right">
                                         <i class="fa fa-eye"></i>
                                         Details
                                     </a>
+                                    {{#if hasReview}}
+                                    {{else}}
+                                        <form action="/seller/AutoCancel?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}" method="post">
+                                        <button class="btn btn-sm btn-outline-danger" style="float: right" type="submit" title="Hủy giao dịch do không được thanh toán!">
+                                            <i class="fa fa-2x fa-times-circle"></i>
+                                        </button>
+                                        </form>
+                                    {{/if}}
+                                    {{#if hasReview}}
+                                        {{#if Status}}
+                                            <i class="float-right fa fa-times-circle-o fa-2x" style="color: #c42e23" title="Bạn đã hủy giao dịch do người dùng không thanh toán!"></i>
+                                        {{else}}
+                                            <i class="float-right fa fa-check-circle-o fa-2x" style="color: #0aa33a" title="Gia dịch thành công!"></i>
+                                        {{/if}}
+                                    {{/if}}
                                 </div>
                             </div>
                         </div>
@@ -76,32 +91,32 @@
                             <p> <span><i class="fa fa-money"></i> Giá mua:</span> <span style="font-weight: bold; color: #c42e23">{{format_number CurrentPrice}}</span></p>
                             <div>
                                 <p class="mr-4"style="text-decoration: underline; color: #00B4CC; font-weight: bold; float:left;  clear: right;">Đánh giá người mua:
-                                    <form action="/seller/sellerLike?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}" method="post" style="float:left; clear: right;" class="mr-2">
-                                        <button {{#if hasReview}}{{#if reviewContent.Status}}class="btn btn-sm btn-primary"{{else}}class="btn btn-sm btn-outline-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
-                                            <i class="fa fa-thumbs-up"></i>
-                                        </button>
-                                    </form>
-                                    <form action="/seller/sellerDisLike?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}" method="post">
-                                        <button {{#if hasReview}}{{#if reviewContent.Status}}class="btn btn-sm btn-outline-primary" {{else}}class="btn btn-sm btn-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
-                                            <i class="fa fa-thumbs-down"></i>
-                                        </button>
-                                    </form>
+                                <form action="/seller/sellerLike?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}" method="post" style="float:left; clear: right;" class="mr-2">
+                                <button {{#if hasReview}}{{#if reviewContent.Status}}class="btn btn-sm btn-primary"{{else}}class="btn btn-sm btn-outline-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
+                                    <i class="fa fa-thumbs-up"></i>
+                                </button>
+                                </form>
+                                <form action="/seller/sellerDisLike?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}" method="post">
+                                <button {{#if hasReview}}{{#if reviewContent.Status}}class="btn btn-sm btn-outline-primary" {{else}}class="btn btn-sm btn-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
+                                    <i class="fa fa-thumbs-down"></i>
+                                </button>
+                                </form>
                                 </p>
                                 {{#if reviewContent.Comment}}
                                     <p><i class="fa fa-pencil"></i>
                                         {{formatDateTime reviewContent.Time}}: {{reviewContent.Comment}}
                                     </p>
-                                    {{else}}
+                                {{else}}
                                     <form class="mb-3" method="POST" action="/seller/reviewBidder?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}">
-                                        <div class="search">
-                                            <input type="text" class="searchTerm" placeholder="Nhập đoạn nhận xét" style="color: black" name="Comment"required>
-                                            <button type="submit" class="searchButton">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                        </div>
+                                    <div class="search">
+                                        <input type="text" class="searchTerm" placeholder="Nhập đoạn nhận xét" style="color: black" name="Comment"required>
+                                        <button type="submit" class="searchButton">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                    </div>
                                     </form>
                                 {{/if}}
-                                <p style="text-decoration: underline; color: #00B4CC; font-weight: bold">Người mua đánh giá bạn:</p>
+                                <p style="text-decoration: underline; color: #00B4CC; font-weight: bold">Người mua đánh giá bạn: {{#if hasBidderReview}}{{#if BidderReviewContent.Status}}<i class="ml-3 fa fa-thumbs-up"></i> {{else}}<i class="fa fa-thumbs-down"></i>  {{/if}}{{/if}}</p>
                                 {{#if hasBidderReview}}
                                     <p><i class="fa fa-pencil"></i>
                                         {{formatDateTime BidderReviewContent.Time}}: {{BidderReviewContent.Comment}}

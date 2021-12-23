@@ -5,6 +5,7 @@ import BCrypt from 'bcrypt'
 import moment from "moment";
 import mails from 'nodemailer'
 import auth from '../middlewares/auth.mdw.js'
+
 const router = express.Router();
 //register.
 router.get('/register', async function(req, res){
@@ -331,10 +332,8 @@ router.post('/profile', auth, async function(req, res){
     const address = req.body.Address
     const dob = req.body.Dob
     accountModel.updateProfileByUserID(userID, name, dob, address)
-    const UserInfo = await accountModel.getUserInfo(userID)
-    res.render('vWAccount/profile',{
-        UserInfo
-    })
+    const url = req.headers.referer || '/'
+    res.redirect(url)
 
 })
 

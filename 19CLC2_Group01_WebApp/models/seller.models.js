@@ -22,7 +22,7 @@ export default {
     },
 
     async countProductByUserID(userID){
-        const list = await db('Product').where('UploadUser', userID).andWhere('Product.EndDate', '>', new Date()).count({total: 'ProID' })
+        const list = await db('Product').where('UploadUser', userID).andWhere('Product.EndDate', '>', new Date()).whereNull('Winner').count({total: 'ProID' })
         if(list.length === 0)
             return null
         return list[0]
@@ -103,5 +103,10 @@ export default {
 
     async updateDisLikePoint(userID){
         return db('User').where('UserID', userID).increment('DislikePoint')
+    },
+
+    //update status proid.
+    async updateStatusProductByProID(proid){
+        return db('Product').where('ProID', proid).update('Status', 1)
     }
 }

@@ -32,6 +32,9 @@ export default function(app){
             formatDate(val) {
                 return moment(val).utcOffset('+0700').format('DD/MM/YYYY')
             },
+            formatDateProfile(val) {
+                return moment(val).utcOffset('+0700').format('YYYY-MM-DD')
+            },
             formatDateTime(val) {
                 return moment(val).utcOffset('+0700').format('DD/MM/YYYY HH:mm:ss')
             },
