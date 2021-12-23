@@ -1,0 +1,40 @@
+<form method="POST">
+    <div class="card">
+        {{#if isViewEdit}}
+        {{else}}
+            {{#if isSuccess}}
+            {{else}}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> You should check some of those fields below.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {{/if}}
+        {{/if}}
+
+        <h4 class="card-header">
+            Thêm danh mục mới (cấp 2):
+        </h4>
+        <div class="card-body">
+            <div class="form-group">
+                <label for="CatID1">Danh mục cấp 1:</label>
+                <input type="text" class="form-control" id="CatID1" name="CatID1" placeholder="Chọn danh mục cấp 1 trước" autofocus required>
+            </div>
+            <div class="form-group">
+                <label for="CatName2">Tên danh mục:</label>
+                <input type="text" class="form-control" id="CatName2" name="CatName2" autofocus placeholder="Nhập tên danh mục cấp 2" required>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <a class="btn btn-success" href="/admin/categories/lv2" role="button">
+                <i class="fa fa-backward" aria-hidden="true"></i>
+                Quay lại
+            </a>
+            <button type="submit" formaction="/admin/categories/lv2/add" class="btn btn-primary">
+                <i class="fa fa-check" aria-hidden="true"></i>
+                Thêm mới
+            </button>
+        </div>
+    </div>
+</form>

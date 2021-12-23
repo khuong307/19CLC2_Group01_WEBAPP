@@ -380,7 +380,6 @@ router.get('/search/:content', async function(req, res){
     req.session.retURL = req.originalUrl
     const content = req.params.content
     const proIDs = await productModel.searchProductFulltext(content)
-    console.log(proIDs)
 
     if( proIDs.length === 0){
         return res.render('vwAccount/searchByUser',{

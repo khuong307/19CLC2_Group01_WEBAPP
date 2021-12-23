@@ -6,8 +6,6 @@ import multer from'multer'
 import {mkdirSync} from 'fs';
 import {existsSync} from 'fs';
 import auth from "../middlewares/auth.mdw.js";
-
-
 const router = express.Router();
 //register.
 router.get('/ProductsOf/:sellerUsername', async function(req, res){

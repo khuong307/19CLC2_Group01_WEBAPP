@@ -25,16 +25,77 @@ export default {
         return raw[0];
     },
 
-    // async findAllWithCategoryL2(){
-    //     const sql = `select p.*
-    //                  from CategoryL1 c left join CategoryL2 p on c.CatID1 = p.CatID1
-    //                  group by p.CatID2, p.CatName2`
-    //     const raw = await db.raw(sql)
-    //     return raw[0]
-    // }
-
     async findALlCategoryL1(){
         return db.select().table('CategoryL1');
-    }
+    },
+
+    // CATEGORY LV1
+    // Minh
+    async findByIdLV1(id){
+        const list =  await db('CategoryL1').where('CatID1', id)
+        if(list.length === 0){
+            return null
+        }
+        return list[0];
+    },
+
+    // Minh
+    insertCategoryL1(entity){
+        return db('CategoryL1').insert(entity);
+    },
+
+    // Minh
+    updateCategoryLV1(entity){
+        const id = entity.CatID1;
+        delete entity.QuantityLV1;
+        return db('CategoryL1').where('CatID1', id).update(entity)
+    },
+
+    // Minh
+    deleteCategoryLV1(entity){
+        const id=entity.CatID1;
+        return db('CategoryL1').where('CatID1', id).del()
+    },
+
+    // CATEGORY LV2
+
+    // Minh
+    insertCategoryL2(entity){
+        return db('CategoryL2').insert(entity);
+    },
+
+    // Minh
+    updateCategoryLV2(entity){
+        const id = entity.CatID2;
+        delete entity.QuantityLV2;
+        return db('CategoryL2').where('CatID2', id).update(entity)
+    },
+
+    // Minh
+    deleteCategoryLV2(entity){
+        const id=entity.CatID2;
+        return db('CategoryL2').where('CatID2', id).del()
+    },
+
+    // Minh
+    deleteRelateCate1ToCategoryLV2(entity){
+        const id=entity.CatID1;
+        return db('CategoryL2').where('CatID1', id).del()
+    },
+
+    // Minh
+    delCategoryL1ToL2ById(id){
+        return db('CategoryL2').where('CatID1', id).del()
+    },
+
+    // Minh
+    delCategoryL1ById(id){
+        return db('CategoryL1').where('CatID1', id).del()
+    },
+
+    // Minh
+    deleteCategoryL2ByID(id){
+        return db('CategoryL2').where('CatID2', id).del()
+    },
 
 }
