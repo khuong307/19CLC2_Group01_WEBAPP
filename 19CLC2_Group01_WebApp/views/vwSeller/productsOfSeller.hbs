@@ -92,16 +92,11 @@
                                 </h7>
                                 <p class="card-text" style="font-weight: bold">Số lượt ra giá: <span>{{numberAuction}}</span><span class="float-right" style="color: #00B4CC">{{#if isNew}}<i class="fa fa-2x fa-check-circle-o" title="Sản phẩm mới đăng 72h qua"></i>{{/if}}</span></p>
                             </div>
-                            <div class="card-footer text-muted">
-                                <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                            <div class="card-footer text-muted"style="text-align: center">
+                                <a class="btn btn-outline-primary ml-5" href="/products/detail/{{ProID}}" role="button">
                                     <i class="fa fa-eye"></i>
                                     Details
                                 </a>
-                                <a class="btn btn-outline-success" href="#" role="button">
-                                    <i class="fa fa-eye"></i>
-                                    Cart
-                                </a>
-                                <!--Khang: Add to watch list-->
                                 {{#if ../this.isLogin}}
                                     <div class="float-right">
                                         <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
@@ -111,7 +106,6 @@
                                             </button>
                                         </form>
                                     </div>
-                                    <!--Khang: Add to watch list-->
                                 {{/if}}
                                 </div>
                         </div>

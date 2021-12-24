@@ -98,9 +98,121 @@ router.get('/byCat/:id', async function(req, res){
         currentPageIndex: page,
         isFirstPage: +page != 1,
         isLastPage: +page != nPages,
-        isLogin
+        isLogin,
+        CatID2: catID2
     })
 })
+
+// search by price ascending
+router.get('/byCat', async function(req, res){
+    req.session.retURL = req.originalUrl
+    const CatID2 = req.query.id
+    const type = req.query.type
+
+    //type = 1: price ascending, type =2, valid date descending.
+    const proIDs = await productModel.getProductsByCatID2(CatID2)
+
+    if( proIDs === null){
+        return res.render('vwProducts/byCat',{
+            empty: true,
+        })
+    }else{
+        const limit = 3
+        const page = req.query.page || 1 //Paging
+        const offset = (page - 1) *limit
+
+        const total = proIDs.length
+        let nPages = Math.floor(total/limit)
+        let pageNumbers = []
+        if(total % limit > 0){
+            nPages++
+        }
+
+        for (let i = 1; i <= nPages; i++){
+            pageNumbers.push({
+                value: i,
+                isCurrentPage: +page === i,
+            })
+        }
+        var list = []
+        if(type === '1'){
+            list = await productModel.getProductsByCatID2ByPrice(CatID2, limit, offset)
+        }
+        else if (type === '2')
+            list = await productModel.getProductsByCatID2ByDate(CatID2, limit, offset)
+        const resultList = [];
+
+        for (const c of list){
+            const d = await productModel.getProductByProID(c.ProID);
+            resultList.push(d);
+        }
+        console.log(resultList)
+        for(const d of resultList){
+            const CatID2 = d.CatID2;
+            const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
+            d.CatID1 = CatID1.CatID1;
+
+            const highestBidder =  await productModel.getUsernameMaxPriceByProID(d.ProID)
+            if (highestBidder === null){
+                d.highestBidder = 'None'
+            }else{
+                d.highestBidder = highestBidder.Username
+            }
+
+            const numberofAuction = await productModel.getNumberofAuctionByProID(d.ProID)
+            if(numberofAuction === null){
+                d.numberAuction = 0
+            }else{
+                d.numberAuction = numberofAuction.NumberOfAuction
+            }
+
+            //check í new product. (3 days)
+            const now = new Date();
+            const date1 = moment.utc(now).format('MM/DD/YYYY')
+            const date2 = moment.utc(d.UploadDate).format('MM/DD/YYYY')
+            const diffTime = Math.abs(new Date(date1)- new Date(date2));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 3){
+                d.isNew = true
+            }
+            else
+                d.isNew = false
+
+        }
+
+        if (res.locals.WatchListByUSerID != null){
+            for(const d of resultList){
+                for (const c of res.locals.WatchListByUSerID){
+                    if (d.ProID === c.ProID){
+                        d.isWatchList = 1;
+                    }
+                }
+            }
+        }
+        const isLogin = req.session.auth || false
+        var isLowtoHighPrice = 0;
+        var isDateClose = 0;
+        if(type === '1')
+            isLowtoHighPrice = 1
+        else if(type === '2')
+            isDateClose = 1
+
+        res.render('vwProducts/byCat',{
+            empty: 0,
+            isLowtoHighPrice,
+            isDateClose,
+            products: resultList,
+            type,
+            isLogin,
+            pageNumbers,
+            currentPageIndex: page,
+            isFirstPage: +page != 1,
+            isLastPage: +page != nPages,
+            CatID2,
+        })
+    }
+});
 
 router.get('/detail/:id', async function(req, res){
     //const catID = req.query.id || 0
@@ -187,7 +299,6 @@ router.get('/detail/:id', async function(req, res){
             c.HeaderUsername = tmp.Username
         }
     }
-console.log(product.Winner)
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
@@ -370,6 +481,25 @@ router.post('/denyRequest', async function(req, res){
     const url = req.headers.referer || '/'
     res.redirect(url)
 })
-
+//history
+router.get('/history', async function (req, res){
+    const ProID = req.query.ProID;
+    const type = req.query.show;
+    var lst = [];
+    if (type === undefined || type === "top-5"){
+        lst = await productModel.getAuctionByProIDWithLimit(ProID, 5);
+    }
+    else{
+        lst = await productModel.getAuctionByProID(ProID);
+    }
+    for (var i = 0; i < lst.length; i++) {
+        lst[i].No = i + 1;
+        lst[i].Time = moment(lst[i].Time).format('DD/MM/YYYY HH:mm:ss');
+    }
+    res.render('vwProducts/history', {
+        Users: lst,
+        ProID
+    });
+});
 
 export default router;

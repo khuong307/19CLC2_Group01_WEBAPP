@@ -318,8 +318,8 @@ router.post('/logout', async function(req, res){
 //phục vụ chức năng chưa đăng nhập mà xem profile.
 
 router.get('/profile', auth, async function(req, res){
+    req.session.retURL = req.originalUrl
     const userID = req.session.authUser.UserID
-
     const UserInfo = await accountModel.getUserInfo(userID)
     res.render('vWAccount/profile',{
         UserInfo
@@ -347,9 +347,96 @@ router.get('/changePassword', auth, async function(req, res){
     })
 })
 
+//change email.
+router.get('/changeEmail', auth, async function(req, res){
+    const userID = req.session.authUser.UserID || "0"
+    const email = await accountModel.getEmailByUserID(userID)
+    res.render('vWAccount/changeEmail',{
+        Email: email.Email
+    })
+})
+
+router.get('/OTPEmailConfirm/:email', auth, function(req, res){
+    res.render('vwAccount/OTPEmailConfirm')
+})
+
+router.post('/OTPEmailConfirm/:email', auth, async function(req, res){
+    const otp = req.body.OTP
+    const email = req.params.email
+    const real_otp = await accountModel.findOTPByEmail(email)
+
+    if (otp.length != 4){
+        res.render('vwAccount/OTPEmailConfirm',{
+            err_message: "Mã OTP bao gồm 4 ký tự!"
+        })
+    }
+    else if(parseInt(real_otp.OTPCode) != parseInt(otp)){
+        res.render('vwAccount/OTPEmailConfirm',{
+            err_message: "Mã OTP không khớp!"
+        })
+    }
+    else{
+        accountModel.deleteOTPLogin(email)
+        accountModel.updateEmailByUserID(req.session.authUser.UserID,email)
+        req.session.authUser = null;
+        req.session.auth = null;
+        res.redirect('/account/login')
+    }
+})
+
+router.post('/changeEmail', auth, async function(req, res){
+    const newEmail = req.body.newEmail
+    //check new email already existed?
+    const checkEmail = await accountModel.checkEmailInUser(newEmail)
+    if (checkEmail === null){
+        //send OTP emails.
+        var transporter = mails.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'khuong16lop9a6@gmail.com',
+                pass: '0903024916'
+            }
+        });
+
+        //random OTP:
+        var digits = '0123456789';
+        let OTP = '';
+        for (let i = 0; i < 4; i++ ) {
+            OTP += digits[Math.floor(Math.random() * 10)];
+        }
+
+        var mailOptions = {
+            from: 'khuong16lop9a6@gmail.com',
+            to: newEmail,
+            subject: 'Bidding Wep App: Xác nhận thay đổi tài khoản email',
+            text: 'Mã xác nhận OTP: ' + OTP
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+        transporter.close()
+        const OTPConfirm = {
+            Email: newEmail,
+            OTPCode: OTP
+        }
+        accountModel.InsertOTP(OTPConfirm)
+        res.redirect(`/account/OTPEmailConfirm/${newEmail}`)
+    }else {
+        const userID = req.session.authUser.UserID || "0"
+        const email = await accountModel.getEmailByUserID(userID)
+        res.render('vWAccount/changeEmail',{
+            Email: email.Email,
+            err_message: "Tài khoản email này đã được sử dụng!"
+        })
+    }
+})
+
 router.post('/changePassword', auth, async function(req, res){
     const userID = req.session.authUser.UserID
-
     const UserInfo = await accountModel.getPasswordByUserID(userID)
     const oldPass = req.body.oldPassword;
     const newPass = req.body.newPassword;
@@ -381,7 +468,7 @@ router.get('/search/:content', async function(req, res){
     const content = req.params.content
     const proIDs = await productModel.searchProductFulltext(content)
 
-    if( proIDs.length === 0){
+    if( proIDs === null){
         return res.render('vwAccount/searchByUser',{
             empty: true,
             content,
@@ -406,7 +493,6 @@ router.get('/search/:content', async function(req, res){
         }
 
         const list = await productModel.searchProductFullTextSearchWithLimitOffset(content, limit, offset)
-        console.log(list)
         const resultList = [];
         for (const c of list){
             const d = await productModel.getProductByProID(c.ProID);

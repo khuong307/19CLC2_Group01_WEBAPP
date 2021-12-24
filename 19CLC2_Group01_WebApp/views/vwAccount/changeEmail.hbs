@@ -1,0 +1,159 @@
+{{#section 'css'}}
+    <style>
+        body{
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+            font-size: 18px;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            max-width: 700px;
+            width: 100%;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 5px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        .container .title{
+            font-size: 25px;
+            font-weight: 500;
+            position: relative;
+        }
+        .container .title::before{
+            content: '';
+            postion: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 30px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+        }
+        .container form .user-details{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 20px 0 12px 0;
+        }
+        form .user-details .input-box{
+            margin-bottom: 15px;
+            width: calc(90%);
+        }
+        .user-details .input-box span.details{
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .user-details .input-box input{
+            height: 45px;
+            width: 100%;
+            outline: none;
+            padding-left: 15px;
+            font-size: 16px;
+            border-bottom-width: 2px;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            color: #0b409c;
+        }
+        .user-details .input-box input:focus,
+        .user-details .input-box input:valid{
+            border-color: #39d48c;
+        }
+        form .button{
+            height: 45px;
+            margin: 45px 0;
+
+        }
+        form .button input{
+            height: 100%;
+            width: 100%;
+            outline: none;
+            color: #fff;
+            border: none;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 5px;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+        }
+        form .button input:hover{
+            background: linear-gradient(-135deg, #71b7e6, #39d48c);
+        }
+        @media (max-width: 584px){
+            .container{
+                max-width: 100%;
+            }
+            form .user-details .input-box{
+                margin-bottom: 15px;
+                width: 100%;
+            }
+            .container form .user-details{
+                max-height: 300px;
+                overflow-y: scroll;
+            }
+            .user-details::-webkit-scrollbar{
+                width: 0;
+            }
+        }
+    </style>
+{{/section}}
+<div class="container-fluid">
+    <div class="container" >
+        <div>
+            <a class="nav-link" href="/account/profile"><h5>Profile</h5> <span class="sr-only">(current)</span></a>
+        </div>
+        <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #39d48c);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px">Thay đổi tài khoản Email</div>
+        <div class="container-rm">
+            <div class="content ml-3">
+                <p style="text-decoration: underline; color: cadetblue; font-weight: bold">Các lưu ý khi thay đổi tài khoản email:</p>
+                <ol style="color: #c47237">
+                    <li>Hãy chắc rằng bạn có quyền truy cập vào tài khoản email mà bạn muốn thay đổi.</li>
+                    <li>Về sau, khi có bất kỳ thông báo nào đều sẽ được gửi thông qua email mới.</li>
+                    <li>Hệ thống sẽ gửi mã OTP qua email nhằm xác minh bạn sở hữu email này.</li>
+                    <li>Nhập đúng mã OTP và hoàn thành việc cập nhật tài khoản email.</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            {{#if err_message}}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center">
+                    <strong>Lỗi! : </strong> {{err_message}}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {{/if}}
+            <form method="POST">
+                <div class="user-details">
+                    <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                        <div class="input-box">
+                            <i class="fa fa-envelope"></i>
+                            Email hiện tại:
+                            <input type="email" name="oldEmail" id = "oldEmail" value="{{Email}}"required readonly>
+                        </div>
+                        <div class="input-box">
+                            <i class="fa fa-envelope"></i>
+                            Email mới:
+                            <input type="email" name="newEmail" id="newEmail" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="button">
+                    <input type="submit" value="Xác nhận">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{#section 'js'}}
+    <script>
+    </script>
+{{/section}}

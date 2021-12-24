@@ -44,7 +44,7 @@ export default {
     },
 
     findOutDatePageByUploadUser(UploadUserID, limit, offset){
-        return db('Product').where('Product.UploadUser', UploadUserID).andWhere('Product.EndDate', '<', new Date()).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
+        return db('Product').where('Product.UploadUser', UploadUserID).whereNull('Winner').andWhere('Product.EndDate', '<', new Date()).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
     },
     findSoldPageByUploadUser(UploadUserID, limit, offset){
         return db('Product').where('Product.UploadUser', UploadUserID).whereNotNull('Winner').orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset).select('Product.*')
@@ -171,7 +171,8 @@ export default {
                          AGAINST('${content}')`;
 
         const raw = await db.raw(sql);
-        if(raw.length === 0)
+        console.log(raw[0].length)
+        if(raw[0].length === 0)
             return null
         else
             return raw[0]
@@ -201,7 +202,6 @@ export default {
                          OFFSET ${offset}`;
 
         const raw = await db.raw(sql);
-        console.log(sql)
         if(raw.length === 0)
             return null
         else
@@ -368,7 +368,7 @@ export default {
 
     async delWatchListOutDate(){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
-        const watch = await db('Product').where('EndDate', '<', now).select('ProID')
+        const watch = await db('Product').where('EndDate', '<', now).whereNull('Winner').select('ProID')
         if (watch.length > 0){
             for(const c of watch){
                 const outDateProID = await db('WatchList').where('ProID', c.ProID)
@@ -390,5 +390,38 @@ export default {
         if (ans.length === 0)
             return null;
         return ans[0]
+    },
+
+    async getAuctionByProIDWithLimit(id, limit){
+        const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
+            '=', 'Account.UserID').where('ProID', id).orderBy('Auction.Time', 'desc').offset(0).limit(limit).select();
+        return lst;
+    },
+
+    async getAuctionByProID(id){
+        const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
+            '=', 'Account.UserID').where('ProID', id).orderBy('Auction.Time', 'desc').select();
+        return lst;
+    },
+
+    // sort by price by CatID2.
+    async getProductsByCatID2ByPrice(CatID2, limit, offset){
+        const res = await db('Product').where('CatID2', CatID2).whereNull('Winner').andWhere('EndDate', '>', new Date()).orderBy('CurrentPrice', 'ASC').limit(limit).offset(offset).select('ProID')
+        if(res.length === 0)
+            return null
+        return res
+    },
+
+    async getProductsByCatID2ByDate(CatID2, limit, offset){
+        const res = await db('Product').where('CatID2', CatID2).whereNull('Winner').andWhere('EndDate', '>', new Date()).orderBy('EndDate', 'DESC').limit(limit).offset(offset).select('ProID')
+        if(res.length === 0)
+            return null
+        return res
+    },
+    async getProductsByCatID2(CatID2){
+        const res = await db('Product').where('CatID2', CatID2).whereNull('Winner').andWhere('EndDate', '>', new Date())
+        if(res.length === 0)
+            return null
+        return res
     }
 }

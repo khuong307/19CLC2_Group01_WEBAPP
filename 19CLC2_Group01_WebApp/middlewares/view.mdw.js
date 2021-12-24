@@ -43,6 +43,9 @@ export default function(app){
                 return moment(val).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
             },
             MaskCharacter(str) {
+                if (str === 'None'){
+                    return str;
+                }
                 var tmp = str;
                 var result = tmp.slice(4, str.length-1)
                 return "####"+result

@@ -1,0 +1,136 @@
+{{#section 'js'}}
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.js"></script>
+    <script>
+        $('#OTP').select();
+    </script>
+{{/section}}
+{{#section 'css'}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            max-width: 700px;
+            width: 100%;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 5px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        .container .title{
+            font-size: 25px;
+            font-weight: 500;
+            position: relative;
+        }
+        .container .title::before{
+            content: '';
+            postion: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 30px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+        }
+        .container form .user-details{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 20px 0 12px 0;
+        }
+        form .user-details .input-box{
+            margin-bottom: 15px;
+            width: calc(90%);
+        }
+        .user-details .input-box span.details{
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .user-details .input-box input{
+            height: 45px;
+            width: 100%;
+            outline: none;
+            /*border: 1px solid #ccc ;*/
+            padding-left: 15px;
+            font-size: 16px;
+            border-bottom-width: 2px;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            color: #0b409c;
+        }
+        .user-details .input-box input:focus,
+        .user-details .input-box input:valid{
+            border-color: #9b59b6;
+        }
+        form .button{
+            height: 45px;
+            margin: 45px 0;
+            padding-left: 220px;
+        }
+        form .button input{
+            height: 100%;
+            width: 50%;
+            outline: none;
+            color: #fff;
+            border: none;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 5px;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #71b7e6, #39d48c);
+        }
+        form .button input:hover{
+            background: linear-gradient(-135deg, #71b7e6, #39d48c);
+        }
+        @media (max-width: 584px){
+            .container{
+                max-width: 100%;
+            }
+            form .user-details .input-box{
+                margin-bottom: 15px;
+                width: 100%;
+            }
+            .container form .user-details{
+                max-height: 300px;
+                overflow-y: scroll;
+            }
+            .user-details::-webkit-scrollbar{
+                width: 0;
+            }
+        }
+    </style>
+{{/section}}
+<div class="container" style="border-radius: 20px">
+    {{#if err_message}}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center">
+            <strong>Lỗi: </strong> {{err_message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {{/if}}
+    <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #39d48c);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Thay đổi tài khoản email</div>
+    <form id="formOTP"method="POST" style="align-items: center">
+        <div class="row" style="justify-content: center">
+            <div class="user-details" >
+                <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 30px;">
+                    <h4 class="card-title mt-2"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #39d48c);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> OTP Code</h4>
+                    <div class="input-box">
+                        <input type="number" placeholder="Kiểm tra email mới" name="OTP" id = "OTP" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button">
+            <input type="submit" value="Xác nhận">
+        </div>
+    </form>
+</div>

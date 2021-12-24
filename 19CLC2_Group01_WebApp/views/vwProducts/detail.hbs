@@ -85,6 +85,12 @@
                 {{/if}}
             {{/if}}
         {{/if}}
+        <div class="float-right mr-2">
+            <a class="btn btn-outline-info" href="/products/history?ProID={{this.product.ProID}}" role="button">
+            <i class="fa fa-history" aria-hidden="true"></i>
+            Lịch sử đấu giá
+            </a>
+        </div>
     </h4>
     <div class="card-body">
         <div class="row">
@@ -164,7 +170,7 @@
                 <p class="card-text">
                     <i class="fa fa-arrow-up"></i>
                     <i class="fa fa-user"></i>
-                    Bidder: <span class="card-title" style="font-weight: bold; color: #f0842b">{{this.highestBidder}}
+                    Bidder: <span class="card-title" style="font-weight: bold; color: #f0842b">{{MaskCharacter this.highestBidder}}
                     (<i class="fa fa-thumbs-up"></i>: {{this.highestBidderPoint.LikePoint}}/
                     <i class="fa fa-thumbs-down"></i>: {{this.highestBidderPoint.DislikePoint}})</span>
 
