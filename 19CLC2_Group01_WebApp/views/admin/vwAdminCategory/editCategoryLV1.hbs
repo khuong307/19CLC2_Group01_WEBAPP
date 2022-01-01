@@ -1,7 +1,7 @@
 <form method="POST">
     <div class="card">
         <h4 class="card-header">
-            Edit Category
+            Chỉnh sửa danh mục cấp 1
         </h4>
 
         {{#if isViewEdit}}
@@ -9,16 +9,7 @@
             {{#if isSuccess}}
             {{else}}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong> You should fill in the Category.
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {{/if}}
-            {{#if isDelete}}
-            {{else}}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong> You only can delete item with 0 quantity.
+                    <strong>Lỗi!</strong> {{msg}}.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -29,30 +20,30 @@
 
         <div class="card-body">
             <div class="form-group">
-                <label for="CatID">ID</label>
+                <label for="CatID">ID:</label>
                 <input type="text" class="form-control" id="CatID" name="CatID1" readonly value="{{this.category.CatID1}}">
             </div>
             <div class="form-group">
-                <label for="QuantityLV1">Quantity</label>
+                <label for="QuantityLV1">Số lượng sản phẩm hiện tại:</label>
                 <input type="text" class="form-control" id="QuantityLV1" name="QuantityLV1" readonly value="{{this.category.QuantityLV1}}">
             </div>
             <div class="form-group">
-                <label for="CatName">Category</label>
-                <input type="text" class="form-control" id="CatName" name="CatName1" value="{{this.category.CatName1}}" autofocus>
+                <label for="CatName">Tên danh mục:</label>
+                <input type="text" class="form-control" id="CatName" name="CatName1" value="{{this.category.CatName1}}" autofocus required>
             </div>
         </div>
         <div class="card-footer text-muted">
-            <a class="btn btn-success" href="/admin/categories/lv1" role="button">
+            <a class="btn btn-success mr-2" href="/admin/categories/lv1" role="button">
                 <i class="fa fa-backward" aria-hidden="true"></i>
-                List
+                Quay lại
             </a>
-            <button type="submit" formaction="/admin/categories/lv1/del" class="btn btn-danger">
+            <button type="submit" formaction="/admin/categories/lv1/del" class="btn btn-danger mr-2">
                 <i class="fa fa-check" aria-hidden="true"></i>
-                Delete
+                Xóa
             </button>
             <button type="submit" formaction="/admin/categories/lv1/patch" class="btn btn-primary">
                 <i class="fa fa-check" aria-hidden="true"></i>
-                Save
+                Cập nhật
             </button>
         </div>
     </div>

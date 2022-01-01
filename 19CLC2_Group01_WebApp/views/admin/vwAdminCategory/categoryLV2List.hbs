@@ -1,38 +1,38 @@
 <div class="card text">
-    <h4 class="card-header d-flex justify-content-between" style="background-color: antiquewhite">
-        Categories Level 2
+    <h4 class="card-header d-flex justify-content-between">
+        <span style="text-decoration: underline">Danh mục cấp 2</span>
         <a class="btn btn-sm btn-outline-primary" href="/admin/categories/lv2/add" role="button">
             <i class="fa fa-plus" aria-hidden="true"></i>
-            Add Category Level 2
+            Thêm mới danh mục cấp 2
         </a>
     </h4>
 
     <table class="table" id="CategoryTable" style="text-align: center">
         <thead>
-        <tr class="table-active">
+        <tr class="table-active" style="background-color: #1a8257; color: white">
             <th scope="col">ID</th>
-            <th scope="col">Category</th>
-            <th scope="col">Category LV1</th>
-            <th scope="col">Quantity</th>
-            <th scope="col" style="text-align: center">Modification</th>
+            <th scope="col">Danh mục L2</th>
+            <th scope="col">Danh mục L1</th>
+            <th scope="col">Số lượng sản phẩm</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
         </tr>
         </thead>
         <tbody>
         {{#each this.categories}}
-            <tr class="table-info">
+            <tr class="table" style="font-size: 21px;background-color: #dfffd1">
                 <th scope="row">{{CatID2}}</th>
                 <td>{{CatName2}}</td>
-                <td>{{CatID1}}</td>
+                <td>{{CatName1}}</td>
                 <td>{{ProductCount}}</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/admin/categories/lv2/edit?id={{CatID2}}&quantity={{ProductCount}}" role="button">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
-                    Edit
+                    Chỉnh sửa
                     </a>
 
-                    <a class="btn btn-sm btn-danger" value="{{CatID2}}" value1="{{ProductCount}}" id="btnDelete" role="button">
-                    <i class=" fa fa-trash" aria-hidden="true"></i>
-                    Delete
+                    <a class="btn btn-sm btn-danger" value="{{CatID2}}" value1="{{ProductCount}}" value2="{{CatName2}}" id="btnDelete" role="button">
+                        <i class=" fa fa-trash" aria-hidden="true"></i>
+                        Xóa
                     </a>
                 </td>
             </tr>
@@ -45,18 +45,22 @@
     <script>
         $("#CategoryTable tbody").on("click", "#btnDelete", function(e){
             var CatID2=$(this).attr('value');
+            var CatName2=$(this).attr('value2');
             var ProductCount=parseInt($(this).attr('value1'));
             var url=window.location+"/delrow?id="+CatID2;
             if(ProductCount==0){
-                $.post( url, function( data ) {
-                    if(data.status==1){
-                        alert(data.msg);
-                        window.location.reload();
-                    }
-                });
+                var answer=window.confirm('Bạn có muốn xóa '+ CatName2);
+                if(answer){
+                    $.post( url, function( data ) {
+                        if(data.status==1){
+                            alert(data.msg);
+                            window.location.reload();
+                        }
+                    });
+                }
             }
             else{
-                alert("Bạn không thể xóa category L2 với quantity > 0");
+                alert("Bạn không thể xóa danh mục cấp 2 với số lượng lớn hơn 0");
             }
         });
     </script>
