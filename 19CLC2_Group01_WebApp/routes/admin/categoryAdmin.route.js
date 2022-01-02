@@ -42,6 +42,32 @@ router.get('/lv1',auth, async function(req, res){
     })
 })
 
+// Xem danh mục cấp 2 dựa vào Id danh mục cấp 1
+router.get('/lv1/detailL2',auth, async function(req, res){
+    if(res.locals.authUser != null){
+        if (res.locals.authUser.Type != 3){
+            res.redirect('/')
+        }
+    }
+
+    req.session.retURL=req.originalUrl;
+    // Lấy id từ query string
+    const id = req.query.id || 0;
+    const list = await categoryModel.findCateL2ByIdCateL1(id);
+    // count tổng số lượng sản phẩm trong 1 CategoryL1.
+    for (const d of res.locals.CategoryL1){
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
+        }
+    }
+
+    res.render('admin/vwAdminCategory/categoryLV2List', {
+        categories: list
+    })
+})
 
 //edit category lv1
 router.get('/lv1/edit',auth,async function(req, res){
@@ -241,7 +267,8 @@ router.get('/lv2',auth, async function(req, res){
 
     req.session.retURL=req.originalUrl;
     const list = await categoryModel.findDetailCateL2();
-    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+    // count tổng số lượng sản phẩm trong 1 CategoryL1.
+    for (const d of res.locals.CategoryL1){
         d.numberPro = 0;
         for (const c of res.locals.lcCategories){
             if (d.CatID1 === c.CatID1){

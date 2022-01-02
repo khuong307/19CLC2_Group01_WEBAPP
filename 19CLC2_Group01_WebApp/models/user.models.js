@@ -21,7 +21,7 @@ export default {
 
     // Vô hiệu hóa Account
     disableAccount(userID){
-        return db('Account').where('UserID',userID).update({Activate:0});
+        return db('Account').where('UserID',userID).update({Activate:-1});
     },
 
     // Tìm tất cả bidder muốn thành seller mà chưa được chấp nhận
@@ -32,14 +32,14 @@ export default {
 
     // Lấy chi tiết dòng userID trong bảng ChangeLevel
     async findChangeLevelByID(userID){
-        const list= await db('ChangeLevel').where('userID',userID);
+        const list= await db('ChangeLevel').where('userID',userID).andWhere("Change",1).andWhere("Status",0);
         return list[0];
     },
 
-    // Cập nhật bidder thành seller
+    // Cập nhật bidder thành seller hoặc từ chối bidder thành seller
     upgradeChangeLevel(entity){
         const userID=entity.UserID;
-        return db('ChangeLevel').where("UserID",userID).update(entity);
+        return db('ChangeLevel').where("UserID",userID).andWhere("Change",1).andWhere("Status",0).update(entity);
     },
 
     // Cập nhật bảng account thành seller

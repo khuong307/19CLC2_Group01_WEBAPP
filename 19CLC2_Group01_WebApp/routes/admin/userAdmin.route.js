@@ -4,6 +4,7 @@ import express from 'express';
 import userModel from '../../models/user.models.js';
 import accountModel from "../../models/account.models.js";
 import auth from "../../middlewares/auth.mdw.js";
+import mails from "nodemailer";
 
 const router = express.Router();
 
@@ -40,10 +41,9 @@ router.get('/seller/detail',auth,async function(req,res){
     req.session.retURL=req.originalUrl;
 
     const userID=req.query.id;
-    const UserInfo = await accountModel.getUserInfo(userID);
-    console.log(UserInfo)
+    const userInfo = await accountModel.getUserInfo(userID);
     res.render('admin/vwUser/detailSeller',{
-        UserInfo
+        UserInfo:userInfo
     })
 })
 
@@ -54,12 +54,40 @@ router.post('/seller/downgrade',auth,async function(req,res){
             res.redirect('/')
         }
     }
-    const UserID=req.query.id;
-    const ret=await userModel.downgradeSeller(UserID);
+    const userID=req.query.id;
+    // Lấy thông tin user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: ''
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Giảm cấp Seller thành Bidder',
+        text: 'Tài khoản của bạn đã bị giảm cấp từ Seller thành Bidder'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    const ret=await userModel.downgradeSeller(userID);
     // Tạo đối tượng để insert vào bảng ChangeLevel
     let now= new Date();
     const entity={
-        UserID:UserID,
+        UserID:userID,
         Time:now,
         Change:0,
         Status:1,
@@ -80,7 +108,36 @@ router.post('/seller/disable',auth,async function(req,res){
         }
     }
     const userID=req.query.id;
+    // Lấy thông tin user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+
+    // Chỉnh activate thành -1 --> Khóa tài khoản
     const ret=await userModel.disableAccount(userID);
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: ''
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Disable account',
+        text: 'Tài khoản của bạn đã bị khóa'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
     res.json({
         msg:"Vô hiệu hóa tài khoản thành công",
         status:1,
@@ -96,8 +153,8 @@ router.get('/bidder',auth,async function(req,res){
         }
     }
     req.session.retURL=req.originalUrl;
-    const UserID=res.locals.authUser.UserID;
-    const bidderList=await userModel.findAllBidderExceptAdmin(UserID);
+    const userID=res.locals.authUser.UserID;
+    const bidderList=await userModel.findAllBidderExceptAdmin(userID);
     res.render('admin/vwUser/bidderList',{bidderList});
 })
 
@@ -109,10 +166,9 @@ router.get('/bidder/detail',auth,async function(req,res){
         }
     }
     const userID=req.query.id;
-    const UserInfo = await accountModel.getUserInfo(userID);
-    console.log(UserInfo)
+    const userInfo = await accountModel.getUserInfo(userID);
     res.render('admin/vwUser/detailBidder',{
-        UserInfo
+        UserInfo:userInfo
     })
 })
 
@@ -125,7 +181,36 @@ router.post('/bidder/disable',auth,async function(req,res){
     }
 
     const userID=req.query.id;
+    // Lấy thông tin user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+
+    // Chỉnh activate thành -1 --> Khóa tài khoản
     const ret=await userModel.disableAccount(userID);
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: ''
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Disable account',
+        text: 'Tài khoản của bạn đã bị khóa'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
     res.json({
         msg:"Vô hiệu hóa tài khoản thành công",
         status:1,
@@ -155,17 +240,98 @@ router.post('/upgrade/accept',auth,async function(req,res){
             res.redirect('/')
         }
     }
-    const UserID=req.query.id;
-    const entity=await userModel.findChangeLevelByID(UserID);
+    const userID=req.query.id;
+
+    // Lấy info user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: ''
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Nâng cấp thành Seller',
+        text: 'Tài khoản của bạn đã được duyệt yêu cầu thành Seller. Từ giờ bạn đã có thể đăng bán sản phẩm mình thích'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    const entity=await userModel.findChangeLevelByID(userID);
     // Update bảng Change Level
     entity["Status"]=1;
     let now= new Date();
     entity["AcceptTime"]=now;
     const ret=await userModel.upgradeChangeLevel(entity);
     // Update bảng Account
-    const ret2=await userModel.upgradeAccToSeller(UserID);
+    const ret2=await userModel.upgradeAccToSeller(userID);
     res.json({
         msg:"Chấp nhận thành công",
+        status:1,
+    });
+})
+
+
+// Hủy yêu cầu bidder thành seller
+router.post('/upgrade/deny',auth,async function(req,res){
+    if(res.locals.authUser != null){
+        if (res.locals.authUser.Type != 3){
+            res.redirect('/')
+        }
+    }
+    const userID=req.query.id;
+
+    // Lấy info user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: ''
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Hủy nâng cấp thành Seller',
+        text: 'Tài khoản của bạn không được admin chấp nhận thành Seller'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    const entity=await userModel.findChangeLevelByID(userID);
+    // Update bảng Change Level
+    entity["Change"]=0;
+    entity["Status"]=1;
+    let now= new Date();
+    entity["AcceptTime"]=now;
+    // Vẫn dùng hàm upgradeChangeLevel tuy nhiên ở đây do đã đổi change =0 nên không sao
+    const ret=await userModel.upgradeChangeLevel(entity);
+    res.json({
+        msg:"Hủy yêu cầu thành công",
         status:1,
     });
 })

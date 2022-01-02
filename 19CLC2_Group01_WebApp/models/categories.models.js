@@ -67,6 +67,13 @@ export default {
         return raw[0];
     },
 
+    // Tìm thông tin của category L2 + tên catname1 dựa trên id Category L1
+    async findCateL2ByIdCateL1(CatID1) {
+        const sql = `select c.*,c1.CatName1, count(p.ProID) as ProductCount from CategoryL2 c left join CategoryL1 c1 on c.CatID1 = c1.CatID1 left join Product p on c.CatID2 = p.CatID2 where c.CatID1='`+CatID1+ `' group by c.CatID2, c.CatName2`;
+        const raw=await db.raw(sql);
+        return raw[0];
+    },
+
     // Minh
     insertCategoryL2(entity) {
         return db('CategoryL2').insert(entity);
