@@ -121,6 +121,8 @@ router.get('/detail/:id', async function(req, res){
         if (product.isActive === undefined)
             product.isActive = null;
     }
+
+    console.log(product)
     // Khang
 
     res.render('vwProducts/detail', {
@@ -208,8 +210,26 @@ router.post('/delWatchList', async function(req, res){
         ProID: id
     };
     const ret = await productModel.delFromWatchList(entity);
-    const url = req.headers.referer || '/'
-    res.redirect(url)
+    const url = req.headers.referer || '/';
+    if (url.includes("http://localhost:3000/products/WatchList")){
+        console.log("true");
+        const list = res.locals.WatchListByUSerID;
+        const length = list.length - 1;
+        for (var i = 0; i < list.length; i++){
+            if (list[i].ProID === id)
+                break;
+        }
+        if (length % 3 === 0 && i === length && length !== 0){
+            if (length / 3 === 1)
+                res.redirect("/products/WatchList");
+            else
+                res.redirect(`/products/WatchList?page=${length/3}`);
+        }
+        else
+            res.redirect(url);
+    }
+    else
+        res.redirect(url);
 });
 
 router.get('/history', async function (req, res){
@@ -232,5 +252,9 @@ router.get('/history', async function (req, res){
         ProID
     });
 });
+
+router.post('/auction', function (req, res){
+    console.log(req.body.txtPrice)
+})
 // Khang
 export default router;

@@ -23,6 +23,23 @@
                 });
             });
         });
+
+        // Khang
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('whatever') // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+            var winner = {{this.product.Winner}}
+            modal.find('.modal-title').text('Đấu giá sản phẩm')
+            alert({{this.product.Winner}})
+            if (winner !== null)
+                modal.find('.modal-body input').val({{this.product.CurrentPrice}} + {{this.product.StepPrice}});
+            else
+                modal.find('.modal-body input').val({{this.product.CurrentPrice}});
+        });
+        // Khang
     </script>
 
 {{/section}}
@@ -58,6 +75,36 @@
                 <i class="fa fa-history" aria-hidden="true"></i>
                 Lịch sử đấu giá
             </a>
+        </div>
+
+        <button type="button" class="btn btn-outline-warning float-right mr-2" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">
+            <i class="fa fa-gavel"></i>
+            Đấu giá
+        </button>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger" id="exampleModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="myform" method="post" action="/products/auction">
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Ra giá</label>
+                                <input type="number" step={{this.product.StepPrice}} min={{this.product.CurrentPrice}} class="form-control" id="recipient-name" name="txtPrice">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" form="myform" class="btn btn-primary">Gửi</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <!--Khang: Add to watch list-->
     </h4>
