@@ -40,7 +40,13 @@ export default function(app){
                 var tmp = str;
                 var result = tmp.slice(4, str.length-1)
                 return "####"+result
+            },
+            // Khang
+            format_date(date){
+                var d = new Date(date);
+                return moment(d).format("DD/MM/YYYY HH:mm:ss");
             }
+            // Khang
         }
     }));
     app.set('view engine', 'hbs');

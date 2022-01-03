@@ -8,25 +8,55 @@
     </div>
 </div>
 
-<div style="background-color: white">
-    <table class="table table-hover table-bordered">
-        <thead>
+<table class="table table-hover table-bordered bg-light">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Thời điểm ra giá</th>
+        <th scope="col">Người ra giá</th>
+        <th scope="col">Giá hiện tại</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each this.Users}}
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Thời điểm ra giá</th>
-            <th scope="col">Người ra giá</th>
-            <th scope="col">Giá hiện tại</th>
+            <th scope="row">{{No}}</th>
+            <td>{{format_date Time}}</td>
+            <td>{{MaskCharacter Username}}</td>
+            <td>{{format_number Price}}</td>
         </tr>
-        </thead>
-        <tbody>
-        {{#each this.Users}}
-            <tr>
-                <th scope="row">{{No}}</th>
-                <td>{{Time}}</td>
-                <td>{{MaskCharacter Username}}</td>
-                <td>{{Price}}</td>
-            </tr>
-        {{/each}}
-        </tbody>
-    </table>
-</div>
+    {{/each}}
+    </tbody>
+</table>
+
+{{#if this.display}}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <li class="page-item">
+                {{#if this.isFirstPage}}
+                    <a class="page-link" href="?ProID={{this.ProID}}&show=all&page={{decrease_one this.currentPageIndex}}">
+                    Previous
+                    </a>
+                {{/if}}
+
+            </li>
+            {{#each this.pageNumbers}}
+                {{#if isCurrentPage}}
+                    <li class="page-item active">
+                        <a class="page-link" href="javascript:;">{{value}}</a>
+                    </li>
+                {{else}}
+                    <li class="page-item">
+                        <a class="page-link" href="?ProID={{../this.ProID}}&show=all&page={{value}}">{{value}}</a>
+                    </li>
+                {{/if}}
+            {{/each}}
+            {{#if this.isLastPage}}
+                <a class="page-link" href="?ProID={{this.ProID}}&show=all&page={{increase_one this.currentPageIndex}}">
+                Next
+                </a>
+            {{/if}}
+        </ul>
+    </nav>
+{{/if}}
+

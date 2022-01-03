@@ -235,21 +235,46 @@ router.post('/delWatchList', async function(req, res){
 router.get('/history', async function (req, res){
     const ProID = req.query.ProID;
     const type = req.query.show;
+    const page = req.query.page || 1;
     var lst = [];
     if (type === undefined || type === "top-5"){
-        lst = await ProductModels.getAuctionByProIDWithLimit(ProID, 5);
+        var display = false;
+        lst = await ProductModels.getAuctionByProIDWithLimit(ProID, 5, 0);
     }
     else{
-        lst = await ProductModels.getAuctionByProID(ProID);
+        var display = true;
+        const offset = (page-1)*6;
+        const length = await ProductModels.getLengthAuction(ProID);
+        if (length === 0)
+            display = false;
+        else{
+            var nPages = Math.floor(length/6);
+            var pageNumbers = [];
+
+            if(length % 6 > 0){
+                nPages++;
+            }
+
+            for (var i = 1; i <= nPages; i++){
+                pageNumbers.push({
+                    value: i,
+                    isCurrentPage: +page === i,
+                });
+            }
+            lst = await ProductModels.getAuctionByProIDWithLimit(ProID, 6, offset);
+        }
     }
     for (var i = 0; i < lst.length; i++) {
-        lst[i].No = i + 1;
-        lst[i].Time = moment(lst[i].Time).format('DD/MM/YYYY HH:mm:ss');
+        lst[i].No = (i + 1) + (page - 1) * 6;
     }
-    console.log(lst)
     res.render('vwProducts/history', {
         Users: lst,
-        ProID
+        ProID,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        display
     });
 });
 
