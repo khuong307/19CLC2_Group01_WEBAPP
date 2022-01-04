@@ -68,12 +68,7 @@
             display:inline-block;
         }
 
-        .glyphicon-circle-arrow-right {
-            margin-left:10px;
-        }
-
-
-        .notification-heading, .notification-footer  {
+        .notification-heading {
             padding:2px 10px;
         }
 
@@ -92,6 +87,11 @@
             margin:5px;
             background:#ccc;
             border-radius:4px;
+        }
+
+        .not-active {
+            pointer-events: none;
+            cursor: default;
         }
         /*Khang*/
     </style>
@@ -142,58 +142,31 @@
                     <ul class="navbar-nav ml-auto nav-flex-icons">
                         <li class="nav-item avatar dropdown">
                             <a class="nav-link waves-effect waves-light" id="navbarDropdownMenuLink-5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                <span class="badge badge-danger ml-2">4</span>
-                                <i class="fa fa-bell text-warning"></i>
+                                <span class="badge badge-danger ml-2">{{lengthOfNotiList}}</span>
+                                <i class="fa fa-bell text-warning" st></i>
                             </a>
                             <!--<div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="navbarDropdownMenuLink-5">-->
-                            <!--<a class="dropdown-item waves-effect waves-light" href="#">Action <span class="badge badge-danger ml-2">4</span></a>
+                            <!--<a class="dropdowyle="cursor: pointer"n-item waves-effect waves-light" href="#">Action <span class="badge badge-danger ml-2">4</span></a>
                             <a class="dropdown-item waves-effect waves-light" href="#">Another action <span class="badge badge-danger ml-2">1</span></a>
                             <a class="dropdown-item waves-effect waves-light" href="#">Something else here <span class="badge badge-danger ml-2">4</span></a>-->
                             <ul class="dropdown-menu dropdown-menu-lg-right notifications" role="menu" aria-labelledby="dLabel">
 
-                                <div class="notification-heading"><h4 class="menu-title">Notifications</h4><a href="#" class="menu-title pull-right">Mark as read<i class="fa fa-check ml-2"></i></a>
-                                </div>
+                                <div class="notification-heading"><h4 class="menu-title">Notifications</h4></div>
                                 <li class="divider"></li>
                                 <div class="notifications-wrapper">
-                                    <a class="content" href="#">
-
-                                        <div class="notification-item">
-                                            <h4 class="item-title">Evaluation Deadline 1 · day ago</h4>
-                                            <p class="item-info">Marketing 101, Video Assignment</p>
-                                        </div>
-
-                                    </a>
-                                    <a class="content" href="#">
-                                        <div class="notification-item">
-                                            <h4 class="item-title">Evaluation Deadline 1 · day ago</h4>
-                                            <p class="item-info">Marketing 101, Video Assignment</p>
-                                        </div>
-                                    </a>
-                                    <a class="content" href="#">
-                                        <div class="notification-item">
-                                            <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-                                            <p class="item-info">Marketing 101, Video Assignment</p>
-                                        </div>
-                                    </a>
-                                    <a class="content" href="#">
-                                        <div class="notification-item">
-                                            <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-                                            <p class="item-info">Marketing 101, Video Assignment</p>
-                                        </div>
-
-                                    </a>
-                                    <a class="content" href="#">
-                                        <div class="notification-item">
-                                            <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-                                            <p class="item-info">Marketing 101, Video Assignment</p>
-                                        </div>
-                                    </a>
-                                    <a class="content" href="#">
-                                        <div class="notification-item">
-                                            <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-                                            <p class="item-info">Marketing 101, Video Assignment</p>
-                                        </div>
-                                    </a>
+                                    {{#each NotiListByUserID}}
+                                        <a class="content not-active" href="#">
+                                            <div class="notification-item">
+                                                {{#if this.Display}}
+                                                    <h4 class="item-title">Tài khoản đã được nâng cấp</h4>
+                                                    <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                {{else}}
+                                                    <h4 class="item-title">Tài khoản đã bị giảm cấp</h4>
+                                                    <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                {{/if}}
+                                            </div>
+                                        </a>
+                                    {{/each}}
                                 </div>
                             </ul>
                         </li>

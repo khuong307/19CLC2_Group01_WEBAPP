@@ -45,7 +45,7 @@ export default function(app){
             format_date(date){
                 var d = new Date(date);
                 return moment(d).format("DD/MM/YYYY HH:mm:ss");
-            }
+            },
             // Khang
         }
     }));

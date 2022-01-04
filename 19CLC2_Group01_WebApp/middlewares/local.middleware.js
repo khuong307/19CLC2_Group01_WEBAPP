@@ -3,7 +3,8 @@ import categoryModel from "../models/categories.models.js";
 import productModels from "../models/product.models.js";
 import BidderModels from "../models/bidder.models.js";
 import accountModels from "../models/account.models.js";
-
+import bidderModels from "../models/bidder.models.js";
+import moment from "moment";
 
 export default function(app){
     //Khang
@@ -20,7 +21,8 @@ export default function(app){
 
         if(res.locals.authUser != false){
             const userid = res.locals.authUser.UserID;
-            const obj = await BidderModels.findById(userid);
+            const lst = await BidderModels.findById(userid);
+            const obj = lst[lst.length-1];
             res.locals.upgrade = "Can upgrade";
             if (obj !== undefined && obj.Change === 1){
                 if (obj.AcceptTime === null)
@@ -90,11 +92,39 @@ export default function(app){
 
         // Khang
         if(res.locals.authUser != false){
-            //console.log(res.locals.authUser)
-            const userID = res.locals.authUser.UserID
-            const list = await productModels.getWatchListByUserID(userID)
-            res.locals.WatchListByUSerID = list
-            res.locals.lengthOfWatchList = list.length
+            const userID = res.locals.authUser.UserID;
+            const list = await productModels.getWatchListByUserID(userID);
+            const notiList = await bidderModels.findById(userID);
+            var temp = [];
+            const now = new Date();
+            for (var i = 0; i < notiList.length; i++){
+                if (notiList[i].Status === 1){
+                    if (notiList[i].Change === 1){
+                        let obj = JSON.parse(JSON.stringify(notiList[i]));
+                        obj.Display = 1;
+                        temp.push(obj);
+                        if ((i === notiList.length-1) || (i !== notiList.length-1 && notiList[i+1].Change !== 0)){
+                            const sendDate = new Date(notiList[i].AcceptTime);
+                            const diffTime = now.getTime() - sendDate.getTime();
+                            if (diffTime > 604800000){
+                                let obj = JSON.parse(JSON.stringify(notiList[i]));
+                                obj.Display = 0;
+                                obj.AcceptTime = moment(sendDate).add(7, 'd');
+                                temp.push(obj);
+                            }
+                        }
+                    }
+                    else{
+                        let obj = JSON.parse(JSON.stringify(notiList[i]));
+                        obj.Display = 0;
+                        temp.push(obj);
+                    }
+                }
+            }
+            res.locals.NotiListByUserID = temp.reverse();
+            res.locals.lengthOfNotiList = temp.length;
+            res.locals.WatchListByUSerID = list;
+            res.locals.lengthOfWatchList = list.length;
         }
         // Khang
         next()
