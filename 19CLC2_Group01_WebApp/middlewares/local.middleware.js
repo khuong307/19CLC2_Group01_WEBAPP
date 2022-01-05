@@ -1,8 +1,9 @@
 //middle-ware: sẽ được khởi động chạy trước khi vào file hbs,  để lên trước các app.get
 import categoryModel from "../models/categories.models.js";
 import productModels from "../models/product.models.js";
-import BidderModels from "../models/bidder.models.js";
+import bidderModels from "../models/bidder.models.js";
 import accountModels from "../models/account.models.js";
+import moment from "moment";
 
 
 export default function(app){
@@ -32,7 +33,7 @@ export default function(app){
 
         if(res.locals.authUser != null){
             const userid = res.locals.authUser.UserID;
-            const obj = await BidderModels.findById(userid);
+            const obj = await bidderModels.findById(userid);
             res.locals.upgrade = "Can upgrade";
             if (obj !== undefined && obj.Change === 1){
                 if (obj.AcceptTime === null)
@@ -73,12 +74,42 @@ export default function(app){
 
         // Khang
         if(res.locals.authUser != null){
-            const userID = res.locals.authUser.UserID
-            productModels.delWatchListOutDate()
-            res.locals.lengthOfWatchList = await productModels.countWatchList(userID);
-            res.locals.WatchListByUSerID = await productModels.getWatchListByUserID(userID)
+            const userID = res.locals.authUser.UserID;
+            const list = await productModels.getWatchListByUserID(userID);
+            const notiList = await bidderModels.findById(userID);
+            var temp = [];
+            const now = new Date();
+            for (var i = 0; i < notiList.length; i++){
+                if (notiList[i].Status === 1){
+                    if (notiList[i].Change === 1){
+                        let obj = JSON.parse(JSON.stringify(notiList[i]));
+                        obj.Display = 1;
+                        temp.push(obj);
+                        if ((i === notiList.length-1) || (i !== notiList.length-1 && notiList[i+1].Change !== 0)){
+                            const sendDate = new Date(notiList[i].AcceptTime);
+                            const diffTime = now.getTime() - sendDate.getTime();
+                            if (diffTime > 604800000){
+                                let obj = JSON.parse(JSON.stringify(notiList[i]));
+                                obj.Display = 0;
+                                obj.AcceptTime = moment(sendDate).add(7, 'd');
+                                temp.push(obj);
+                            }
+                        }
+                    }
+                    else{
+                        let obj = JSON.parse(JSON.stringify(notiList[i]));
+                        obj.Display = 0;
+                        temp.push(obj);
+                    }
+                }
+            }
+            res.locals.NotiListByUserID = temp.reverse();
+            res.locals.lengthOfNotiList = temp.length;
+            if (list != null) {
+                res.locals.WatchListByUSerID = list;
+                res.locals.lengthOfWatchList = list.length;
+            }
         }
-        // Khang
         next()
     })
 

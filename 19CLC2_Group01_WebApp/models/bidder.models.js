@@ -6,6 +6,18 @@ export default{
 
     async findById(userid){
         const lst = await db('ChangeLevel').where('UserID', userid).select();
-        return lst[lst.length-1];
+        return lst;
+    },
+
+    async getPermissionByUserID(UserID, ProID){
+        const lst = await db('Permission').where({
+            'ProID': ProID,
+            'BidderID': UserID
+        }).select();
+        return lst;
+    },
+
+    async insertToPermission(entity){
+        return db('Permission').insert(entity);
     }
 };

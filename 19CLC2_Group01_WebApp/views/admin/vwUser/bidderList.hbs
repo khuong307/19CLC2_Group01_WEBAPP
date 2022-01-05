@@ -1,20 +1,24 @@
 <div class="card text">
     <h4 class="card-header d-flex justify-content-between" style="background-color: antiquewhite">
-        BIDDER LIST
-        <a class="btn btn-sm btn-outline-primary" href="/admin/user/bidder/add" role="button">
-            <i class="fa fa-plus" aria-hidden="true"></i>
-            Add Bidder
+        DANH SÁCH BIDDER
+        <a class="btn btn-sm btn-outline-primary" href="/admin/user/seller" role="button">
+            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+            Xem danh sách Seller
+        </a>
+        <a class="btn btn-sm btn-outline-danger" href="/admin/user/upgrade" role="button">
+            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+            Xem yêu cầu nâng cấp
         </a>
     </h4>
 
-    <table class="table" style="text-align: center">
+    <table class="table" id="BidderTable" style="text-align: center">
         <thead>
         <tr class="table-active">
             <th scope="col">UserID</th>
             <th scope="col">Username</th>
-            <th scope="col">Type</th>
-            <th scope="col">Activate</th>
-            <th scope="col" style="text-align: center">Modification</th>
+            <th scope="col">Loại</th>
+            <th scope="col">Tình trạng kích hoạt</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
         </tr>
         </thead>
         <tbody>
@@ -25,14 +29,14 @@
                 <td>{{Type}}</td>
                 <td>{{Activate}}</td>
                 <td class="text-center">
-                    <a class="btn btn-sm btn-primary" href="#" role="button">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                        Edit
+                    <a class="btn btn-sm btn-primary" href="/admin/user/bidder/detail?id={{UserID}}" role="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Chi tiết
                     </a>
 
-                    <a class="btn btn-sm btn-danger" href="#" role="button">
-                        <i class=" fa fa-trash" aria-hidden="true"></i>
-                        Delete
+                    <a class="btn btn-sm btn-warning" value="{{UserID}}" value1="{{Username}}" id="btnDisable" role="button">
+                        <i class=" fa fa-ban" aria-hidden="true"></i>
+                        Vô hiệu hóa
                     </a>
                 </td>
             </tr>
@@ -40,3 +44,22 @@
         </tbody>
     </table>
 </div>
+
+{{#section 'js'}}
+    <script>
+        $("#BidderTable tbody").on("click", "#btnDisable", function(e){
+            var UserID=$(this).attr('value');
+            var Username=$(this).attr('value1');
+            var url=window.location+"/disable?id="+UserID;
+            var answer=window.confirm('Bạn có muốn vô hiệu hóa tài khoản '+ Username);
+            if(answer){
+                $.post( url, function( data ) {
+                    if(data.status==1){
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+{{/section}}

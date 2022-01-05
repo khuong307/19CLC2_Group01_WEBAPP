@@ -91,6 +91,62 @@
             Lịch sử đấu giá
             </a>
         </div>
+        {{#if auth}}
+            {{#if isOwner}}
+            {{else}}
+                <button type="button" class="btn btn-outline-warning float-right mr-2" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">
+                    <i class="fa fa-gavel"></i>
+                    Đấu giá
+                </button>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-danger" id="exampleModalLabel">Đấu giá</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            {{#if this.userInfo.Auction}}
+                                <div class="modal-body">
+                                    <form id="myform" method="post" action="/products/auction/{{this.product.ProID}}">
+                                        <div class="form-group">
+                                            <label for="recipient-name" class="col-form-label">Ra giá</label>
+                                            <input type="number" step={{this.product.StepPrice}} min={{this.product.CurrentPrice}} class="form-control" id="recipient-name" name="txtPrice" value="{{this.product.CurrentPrice}}">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                    <button type="submit" form="myform" class="btn btn-primary">Xác nhận</button>
+                                </div>
+                            {{else}}
+                                {{#if this.userInfo.Show}}
+                                    <div class="modal-body">
+                                        <form id="myform" method="post" action="/products/auction/{{this.product.ProID}}">
+                                            Tài khoản hiện không đủ điều kiện đấu giá. Để tiếp tục đấu giá, bạn cần gửi yêu cầu cho người bán
+                                            <input type="hidden" name="txtRequest" value="1">
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                        <button type="submit" form="myform" class="btn btn-primary">Gửi yêu cầu</button>
+                                    </div>
+                                {{else}}
+                                    <div class="modal-body">
+                                        Yêu cầu đã được gửi. Vui lòng chờ người bán chấp nhận.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                    </div>
+                                {{/if}}
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+        {{/if}}
     </h4>
     <div class="card-body">
         <div class="row">
@@ -139,9 +195,14 @@
                                     <div class="float-right">
                                         <form action="/products/denyRequest?ProID={{../this.proID}}&UserID={{UserID}}" method="post">
                                             <input type="hidden" name="ProID" value={{ProID}}>
-                                            <button class="btn btn{{#if Status}}-outline-danger{{else}}-danger{{/if}}" type="submit">
-                                                <i class="fa fa-trash-o"></i>
-                                            </button>
+                                            {{#if ../this.hasWinner}}
+                                                    <i class="fa fa-trash-o"></i>
+                                                </button>
+                                            {{else}}
+                                                <button disabled="disabled" class="btn btn-success">
+                                                    <i class="fa fa-check-circle-o fa-2x"></i>
+                                                </button>
+                                            {{/if}}
                                         </form>
                                     </div>
                                 </td>
@@ -150,6 +211,31 @@
                         {{/each}}
                     </table>
                 </div>
+                {{#if isOwner}}
+                <div class="card-body"n style="justify-items: center; text-align: center">
+                    <h5 class="mt-3" style="text-decoration: underline; font-weight: bold">Yêu cầu xin đấu giá</h5>
+                    <table id="bidderInfo" style="margin-left: auto; margin-right: auto">
+                        <tr>
+                            <th style="font-weight: lighter">Bidder</th>
+                        </tr>
+                        {{#each allRequest}}
+                            <tr>
+                                <td>{{MaskCharacter Username}}</td>
+                                <td>
+                                    <div class="float-right">
+                                        <form action="/products/approveRequest?ProID={{../this.proID}}&UserID={{BidderID}}" method="post">
+                                            <input type="hidden" name="ProID" value={{ProID}}>
+                                            <button class="btn btn-outline-success">
+                                                <i class="fa fa-check-circle-o"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                </div>
+                {{/if}}
             </div>
             <div class="col-md-6" style="text-align: justify-all; padding-top: 20px">
                 <p class="card-text mt-4" style="font-size: 30px; text-align: center">
@@ -209,16 +295,18 @@
                     </p>
                 {{/each}}
                 {{#if isOwner}}
-                    <div>
-                        <form method="POST" action="/products/appendDescription/{{this.product.ProID}}">
-                            <div class="search">
-                                <input type="text" class="searchTerm" placeholder="Nhập thông tin bổ sung thêm" style="color: black" name="Info"required>
-                                <button type="submit" class="searchButton">
-                                    <i class="fa fa-check"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    {{#if hasWinner}}
+                        <div>
+                            <form method="POST" action="/products/appendDescription/{{this.product.ProID}}">
+                                <div class="search">
+                                    <input type="text" class="searchTerm" placeholder="Nhập thông tin bổ sung thêm" style="color: black" name="Info"required>
+                                    <button type="submit" class="searchButton">
+                                        <i class="fa fa-check"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    {{/if}}
                 {{/if}}
             </div>
         </div>

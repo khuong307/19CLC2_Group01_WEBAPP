@@ -4,7 +4,9 @@ import productModels from "../models/product.models.js";
 import sellerRoute from "../routes/seller.route.js";
 import bidderRoute from "../routes/bidder.route.js";
 //[ADD][MINH][15/12/2021]
+import indexAdminRoute from "../routes/admin/indexAdmin.route.js";
 import categoryAdminRoute from "../routes/admin/categoryAdmin.route.js";
+import productAdminRoute from "../routes/admin/productAdmin.route.js";
 import userAdminRoute from "../routes/admin/userAdmin.route.js";
 //[END]
 
@@ -86,9 +88,13 @@ export default function(app){
     })
 
     //admin/categories
+    //admin/categories
     //[ADD][MINH][15/12/2021]
+    app.use('/admin/',indexAdminRoute)
+    // admin/products
     app.use('/admin/categories', categoryAdminRoute)
-
+    //admin/products
+    app.use('/admin/products', productAdminRoute)
     //user
     app.use('/admin/user',userAdminRoute);
     //[END]

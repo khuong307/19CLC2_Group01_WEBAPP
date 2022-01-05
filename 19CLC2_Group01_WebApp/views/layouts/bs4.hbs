@@ -94,6 +94,39 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+        .notifications {
+            min-width:300px;
+        }
+        .notifications-wrapper {
+            overflow:auto;
+            max-height:300px;
+        }
+        .menu-title {
+            color:#e3b600;
+            font-size:1.3rem;
+            text-align: center;
+        }
+        .notification-heading {
+            padding:2px 10px;
+        }
+        .item-title {
+            font-size:1.2rem;
+            color:#003b46;
+        }
+        .notifications a.content {
+            text-decoration:none;
+            background: #c4dfe6;
+        }
+        .notification-item {
+            padding:10px;
+            margin:5px;
+            background: #c4dfe6;
+            border-radius:4px;
+        }
+        .not-active {
+            pointer-events: none;
+            cursor: default;
+        }
     </style>
 </head>
 <body>
@@ -162,6 +195,42 @@
                 </div>
             </li>
         </ul>
+        <!--Khang-->
+        {{#if auth}}
+            <ul class="navbar-nav">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent-5">
+                    <ul class="navbar-nav ml-auto nav-flex-icons">
+                        <li class="nav-item avatar dropdown">
+                            <a class="nav-link waves-effect waves-light" id="navbarDropdownMenuLink-5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="badge badge-danger ml-2">{{lengthOfNotiList}}</span>
+                                <i class="fa fa-bell text-warning" st></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-lg-right notifications" role="menu" aria-labelledby="dLabel">
+
+                                <div class="notification-heading"><h6 class="menu-title">Notifications</h6></div>
+                                <li class="divider"></li>
+                                <div class="notifications-wrapper">
+                                    {{#each NotiListByUserID}}
+                                        <a class="content not-active" href="#">
+                                            <div class="notification-item">
+                                                {{#if this.Display}}
+                                                    <h4 class="item-title">Tài khoản đã được nâng cấp</h4>
+                                                    <p class="item-info" style="color: #fb6542">{{format_date this.AcceptTime}}</p>
+                                                {{else}}
+                                                    <h4 class="item-title">Tài khoản đã bị giảm cấp</h4>
+                                                    <p class="item-info" style="color: #fb6542">{{format_date this.AcceptTime}}</p>
+                                                {{/if}}
+                                            </div>
+                                        </a>
+                                    {{/each}}
+                                </div>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </ul>
+        {{/if}}
+        <!--Khang-->
         <ul class="navbar-nav">
             {{#if auth}}
                 <li class="nav-item active dropdown">

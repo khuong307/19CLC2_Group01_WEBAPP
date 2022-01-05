@@ -5,7 +5,7 @@
             {{#if isSuccess}}
             {{else}}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Lỗi!</strong> Hãy điền đầy đủ thông tin!
+                    <strong>Lỗi!</strong> {{msg}}.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -14,16 +14,16 @@
         {{/if}}
 
         <h4 class="card-header">
-            Thêm danh mục mới:
+            Thêm danh mục mới
         </h4>
         <div class="card-body">
             <div class="form-group">
-                <label for="CatName">Tên danh mục:</label>
-                <input type="text" class="form-control" id="CatName" name="CatName" placeholder="Nhập tên danh mục mới" autofocus required>
+                <label for="CatName">Tên danh mục</label>
+                <input type="text" class="form-control" id="CatName" name="CatName" placeholder="Nhập tên danh mục mới" autofocus>
             </div>
         </div>
         <div class="card-footer text-muted">
-            <a class="btn btn-success" href="/admin/categories/lv2" role="button">
+            <a class="btn btn-success" href="/admin/categories/lv1" role="button">
                 <i class="fa fa-backward" aria-hidden="true"></i>
                 Quay lại
             </a>

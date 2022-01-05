@@ -34,7 +34,6 @@
         {{#if this.isOwner}}
             {{#if this.empty}}
                 <h5 class="card-title">Không có bất kỳ sản phẩm nào!</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content</p>
             {{else}}
                 {{#each this.ProductOfSeller}}
                     <div class="row">
@@ -92,12 +91,12 @@
                             <div>
                                 <p class="mr-4"style="text-decoration: underline; color: #00B4CC; font-weight: bold; float:left;  clear: right;">Đánh giá người mua:
                                 <form action="/seller/sellerLike?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}" method="post" style="float:left; clear: right;" class="mr-2">
-                                <button {{#if hasReview}}{{#if reviewContent.Status}}class="btn btn-sm btn-primary"{{else}}class="btn btn-sm btn-outline-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
+                                <button {{#if hasReview}}disabled="disabled"{{#if reviewContent.Status}}class="btn btn-sm btn-primary"{{else}}class="btn btn-sm btn-outline-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
                                     <i class="fa fa-thumbs-up"></i>
                                 </button>
                                 </form>
                                 <form action="/seller/sellerDisLike?seller={{UploadUser}}&bidder={{Winner}}&proid={{ProID}}" method="post">
-                                <button {{#if hasReview}}{{#if reviewContent.Status}}class="btn btn-sm btn-outline-primary" {{else}}class="btn btn-sm btn-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
+                                <button {{#if hasReview}}disabled="disabled"{{#if reviewContent.Status}}class="btn btn-sm btn-outline-primary" {{else}}class="btn btn-sm btn-primary"{{/if}}{{else}}class="btn btn-sm btn-outline-primary"{{/if}} type="submit">
                                     <i class="fa fa-thumbs-down"></i>
                                 </button>
                                 </form>

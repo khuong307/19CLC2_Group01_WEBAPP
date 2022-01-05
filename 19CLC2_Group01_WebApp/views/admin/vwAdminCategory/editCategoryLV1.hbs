@@ -1,6 +1,6 @@
 <form method="POST">
     <div class="card">
-        <h4 class="card-header" style="font-weight: ">
+        <h4 class="card-header">
             Chỉnh sửa danh mục cấp 1
         </h4>
 
@@ -9,16 +9,7 @@
             {{#if isSuccess}}
             {{else}}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Lỗi!</strong> Hãy nhập đầy đủ thông tin!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {{/if}}
-            {{#if isDelete}}
-            {{else}}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Lỗi!</strong> Chỉ có thể xóa danh mục nếu không có bất kỳ sản phẩm nào!
+                    <strong>Lỗi!</strong> {{msg}}.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

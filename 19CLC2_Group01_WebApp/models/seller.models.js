@@ -108,5 +108,23 @@ export default {
     //update status proid.
     async updateStatusProductByProID(proid){
         return db('Product').where('ProID', proid).update('Status', 1)
-    }
+    },
+
+    //get all request first bid
+    async getBidderFirstRequest(proid){
+        return db('Permission').where('ProID', proid).andWhere('Status', 0).select('BidderID')
+    },
+
+    //get username by userid.
+    async getUsernameByUserID(userID){
+        const list = await db('Account').where('UserID', userID).select('Username')
+        return list[0].Username
+    },
+
+
+    //update status permisstion
+    //get username by userid.
+    async updateStatusPermission(userID, proid, time){
+        return db('Permission').where('BidderID', userID).andWhere('ProID', proid).update('Status', 1).update('AcceptTime', time)
+    },
 }

@@ -22,7 +22,7 @@
             <tr class="table" style="font-size: 21px;background-color: #dfffd1">
                 <th scope="row">{{CatID2}}</th>
                 <td>{{CatName2}}</td>
-                <td>{{CatID1}}</td>
+                <td>{{CatName1}}</td>
                 <td>{{ProductCount}}</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/admin/categories/lv2/edit?id={{CatID2}}&quantity={{ProductCount}}" role="button">
@@ -30,7 +30,7 @@
                     Chỉnh sửa
                     </a>
 
-                    <a class="btn btn-sm btn-danger" value="{{CatID2}}" value1="{{ProductCount}}" id="btnDelete" role="button">
+                    <a class="btn btn-sm btn-danger" value="{{CatID2}}" value1="{{ProductCount}}" value2="{{CatName2}}" id="btnDelete" role="button">
                         <i class=" fa fa-trash" aria-hidden="true"></i>
                         Xóa
                     </a>
@@ -45,18 +45,22 @@
     <script>
         $("#CategoryTable tbody").on("click", "#btnDelete", function(e){
             var CatID2=$(this).attr('value');
+            var CatName2=$(this).attr('value2');
             var ProductCount=parseInt($(this).attr('value1'));
             var url=window.location+"/delrow?id="+CatID2;
             if(ProductCount==0){
-                $.post( url, function( data ) {
-                    if(data.status==1){
-                        alert(data.msg);
-                        window.location.reload();
-                    }
-                });
+                var answer=window.confirm('Bạn có muốn xóa '+ CatName2);
+                if(answer){
+                    $.post( url, function( data ) {
+                        if(data.status==1){
+                            alert(data.msg);
+                            window.location.reload();
+                        }
+                    });
+                }
             }
             else{
-                alert("Bạn không thể xóa category L2 với quantity > 0");
+                alert("Bạn không thể xóa danh mục cấp 2 với số lượng lớn hơn 0");
             }
         });
     </script>

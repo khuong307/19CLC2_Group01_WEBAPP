@@ -1,9 +1,81 @@
 <div class="card text">
     <h4 class="card-header d-flex justify-content-between" style="background-color: antiquewhite">
-        UPGRADE LIST
-        <a class="btn btn-sm btn-outline-primary" href="/admin/categories/add" role="button">
-            <i class="fa fa-plus" aria-hidden="true"></i>
-            Category
+        NÂNG CẤP BIDDER
+        <a class="btn btn-sm btn-outline-primary" href="/admin/user/seller" role="button">
+            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+            Xem danh sách Seller
+        </a>
+        <a class="btn btn-sm btn-outline-danger" href="/admin/user/bidder" role="button">
+            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+            Xem danh sách Bidder
         </a>
     </h4>
+
+    <table class="table" id="UpgradeTable" style="text-align: center">
+        <thead>
+        <tr class="table-active">
+            <th scope="col">ID</th>
+            <th scope="col">Username</th>
+            <th scope="col">Thời gian yêu cầu</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.upgradeList}}
+            <tr class="table-info">
+                <th scope="row">{{UserID}}</th>
+                <td>{{Username}}</td>
+                <td>{{Time}}</td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-primary" href="/admin/user/bidder/detail?id={{UserID}}"  role="button">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    Thông tin chi tiết
+                    </a>
+
+                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}"  id="btnAgree" role="button">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        Chấp nhận
+                    </a>
+                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}"  id="btnDisagree" role="button">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        Không chấp nhận
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
 </div>
+
+{{#section 'js'}}
+    <script>
+        $("#UpgradeTable tbody").on("click", "#btnAgree", function(e){
+            var UserID=$(this).attr('value');
+            var Username=$(this).attr('value1');
+            var url=window.location+"/accept?id="+UserID;
+            var answer=window.confirm('Bạn có muốn chấp nhập '+ Username + ' thành seller');
+            if(answer){
+                $.post( url, function( data ) {
+                    if(data.status==1){
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+        $("#UpgradeTable tbody").on("click", "#btnDisagree", function(e){
+            var UserID=$(this).attr('value');
+            var Username=$(this).attr('value1');
+            var url=window.location+"/deny?id="+UserID;
+            var answer=window.confirm('Bạn có muốn hủy yêu cầu '+ Username + ' thành seller');
+            if(answer){
+                $.post( url, function( data ) {
+                    if(data.status==1){
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+{{/section}}

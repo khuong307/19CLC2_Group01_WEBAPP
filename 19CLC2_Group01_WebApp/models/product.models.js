@@ -52,7 +52,7 @@ export default {
 
 
     async countByCatID(CatID){
-        const list = await db('Product').where('CatID2', CatID).andWhere('Product.EndDate', '>', new Date()).count({amount: 'ProID' })
+        const list = await db('Product').where('CatID2', CatID).whereNull('Winner').andWhere('Product.EndDate', '>', new Date()).count({amount: 'ProID' })
         return list[0].amount
     },
 
@@ -83,6 +83,11 @@ export default {
             'UserID': entity.UserID,
             'ProID': entity.ProID
         }).del();
+    },
+
+    async getLengthAuction(id){
+        const lst = await db('Auction').where('ProID', id);
+        return lst.length;
     },
 
     async countWatchList(userID){
