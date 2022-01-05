@@ -3,7 +3,8 @@ import express from 'express';
 import productModel from '../models/product.models.js'
 import auth from '../middlewares/auth.mdw.js'
 import ProductModels from "../models/product.models.js";
-import moment from "moment";
+import AccountModels from "../models/account.models.js";
+import BidderModels from "../models/bidder.models.js";
 const router = express.Router();
 //Khuong.
 router.get('/byCat/:id', async function(req, res){
@@ -122,7 +123,31 @@ router.get('/detail/:id', async function(req, res){
             product.isActive = null;
     }
 
-    console.log(product)
+    if (res.locals.authUser != false){
+        const userID = res.locals.authUser.UserID;
+        var userInfo = await AccountModels.getUserInfo(userID);
+        const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
+        if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
+            const permissionList = await BidderModels.getPermissionByUserID(userID, proID);
+            if (permissionList.length === 0){
+                userInfo.Auction = 0;
+                userInfo.Show = 1;
+            }
+            else{
+                if (permissionList[permissionList.length-1].Status === 0){
+                    userInfo.Auction = 0;
+                    userInfo.Show = 0;
+                }
+                else{
+                    userInfo.Auction = 1;
+                }
+            }
+        }
+        else{
+            userInfo.Auction = 1;
+        }
+        console.log(userInfo);
+    }
     // Khang
 
     res.render('vwProducts/detail', {
@@ -130,7 +155,7 @@ router.get('/detail/:id', async function(req, res){
         empty: product.length === 0,
         list5Relate,
         Category1: catID1.CatID1,
-
+        userInfo
     })
 })
 //Khuong.
@@ -278,8 +303,20 @@ router.get('/history', async function (req, res){
     });
 });
 
-router.post('/auction', function (req, res){
-    console.log(req.body.txtPrice)
+router.post('/auction/:id', function (req, res){
+    if (req.body.txtRequest !== undefined){
+        const d = new Date();
+        const entity = {
+            BidderID: res.locals.authUser.UserID,
+            ProID: req.params.id,
+            Time: d,
+            Status: 0,
+            AcceptTime: null
+        };
+        const ret = BidderModels.insertToPermission(entity);
+    }
+    const url = req.headers.referer || '/';
+    res.redirect(url);
 })
 // Khang
 export default router;
