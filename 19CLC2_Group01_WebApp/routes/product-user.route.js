@@ -126,31 +126,44 @@ router.get('/detail/:id', async function(req, res){
     if (res.locals.authUser != false){
         const userID = res.locals.authUser.UserID;
         var userInfo = await AccountModels.getUserInfo(userID);
-        const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
-        if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
-            const permissionList = await BidderModels.getPermissionByUserIDAndProID(userID, proID);
-            if (permissionList.length === 0){
-                userInfo.Auction = 0;
-                userInfo.Show = 1;
+        var flag = true;
+        const auctionList = await ProductModels.getAuctionByProIDAndUserID(userID, proID);
+        for (let i = 0; i < auctionList.length; i++){
+            if (auctionList[i].Status === 0){
+                flag = false;
+                break;
             }
-            else{
-                if (permissionList[permissionList.length-1].Status === 0){
-                    userInfo.Auction = 0;
-                    userInfo.Show = 0;
-                }
-                else if (permissionList[permissionList.length-1].Status === 1){
-                    userInfo.Auction = 1;
-                }
-                else{
+        }
+        if (!flag){
+            userInfo.NotShow = 1;
+        }
+        else{
+            const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
+            if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
+                const permissionList = await BidderModels.getPermissionByUserIDAndProID(userID, proID);
+                if (permissionList.length === 0){
                     userInfo.Auction = 0;
                     userInfo.Show = 1;
                 }
+                else{
+                    if (permissionList[permissionList.length-1].Status === 0){
+                        userInfo.Auction = 0;
+                        userInfo.Show = 0;
+                    }
+                    else if (permissionList[permissionList.length-1].Status === 1){
+                        userInfo.Auction = 1;
+                    }
+                    else{
+                        userInfo.Auction = 0;
+                        userInfo.Show = 1;
+                    }
+                }
             }
+            else{
+                userInfo.Auction = 1;
+            }
+            console.log(userInfo);
         }
-        else{
-            userInfo.Auction = 1;
-        }
-        console.log(userInfo);
     }
     // Khang
 
@@ -365,8 +378,10 @@ router.post('/auction/:id', async function (req, res){
                     new_entity.Header = res.locals.authUser.UserID;
                     new_entity.UserID = res.locals.authUser.UserID;
                 }
-                await ProductModels.insertAuction(new_entity);
-                await ProductModels.updatePriceAndWinnerProduct(new_entity);
+                if (priceList[0].UserID !== entity.UserID){
+                    await ProductModels.insertAuction(new_entity);
+                    await ProductModels.updatePriceAndWinnerProduct(new_entity);
+                }
             }
         }
     }

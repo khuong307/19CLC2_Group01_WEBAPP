@@ -80,14 +80,15 @@ export default {
     },
 
     async getAuctionByProIDWithLimit(id, limit, offset){
-        const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
-            '=', 'Account.UserID').where('ProID', id).orderBy('Auction.Time', 'desc').offset(offset).limit(limit).select();
-        return lst;
+        const raw_sql = `select * from Account acc join Auction auc on acc.UserID = auc.UserID where ProID = '${id}' and auc.UserID in (select distinct UserID from Auction where ProID = '${id}' and UserID not in (select UserID from Auction where Status = 0 and ProID = '${id}')) order by auc.Time desc limit ${limit} offset ${offset}`;
+        const lst = await db.raw(raw_sql);
+        return lst[0];
     },
 
     async getLengthAuction(id){
-        const lst = await db('Auction').where('ProID', id);
-        return lst.length;
+        const raw_sql = `select * from Auction where ProID = '${id}' and UserID in (select distinct UserID from Auction where ProID = '${id}' and UserID not in (select UserID from Auction where Status = 0 and ProID = '${id}'))`;
+        const lst = await db.raw(raw_sql);
+        return lst[0].length;
     },
 
     async getMaxPriceByProID(ProID){
@@ -104,6 +105,19 @@ export default {
             'Winner': entity.Header,
             'CurrentPrice': entity.Price
         });
+    },
+
+    async getAuctionByProIDAndUserID(UserID, ProID){
+        const lst = await db('Auction').where({
+            'ProID': ProID,
+            'UserID': UserID
+        }).select();
+        return lst;
+    },
+
+    async getAuctionByUserID(UserID){
+        const lst = await db('Auction').where('UserID', UserID).orderBy('AcceptTime', 'asc').select();
+        return lst;
     },
     // Khang
 

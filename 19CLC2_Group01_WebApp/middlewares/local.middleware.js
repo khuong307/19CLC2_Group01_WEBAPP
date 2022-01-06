@@ -101,6 +101,7 @@ export default function(app){
             const list = await productModels.getWatchListByUserID(userID);
             const changeList = await bidderModels.findById(userID);
             const permissionList = await bidderModels.getPermissionByUserID(userID);
+            const auctionList = await productModels.getAuctionByUserID(userID);
             var temp = [];
             const now = new Date();
             for (let i = 0; i < changeList.length; i++){
@@ -150,10 +151,28 @@ export default function(app){
                     temp.push(obj);
                 }
             }
+            var auctionTemp = [];
+            for (let i = 0; i < auctionList.length; i++){
+                auctionList[i].Auction = 1;
+                if (auctionList[i].Status === 0){
+                    let obj = JSON.parse(JSON.stringify(auctionList[i]));
+                    var flag = true;
+                    for (let j = 0; j < auctionTemp.length; j++){
+                        if (auctionTemp[j].ProID == obj.ProID){
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag){
+                        obj.DisplayAuction = 1;
+                        temp.push(obj);
+                        auctionTemp.push(obj);
+                    }
+                }
+            }
             temp.sort(function(a,b){
                 return new Date(a.AcceptTime) - new Date(b.AcceptTime);
             });
-            console.log(temp);
             res.locals.NotiListByUserID = temp.reverse();
             res.locals.lengthOfNotiList = temp.length;
             res.locals.WatchListByUSerID = list;

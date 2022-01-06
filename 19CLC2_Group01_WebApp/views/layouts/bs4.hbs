@@ -176,16 +176,25 @@
                                                         {{/if}}
                                                     {{/if}}
                                                 {{else}}
-                                                    {{#if this.DisplayPermission}}
-                                                        <a class="link-product" href="/products/detail/{{this.ProID}}">
-                                                            <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã được duyệt</h4>
-                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
-                                                        </a>
+                                                    {{#if this.Permission}}
+                                                        {{#if this.DisplayPermission}}
+                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã được duyệt</h4>
+                                                                <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                            </a>
+                                                        {{else}}
+                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã bị từ chối</h4>
+                                                                <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                            </a>
+                                                        {{/if}}
                                                     {{else}}
-                                                        <a class="link-product" href="/products/detail/{{this.ProID}}">
-                                                            <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã bị từ chối</h4>
-                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
-                                                        </a>
+                                                        {{#if this.DisplayAuction}}
+                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Tài khoản không thể đấu giá sản phẩm {{this.ProID}}</h4>
+                                                                <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                            </a>
+                                                        {{/if}}
                                                     {{/if}}
                                                 {{/if}}
                                             </div>
