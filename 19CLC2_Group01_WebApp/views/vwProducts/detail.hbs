@@ -23,21 +23,6 @@
                 });
             });
         });
-
-        // Khang
-        // $('#exampleModal').on('show.bs.modal', function (event) {
-        //     if (true){
-        //         var modal = $(this)
-        //         modal.find('.modal-title').text('Hello')
-        //         modal.find('.modal-body input').val(25);
-        //     }
-        //     else{
-        //         var modal = $(this)
-        //         modal.find('.modal-title').text('Đấu giá sản phẩm')
-        //         modal.find('.modal-body input').val(0);
-        //     }
-        // });
-        // Khang
     </script>
 
 {{/section}}
@@ -94,7 +79,7 @@
                                 <form id="myform" method="post" action="/products/auction/{{this.product.ProID}}">
                                     <div class="form-group">
                                         <label for="recipient-name" class="col-form-label">Ra giá</label>
-                                        <input type="number" step={{this.product.StepPrice}} min={{this.product.CurrentPrice}} class="form-control" id="recipient-name" name="txtPrice" value="{{this.product.CurrentPrice}}">
+                                        <input type="number" step={{this.product.StepPrice}} min={{this.product.CurrentPrice}} max={{this.product.PriceBuyNow}} class="form-control" id="recipient-name" name="txtPrice" value="{{this.product.CurrentPrice}}">
                                     </div>
                                 </form>
                             </div>

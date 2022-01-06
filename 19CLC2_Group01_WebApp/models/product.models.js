@@ -89,6 +89,22 @@ export default {
         const lst = await db('Auction').where('ProID', id);
         return lst.length;
     },
+
+    async getMaxPriceByProID(ProID){
+        const lst = await db('MaxPrice').where('ProID', ProID).orderBy('MaxPrice', 'desc').orderBy('Time', 'asc').select();
+        return lst;
+    },
+
+    insertAuction(entity){
+        return db('Auction').insert(entity);
+    },
+
+    updatePriceAndWinnerProduct(entity){
+        return db('Product').where('ProID', entity.ProID).update({
+            'Winner': entity.Header,
+            'CurrentPrice': entity.Price
+        });
+    },
     // Khang
 
     async getWatchListByUserID(userID){

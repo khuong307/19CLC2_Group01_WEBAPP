@@ -93,6 +93,11 @@
             pointer-events: none;
             cursor: default;
         }
+
+        .link-product:hover {
+            opacity: 0.8;
+            text-decoration: none;
+        }
         /*Khang*/
     </style>
 </head>
@@ -157,12 +162,31 @@
                                     {{#each NotiListByUserID}}
                                         <a class="content not-active" href="#">
                                             <div class="notification-item">
-                                                {{#if this.Display}}
-                                                    <h4 class="item-title">Tài khoản đã được nâng cấp</h4>
-                                                    <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                {{#if this.Level}}
+                                                    {{#if this.DisplayChange}}
+                                                        <h4 class="item-title">Tài khoản đã được nâng cấp</h4>
+                                                        <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                    {{else}}
+                                                        {{#if this.RefuseChange}}
+                                                            <h4 class="item-title">Yêu cầu nâng cấp bị từ chối</h4>
+                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                        {{else}}
+                                                            <h4 class="item-title">Tài khoản đã bị giảm cấp</h4>
+                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                        {{/if}}
+                                                    {{/if}}
                                                 {{else}}
-                                                    <h4 class="item-title">Tài khoản đã bị giảm cấp</h4>
-                                                    <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                    {{#if this.DisplayPermission}}
+                                                        <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                            <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã được duyệt</h4>
+                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                        </a>
+                                                    {{else}}
+                                                        <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                            <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã bị từ chối</h4>
+                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                        </a>
+                                                    {{/if}}
                                                 {{/if}}
                                             </div>
                                         </a>

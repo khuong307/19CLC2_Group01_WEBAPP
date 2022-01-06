@@ -128,7 +128,7 @@ router.get('/detail/:id', async function(req, res){
         var userInfo = await AccountModels.getUserInfo(userID);
         const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
         if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
-            const permissionList = await BidderModels.getPermissionByUserID(userID, proID);
+            const permissionList = await BidderModels.getPermissionByUserIDAndProID(userID, proID);
             if (permissionList.length === 0){
                 userInfo.Auction = 0;
                 userInfo.Show = 1;
@@ -138,8 +138,12 @@ router.get('/detail/:id', async function(req, res){
                     userInfo.Auction = 0;
                     userInfo.Show = 0;
                 }
-                else{
+                else if (permissionList[permissionList.length-1].Status === 1){
                     userInfo.Auction = 1;
+                }
+                else{
+                    userInfo.Auction = 0;
+                    userInfo.Show = 1;
                 }
             }
         }
@@ -303,9 +307,10 @@ router.get('/history', async function (req, res){
     });
 });
 
-router.post('/auction/:id', function (req, res){
+router.post('/auction/:id', async function (req, res){
+    const d = new Date();
+    console.log(req.body.txtRequest)
     if (req.body.txtRequest !== undefined){
-        const d = new Date();
         const entity = {
             BidderID: res.locals.authUser.UserID,
             ProID: req.params.id,
@@ -313,7 +318,57 @@ router.post('/auction/:id', function (req, res){
             Status: 0,
             AcceptTime: null
         };
-        const ret = BidderModels.insertToPermission(entity);
+        await BidderModels.insertToPermission(entity);
+    }
+    else{
+        const entity = {
+            UserID: res.locals.authUser.UserID,
+            ProID: req.params.id,
+            MaxPrice: req.body.txtPrice,
+            Time: d
+        };
+        const product = await ProductModels.findById(entity.ProID);
+        const priceList = await ProductModels.getMaxPriceByProID(entity.ProID);
+        if (priceList.length === 0){
+            await BidderModels.insertMaxPrice(entity);
+            const new_entity = {
+                UserID: res.locals.authUser.UserID,
+                ProID: req.params.id,
+                Time: d,
+                Price: product.CurrentPrice,
+                Status: 1,
+                Header: res.locals.authUser.UserID
+            };
+            await ProductModels.insertAuction(new_entity);
+            await ProductModels.updatePriceAndWinnerProduct(new_entity);
+        }
+        else{
+            const obj = await BidderModels.selectMaxPrice(entity);
+            if (obj[0].Num !== 0)
+                await BidderModels.updateMaxPrice(entity);
+            else
+                await BidderModels.insertMaxPrice(entity);
+            if (product.CurrentPrice != entity.MaxPrice){
+                console.log("Hi")
+                const new_entity = {
+                    ProID: req.params.id,
+                    Time: d,
+                    Status: 1,
+                };
+                if (priceList[0].MaxPrice >= entity.MaxPrice){
+                    new_entity.Price = entity.MaxPrice;
+                    new_entity.Header = priceList[0].UserID;
+                    new_entity.UserID = priceList[0].UserID;
+                }
+                else{
+                    new_entity.Price = priceList[0].MaxPrice + product.StepPrice;
+                    new_entity.Header = res.locals.authUser.UserID;
+                    new_entity.UserID = res.locals.authUser.UserID;
+                }
+                await ProductModels.insertAuction(new_entity);
+                await ProductModels.updatePriceAndWinnerProduct(new_entity);
+            }
+        }
     }
     const url = req.headers.referer || '/';
     res.redirect(url);

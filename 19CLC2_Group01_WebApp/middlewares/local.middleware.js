@@ -28,16 +28,21 @@ export default function(app){
                 if (obj.AcceptTime === null)
                     res.locals.upgrade = "Yêu cầu của bạn đã được gửi và đang chờ xử lý";
                 else{
-                    const now = new Date();
-                    const sendDate = new Date(obj.AcceptTime);
-                    const diffTime = now.getTime() - sendDate.getTime();
-                    console.log(diffTime)
-                    if (diffTime > 604800000){
-                        const ret = await accountModels.updateActorById(userid, 1);
-                        res.locals.authUser.Type = 1;
+                    if (obj.Status === 1){
+                        const now = new Date();
+                        const sendDate = new Date(obj.AcceptTime);
+                        const diffTime = now.getTime() - sendDate.getTime();
+                        console.log(diffTime)
+                        if (diffTime > 604800000){
+                            const ret = await accountModels.updateActorById(userid, 1);
+                            res.locals.authUser.Type = 1;
+                        }
+                        else{
+                            res.locals.upgrade = "Bạn đã trở thành seller";
+                        }
                     }
-                    else{
-                        res.locals.upgrade = "Bạn đã trở thành seller";
+                    else if (obj.Status === 2){
+                        res.locals.upgrade = "Can upgrade";
                     }
                 }
             }
@@ -94,33 +99,61 @@ export default function(app){
         if(res.locals.authUser != false){
             const userID = res.locals.authUser.UserID;
             const list = await productModels.getWatchListByUserID(userID);
-            const notiList = await bidderModels.findById(userID);
+            const changeList = await bidderModels.findById(userID);
+            const permissionList = await bidderModels.getPermissionByUserID(userID);
             var temp = [];
             const now = new Date();
-            for (var i = 0; i < notiList.length; i++){
-                if (notiList[i].Status === 1){
-                    if (notiList[i].Change === 1){
-                        let obj = JSON.parse(JSON.stringify(notiList[i]));
-                        obj.Display = 1;
+            for (let i = 0; i < changeList.length; i++){
+                changeList[i].Level = 1;
+                if (changeList[i].Status === 1){
+                    if (changeList[i].Change === 1){
+                        let obj = JSON.parse(JSON.stringify(changeList[i]));
+                        obj.DisplayChange = 1;
                         temp.push(obj);
-                        if ((i === notiList.length-1) || (i !== notiList.length-1 && notiList[i+1].Change !== 0)){
-                            const sendDate = new Date(notiList[i].AcceptTime);
+                        if ((i === changeList.length-1) || (i !== changeList.length-1 && changeList[i+1].Change !== 0)){
+                            const sendDate = new Date(changeList[i].AcceptTime);
                             const diffTime = now.getTime() - sendDate.getTime();
                             if (diffTime > 604800000){
-                                let obj = JSON.parse(JSON.stringify(notiList[i]));
-                                obj.Display = 0;
+                                let obj = JSON.parse(JSON.stringify(changeList[i]));
+                                obj.DisplayChange = 0;
+                                obj.RefuseChange = 0;
                                 obj.AcceptTime = moment(sendDate).add(7, 'd');
                                 temp.push(obj);
                             }
                         }
                     }
                     else{
-                        let obj = JSON.parse(JSON.stringify(notiList[i]));
-                        obj.Display = 0;
+                        let obj = JSON.parse(JSON.stringify(changeList[i]));
+                        obj.DisplayChange = 0;
+                        obj.RefuseChange = 0;
                         temp.push(obj);
                     }
                 }
+                else if (changeList[i].Status === 2){
+                    let obj = JSON.parse(JSON.stringify(changeList[i]));
+                    obj.DisplayChange = 0;
+                    obj.RefuseChange = 1;
+                    temp.push(obj);
+                }
             }
+            for (let i = 0; i < permissionList.length; i++){
+                permissionList[i].Permission = 1;
+                if (permissionList[i].Status === 1){
+                    let obj = JSON.parse(JSON.stringify(permissionList[i]));
+                    obj.DisplayPermission = 1;
+                    temp.push(obj);
+
+                }
+                else if (permissionList[i].Status === 2){
+                    let obj = JSON.parse(JSON.stringify(permissionList[i]));
+                    obj.DisplayPermission = 0;
+                    temp.push(obj);
+                }
+            }
+            temp.sort(function(a,b){
+                return new Date(a.AcceptTime) - new Date(b.AcceptTime);
+            });
+            console.log(temp);
             res.locals.NotiListByUserID = temp.reverse();
             res.locals.lengthOfNotiList = temp.length;
             res.locals.WatchListByUSerID = list;
