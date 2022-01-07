@@ -1,0 +1,64 @@
+<div class="card">
+    <div class="card-header" style="background-color: antiquewhite">
+        <h4>
+            DANH SÁCH SẢN PHẨM
+        </h4>
+    </div>
+
+    <table class="table" id="ProductTable" style="text-align: center">
+        <thead>
+        <tr class="table-active">
+            <th scope="col">ProID</th>
+            <th scope="col">Hình ảnh</th>
+            <th scope="col">Sản phẩm</th>
+            <th scope="col">Giá hiện tại</th>
+            <th scope="col">Bước giá</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.products}}
+            <tr class="table-info">
+                <th scope="row">{{ProID}}</th>
+                <th width="20%">
+                    <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{CatID2}}/{{ProID}}/main.jpg" alt="{{ProName}}" title="{{ProName}}" style="width:80%;height:50%">
+                </th>
+                <td>{{ProName}}</td>
+                <td>{{format_number CurrentPrice}}</td>
+                <td>{{StepPrice}}</td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-primary" href="/products/detail/{{ProID}}" role="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Chi tiết
+                    </a>
+
+                    <a class="btn btn-sm btn-danger" value="{{ProID}}" value1="{{ProName}}" id="btnDelete"
+                       role="button">
+                        <i class=" fa fa-trash" aria-hidden="true"></i>
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{#section 'js'}}
+    <script>
+        $("#ProductTable tbody").on("click", "#btnDelete", function (e) {
+            var ProID = $(this).attr('value');
+            var ProName = $(this).attr('value1');
+            var url = window.location + "/del?id=" + ProID;
+            var answer = window.confirm('Bạn có muốn xóa sản phẩm ' + ProName);
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+{{/section}}

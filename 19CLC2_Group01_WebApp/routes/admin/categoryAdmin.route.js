@@ -14,8 +14,8 @@ router.get('/lv1',auth, async function(req, res){
             res.redirect('/')
         }
     }
-
     req.session.retURL=req.originalUrl;
+
     const list = await categoryModel.findALlCategoryL1();
 
     for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
@@ -49,8 +49,8 @@ router.get('/lv1/detailL2',auth, async function(req, res){
             res.redirect('/')
         }
     }
-
     req.session.retURL=req.originalUrl;
+
     // Lấy id từ query string
     const id = req.query.id || 0;
     const list = await categoryModel.findCateL2ByIdCateL1(id);
@@ -76,8 +76,8 @@ router.get('/lv1/edit',auth,async function(req, res){
             res.redirect('/')
         }
     }
-
     req.session.retURL=req.originalUrl;
+
     const id = req.query.id || 0;
     let quantity=req.query.quantity;
     const category = await categoryModel.findByIdLV1(id);
@@ -118,6 +118,8 @@ router.post('/lv1/add',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     // Lấy catName ở form nhập
     const CatName1=req.body.CatName;
     // Truy vấn toàn bộ phẩn tử trong Category L1
@@ -168,6 +170,8 @@ router.post('/lv1/patch', auth,async function(req, res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     // Kiểm tra phần form nhập vào CatName1 liệu có bỏ trống
     let checkValid=isValidCategoryL1(req.body);
     // Tạo category để khi có lỗi render lại đúng những thông tin cần thiết
@@ -211,6 +215,7 @@ router.post('/lv1/del', auth,async function(req, res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
 
     // Tạo category để khi có lỗi render lại đúng những thông tin cần thiết
     let category = {CatID1:req.body.CatID1,QuantityLV1:req.body.QuantityLV1,CatName1:req.body.CatName1};
@@ -242,6 +247,7 @@ router.post('/lv1/delrow',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
 
     let CatID1=req.query.id;
     // Đầu tiên hủy toàn bộ category ở khóa ngoại ( Category Lv2)
@@ -264,8 +270,8 @@ router.get('/lv2',auth, async function(req, res){
             res.redirect('/')
         }
     }
-
     req.session.retURL=req.originalUrl;
+
     const list = await categoryModel.findDetailCateL2();
     // count tổng số lượng sản phẩm trong 1 CategoryL1.
     for (const d of res.locals.CategoryL1){
@@ -290,8 +296,8 @@ router.get('/lv2/add',auth,async function(req, res){
             res.redirect('/')
         }
     }
-
     req.session.retURL=req.originalUrl;
+
     const list=await categoryModel.findALlCategoryL1();
     res.render('admin/vwAdminCategory/addCategoryLV2',{
         isViewEdit:true,
@@ -307,6 +313,8 @@ router.post('/lv2/add', auth,async function(req, res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     const CatName2=req.body.CatName2;
     const CatID1=req.body.CatID1;
     // Tạo danh sách các danh mục cấp 1 để khi render lại chính trang đó tồn tại
@@ -363,8 +371,8 @@ router.get('/lv2/edit', auth,async function(req, res){
             res.redirect('/')
         }
     }
-
     req.session.retURL=req.originalUrl;
+
     const id = req.query.id || 0;
     const quantity=req.query.quantity;
 
@@ -389,6 +397,7 @@ router.post('/lv2/del', auth,async function(req, res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
 
     // Tạo category để khi lỗi render ra lại đúng form đó
     let category = {CatID2:req.body.CatID2,QuantityLV2:req.body.QuantityLV2,CatName2:req.body.CatName2};
@@ -415,6 +424,8 @@ router.post('/lv2/delrow',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     let CatID2=req.query.id;
     const ret = await categoryModel.deleteCategoryL2ByID(CatID2);
     res.json({
@@ -430,6 +441,8 @@ router.post('/lv2/patch',auth, async function(req, res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     // Kiểm tra liệu form có để trống tên
     let checkValid=isValidCategoryL2(req.body);
     // Tạo category để khi lỗi render ra lại đúng form đó

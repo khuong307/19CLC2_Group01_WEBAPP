@@ -95,6 +95,46 @@ export default {
             return null
         }
         return list
-    }
+    },
 
+    // Minh
+    findAllWithIdCate(){
+        return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2');
+    },
+
+    findBidderByProId(ProID){
+        return db.select().table('User').join('MaxPrice','MaxPrice.UserID','=','User.UserID').where('MaxPrice.ProID',ProID);
+    },
+
+    findSellerByProId(ProID){
+        return db.select().table('User').join('Product','Product.UploadUser','=','User.UserID').where('Product.ProID',ProID);
+    },
+
+    delPermisByProId(ProID){
+        return db('Permission').where('ProID', ProID).del();
+    },
+
+    delMaxPriceByProId(ProID){
+        return db('MaxPrice').where('ProID', ProID).del();
+    },
+
+    delAuctionByProId(ProID){
+        return db('Auction').where('ProID', ProID).del();
+    },
+
+    delDescriptionByProId(ProID){
+        return db('DescriptionHistory').where('ProID', ProID).del();
+    },
+
+    delWatchListByProId(ProID){
+        return db('WatchList').where('ProID', ProID).del();
+    },
+
+    delProInfoSearchByProId(ProID){
+        return db('ProInfoSearch').where('ProID', ProID).del();
+    },
+
+    delProductByProId(ProID){
+        return db('Product').where('ProID', ProID).del();
+    },
 }

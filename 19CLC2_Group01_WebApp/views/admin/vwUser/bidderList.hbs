@@ -1,15 +1,19 @@
-<div class="card text">
-    <h4 class="card-header d-flex justify-content-between" style="background-color: antiquewhite">
-        DANH SÁCH BIDDER
-        <a class="btn btn-sm btn-outline-primary" href="/admin/user/seller" role="button">
-            <i class="fa fa-eye-slash" aria-hidden="true"></i>
-            Xem danh sách Seller
-        </a>
-        <a class="btn btn-sm btn-outline-danger" href="/admin/user/upgrade" role="button">
-            <i class="fa fa-eye-slash" aria-hidden="true"></i>
-            Xem yêu cầu nâng cấp
-        </a>
-    </h4>
+<div class="card">
+    <div class="card-header" style="background-color: antiquewhite">
+        <h4>
+            DANH SÁCH BIDDER
+            <div style="float: right">
+                <a class="btn btn-sm btn-outline-primary" href="/admin/user/seller" role="button">
+                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                    Xem danh sách Seller
+                </a>
+                <a class="btn btn-sm btn-outline-danger" href="/admin/user/upgrade" role="button">
+                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                    Xem yêu cầu nâng cấp
+                </a>
+            </div>
+        </h4>
+    </div>
 
     <table class="table" id="BidderTable" style="text-align: center">
         <thead>
@@ -30,11 +34,12 @@
                 <td>{{Activate}}</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/admin/user/bidder/detail?id={{UserID}}" role="button">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                        Chi tiết
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Chi tiết
                     </a>
 
-                    <a class="btn btn-sm btn-warning" value="{{UserID}}" value1="{{Username}}" id="btnDisable" role="button">
+                    <a class="btn btn-sm btn-warning" value="{{UserID}}" value1="{{Username}}" id="btnDisable"
+                       role="button">
                         <i class=" fa fa-ban" aria-hidden="true"></i>
                         Vô hiệu hóa
                     </a>
@@ -47,14 +52,14 @@
 
 {{#section 'js'}}
     <script>
-        $("#BidderTable tbody").on("click", "#btnDisable", function(e){
-            var UserID=$(this).attr('value');
-            var Username=$(this).attr('value1');
-            var url=window.location+"/disable?id="+UserID;
-            var answer=window.confirm('Bạn có muốn vô hiệu hóa tài khoản '+ Username);
-            if(answer){
-                $.post( url, function( data ) {
-                    if(data.status==1){
+        $("#BidderTable tbody").on("click", "#btnDisable", function (e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location + "/disable?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn vô hiệu hóa tài khoản ' + Username);
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
                         alert(data.msg);
                         window.location.reload();
                     }
