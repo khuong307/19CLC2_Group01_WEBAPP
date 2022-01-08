@@ -89,7 +89,7 @@
         $("#UpgradeTable tbody").on("click", "#btnAgree", function (e) {
             var UserID = $(this).attr('value');
             var Username = $(this).attr('value1');
-            var url = window.location + "/accept?id=" + UserID;
+            var url = window.location.origin+window.location.pathname + "/accept?id=" + UserID;
             var answer = window.confirm('Bạn có muốn chấp nhập ' + Username + ' thành seller');
             if (answer) {
                 $.post(url, function (data) {
@@ -104,7 +104,7 @@
         $("#UpgradeTable tbody").on("click", "#btnDisagree", function (e) {
             var UserID = $(this).attr('value');
             var Username = $(this).attr('value1');
-            var url = window.location + "/deny?id=" + UserID;
+            var url = window.location.origin+window.location.pathname + "/deny?id=" + UserID;
             var answer = window.confirm('Bạn có muốn hủy yêu cầu ' + Username + ' thành seller');
             if (answer) {
                 $.post(url, function (data) {

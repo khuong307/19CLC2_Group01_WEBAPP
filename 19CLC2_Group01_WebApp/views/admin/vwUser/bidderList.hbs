@@ -86,7 +86,7 @@
         $("#BidderTable tbody").on("click", "#btnDisable", function (e) {
             var UserID = $(this).attr('value');
             var Username = $(this).attr('value1');
-            var url = window.location + "/disable?id=" + UserID;
+            var url = window.location.origin+window.location.pathname + "/disable?id=" + UserID;
             var answer = window.confirm('Bạn có muốn vô hiệu hóa tài khoản ' + Username);
             if (answer) {
                 $.post(url, function (data) {

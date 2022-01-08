@@ -58,6 +58,7 @@ router.get('/seller',auth,async function(req,res){
     });
 })
 
+
 // get seller detail
 router.get('/seller/detail',auth,async function(req,res){
     if(res.locals.authUser != null){
@@ -418,14 +419,13 @@ router.post('/upgrade/deny',auth,async function(req,res){
     entity["Status"]=2;
     let now= new Date();
     entity["AcceptTime"]=now;
-    // Vẫn dùng hàm upgradeChangeLevel tuy nhiên ở đây do đã đổi change =0 nên không sao
+    // Vẫn dùng hàm upgradeChangeLevel
     const ret=await userModel.upgradeChangeLevel(entity);
     res.json({
         msg:"Hủy yêu cầu thành công",
         status:1,
     });
 })
-
 
 
 export default router;

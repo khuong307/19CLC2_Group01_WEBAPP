@@ -79,7 +79,7 @@
         $("#ProductTable tbody").on("click", "#btnDelete", function (e) {
             var ProID = $(this).attr('value');
             var ProName = $(this).attr('value1');
-            var url = window.location + "/del?id=" + ProID;
+            var url = window.location.origin+window.location.pathname + "/del?id=" + ProID;
             var answer = window.confirm('Bạn có muốn xóa sản phẩm ' + ProName);
             if (answer) {
                 $.post(url, function (data) {

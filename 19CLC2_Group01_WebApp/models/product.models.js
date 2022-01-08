@@ -104,13 +104,15 @@ export default {
 
     // Đếm số lượng product
     async countProduct(){
-        const list = await db('Product').whereNull('Winner').count({amount: 'ProID' })
+        let now=new Date();
+        const list = await db('Product').whereNull('Winner').andWhere('EndDate','>=',now).count({amount: 'ProID' })
         return list[0].amount
     },
 
     // Lấy toàn bộ product chia bởi page
     findPageByProduct(limit, offset){
-        return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2').whereNull('Winner').limit(limit).offset(offset);
+        let now=new Date();
+        return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2').whereNull('Winner').andWhere('EndDate','>=',now).orderBy('Product.ProID').limit(limit).offset(offset);
     },
 
     findBidderByProId(ProID){

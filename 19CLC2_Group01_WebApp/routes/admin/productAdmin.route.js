@@ -3,7 +3,6 @@ import express from 'express';
 import productModel from '../../models/product.models.js';
 import auth from "../../middlewares/auth.mdw.js";
 import mails from "nodemailer";
-import userModel from "../../models/user.models.js";
 
 const router = express.Router();
 
@@ -37,7 +36,6 @@ router.get('/', auth,async function(req, res){
 
     const list = await productModel.findPageByProduct(limit, offset)
 
-    //const list = await productModel.findAllWithIdCate()
     res.render('admin/vwProductAdmin/productList', {
         products: list,
         pageNumbers,
