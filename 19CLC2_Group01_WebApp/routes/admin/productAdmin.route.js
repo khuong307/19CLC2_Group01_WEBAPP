@@ -3,6 +3,7 @@ import express from 'express';
 import productModel from '../../models/product.models.js';
 import auth from "../../middlewares/auth.mdw.js";
 import mails from "nodemailer";
+import userModel from "../../models/user.models.js";
 
 const router = express.Router();
 
@@ -15,9 +16,34 @@ router.get('/', auth,async function(req, res){
     }
     req.session.retURL=req.originalUrl;
 
-    const list = await productModel.findAllWithIdCate()
+    // Paging
+    const limit = 4
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await productModel.countProduct()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const list = await productModel.findPageByProduct(limit, offset)
+
+    //const list = await productModel.findAllWithIdCate()
     res.render('admin/vwProductAdmin/productList', {
-        products: list
+        products: list,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
     })
 })
 

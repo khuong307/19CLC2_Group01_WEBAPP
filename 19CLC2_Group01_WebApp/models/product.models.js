@@ -102,6 +102,17 @@ export default {
         return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2');
     },
 
+    // Đếm số lượng product
+    async countProduct(){
+        const list = await db('Product').whereNull('Winner').count({amount: 'ProID' })
+        return list[0].amount
+    },
+
+    // Lấy toàn bộ product chia bởi page
+    findPageByProduct(limit, offset){
+        return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2').whereNull('Winner').limit(limit).offset(offset);
+    },
+
     findBidderByProId(ProID){
         return db.select().table('User').join('MaxPrice','MaxPrice.UserID','=','User.UserID').where('MaxPrice.ProID',ProID);
     },

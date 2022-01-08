@@ -27,8 +27,35 @@ router.get('/seller',auth,async function(req,res){
         }
     }
     req.session.retURL=req.originalUrl;
-    const sellerList=await userModel.findALlSeller();
-    res.render('admin/vwUser/sellerList',{sellerList});
+
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await userModel.countSeller()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const sellerList = await userModel.findPageBySeller(limit, offset)
+
+    res.render('admin/vwUser/sellerList',{
+        sellerList:sellerList,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+    });
 })
 
 // get seller detail
@@ -41,7 +68,8 @@ router.get('/seller/detail',auth,async function(req,res){
     req.session.retURL=req.originalUrl;
 
     const userID=req.query.id;
-    const userInfo = await accountModel.getUserInfo(userID);
+    const userInfo = await accountModel.getDetailUserInfo(userID);
+    console.log(userInfo);
     res.render('admin/vwUser/detailSeller',{
         UserInfo:userInfo
     })
@@ -158,8 +186,35 @@ router.get('/bidder',auth,async function(req,res){
     }
     req.session.retURL=req.originalUrl;
     const userID=res.locals.authUser.UserID;
-    const bidderList=await userModel.findAllBidderExceptAdmin(userID);
-    res.render('admin/vwUser/bidderList',{bidderList});
+
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await userModel.countBidderExceptAdmin(userID)
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const bidderList = await userModel.findPageByBidderExAdmin(userID,limit, offset)
+
+    res.render('admin/vwUser/bidderList',{
+        bidderList,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+    });
 })
 
 // get bidder detail
@@ -172,7 +227,7 @@ router.get('/bidder/detail',auth,async function(req,res){
     req.session.retURL=req.originalUrl;
 
     const userID=req.query.id;
-    const userInfo = await accountModel.getUserInfo(userID);
+    const userInfo = await accountModel.getDetailUserInfo(userID);
     res.render('admin/vwUser/detailBidder',{
         UserInfo:userInfo
     })
@@ -234,9 +289,34 @@ router.get('/upgrade',auth,async function(req,res){
         }
     }
     req.session.retURL=req.originalUrl;
-    const upgradeList=await userModel.findAllBidderUpgrade();
+
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await userModel.countUpgradeBidder()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const upgradeList = await userModel.findPageByUpgradeBidder(limit, offset)
+
     res.render('admin/vwUser/upgradeList',{
-        upgradeList
+        upgradeList,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
     });
 })
 

@@ -6,17 +6,31 @@ export default {
         return db.select().table('Account').where('Type',2);
     },
 
-    // Tìm toàn bộ bidder ngoại trừ Admin
-    async findAllBidderExceptAdmin(UserID){
-        return db('Account').whereNot('UserID',UserID);
+    // Lấy toàn bộ seller chia bởi page
+    async findPageBySeller(limit, offset){
+        return db.select().table('Account').where('Type',2).limit(limit).offset(offset);
     },
 
-    // Lấy thông tin User
-    async getUserInfo(userID){
-        const list = await db('User').where('UserID', userID);
-        if(list.length === 0)
-            return null;
-        return list[0];
+    // Đếm số lượng seller
+    async countSeller(){
+        const list = await db('Account').where('Type',2).count({amount: 'UserID' })
+        return list[0].amount
+    },
+
+    // Tìm toàn bộ bidder ngoại trừ Admin
+    async findAllBidderExceptAdmin(userID){
+        return db('Account').whereNot('UserID',userID);
+    },
+
+    // Đếm số lượng bidder ngoại trừ admin
+    async countBidderExceptAdmin(userID){
+        const list = await db('Account').whereNot('UserID',userID).count({amount: 'UserID' })
+        return list[0].amount
+    },
+
+    // Lấy toàn bộ bidder ngoại trừ admin chia bởi page
+    async findPageByBidderExAdmin(userID,limit, offset){
+        return db.select().table('Account').whereNot('UserID',userID).limit(limit).offset(offset);
     },
 
     // Vô hiệu hóa Account
@@ -28,6 +42,17 @@ export default {
     async findAllBidderUpgrade(){
         const list=await db('Account').join('ChangeLevel','Account.UserID','ChangeLevel.UserID').select('Account.UserID','Account.Username','ChangeLevel.Time').where('ChangeLevel.Status',0);
         return list;
+    },
+
+    // Tìm tất cả bidder muốn thành seller mà chưa được chấp nhận chia bởi page
+    async findPageByUpgradeBidder(limit, offset){
+        return db('Account').join('ChangeLevel','Account.UserID','ChangeLevel.UserID').select('Account.UserID','Account.Username','ChangeLevel.Time').where('ChangeLevel.Status',0).limit(limit).offset(offset);
+    },
+
+    // Đếm số lượng bidder muốn thành seller
+    async countUpgradeBidder(){
+        const list = await db('Account').join('ChangeLevel','Account.UserID','ChangeLevel.UserID').select('Account.UserID','Account.Username','ChangeLevel.Time').where('ChangeLevel.Status',0).count({amount: 'ChangeLevel.UserID' });
+        return list[0].amount
     },
 
     // Lấy chi tiết dòng userID trong bảng ChangeLevel
