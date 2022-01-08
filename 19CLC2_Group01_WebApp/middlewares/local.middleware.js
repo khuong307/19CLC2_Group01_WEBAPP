@@ -177,7 +177,8 @@ export default function(app){
             res.locals.lengthOfNotiList = temp.length;
             res.locals.WatchListByUSerID = watchList;
             res.locals.lengthOfWatchList = watchList.length;
-            const auctioningList = await productModels.getAuctioningList(userID, now);
+            const current = now.toISOString().slice(0, 19).replace('T', ' ');
+            const auctioningList = await productModels.getAuctioningList(userID, current);
             res.locals.lengthOfAuctionList = auctioningList.length;
             console.log(res.locals.lengthOfAuctionList);
         }

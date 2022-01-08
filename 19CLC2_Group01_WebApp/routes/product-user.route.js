@@ -468,7 +468,8 @@ router.get("/AuctionList", async function (req, res){
         })
     }
 
-    const ProIDList = await productModel.getAuctioningListWithLimitOffset(userID, d, limit, offset);
+    const current = d.toISOString().slice(0, 19).replace('T', ' ');
+    const ProIDList = await productModel.getAuctioningListWithLimitOffset(userID, current, limit, offset);
     var list = [];
     console.log(ProIDList);
     for (let i = 0; i < ProIDList.length; i++){
@@ -499,5 +500,9 @@ router.get("/AuctionList", async function (req, res){
         isLogin
     })
 });
+
+router.get('/WinList', async function(req, res){
+    res.render('vwProducts/winList');
+})
 // Khang
 export default router;
