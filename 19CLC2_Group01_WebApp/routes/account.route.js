@@ -179,7 +179,6 @@ router.post('/login', async function(req, res){
     if(user.Type === 2){
         //getAcceptDate.
         const validDate = await accountModel.getSellerTimeValidByUserID(user.UserID)
-        console.log(validDate.AcceptTime)
         const now = new Date();
         const date1 = moment.utc(now).format('MM/DD/YYYY')
         const date2 = moment.utc(validDate.AcceptTime).format('MM/DD/YYYY')

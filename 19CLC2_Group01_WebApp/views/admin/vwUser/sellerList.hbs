@@ -1,12 +1,12 @@
 <div class="card text">
     <h4 class="card-header d-flex justify-content-between" style="background-color: antiquewhite">
-        DANH SÁCH SELLER
-        <a class="btn btn-sm btn-outline-primary" href="/admin/user/bidder" role="button">
-            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+        Danh sách Seller
+        <a class="btn btn-sm btn-outline-danger" href="/admin/user/bidder" role="button">
+            <i class="fa fa-eye" aria-hidden="true"></i>
             Xem danh sách Bidder
         </a>
-        <a class="btn btn-sm btn-outline-danger" href="/admin/user/upgrade" role="button">
-            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+        <a class="btn btn-sm btn-outline-success" href="/admin/user/upgrade" role="button">
+            <i class="fa fa-eye" aria-hidden="true"></i>
             Xem yêu cầu nâng cấp
         </a>
     </h4>
@@ -16,7 +16,6 @@
         <tr class="table-active">
             <th scope="col">UserID</th>
             <th scope="col">Username</th>
-            <th scope="col">Loại</th>
             <th scope="col">Tình trạng kích hoạt</th>
             <th scope="col" style="text-align: center">Tính năng</th>
         </tr>
@@ -26,19 +25,30 @@
             <tr class="table-info">
                 <th scope="row">{{UserID}}</th>
                 <td>{{Username}}</td>
-                <td>{{Type}}</td>
-                <td>{{Activate}}</td>
+                <td>
+                    {{#ifCond Activate 1}}
+                        Đã kích hoạt
+                    {{/ifCond}}
+                    {{#ifCond Activate 0}}
+                        Chưa xác nhận mã OTP
+                    {{/ifCond}}
+                    {{#ifCond Activate -1}}
+                        Đã vô hiệu hóa
+                    {{/ifCond}}
+                </td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/admin/user/seller/detail?id={{UserID}}" role="button">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Chi tiết
                     </a>
 
-                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}" id="btnDisable" role="button">
-                        <i class=" fa fa-ban" aria-hidden="true"></i>
-                        Vô hiệu hóa
-                    </a>
-
+                    {{#ifCond Activate -1}}
+                        {{else}}
+                        <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}" id="btnDisable" role="button">
+                            <i class=" fa fa-ban" aria-hidden="true"></i>
+                            Vô hiệu hóa
+                        </a>
+                    {{/ifCond}}
                     <a class="btn btn-sm btn-warning" value="{{UserID}}" value1="{{Username}}" id="btnDown" role="button">
                         <i class="fa fa-arrow-down" aria-hidden="true"></i>
                         Giáng cấp

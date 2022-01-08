@@ -75,40 +75,91 @@ export default function(app){
         // Khang
         if(res.locals.authUser != null){
             const userID = res.locals.authUser.UserID;
-            const list = await productModels.getWatchListByUserID(userID);
-            const notiList = await bidderModels.findById(userID);
+            const watchList = await productModels.getWatchListByUserID(userID);
+            const changeList = await bidderModels.findById(userID);
+            const permissionList = await bidderModels.getPermissionByUserID(userID);
+            const auctionList = await productModels.getAuctionByUserID(userID);
             var temp = [];
             const now = new Date();
-            for (var i = 0; i < notiList.length; i++){
-                if (notiList[i].Status === 1){
-                    if (notiList[i].Change === 1){
-                        let obj = JSON.parse(JSON.stringify(notiList[i]));
-                        obj.Display = 1;
+            for (let i = 0; i < changeList.length; i++){
+                changeList[i].Level = 1;
+                if (changeList[i].Status === 1){
+                    if (changeList[i].Change === 1){
+                        let obj = JSON.parse(JSON.stringify(changeList[i]));
+                        obj.DisplayChange = 1;
                         temp.push(obj);
-                        if ((i === notiList.length-1) || (i !== notiList.length-1 && notiList[i+1].Change !== 0)){
-                            const sendDate = new Date(notiList[i].AcceptTime);
+                        if ((i === changeList.length-1) || (i !== changeList.length-1 && changeList[i+1].Change !== 0)){
+                            const sendDate = new Date(changeList[i].AcceptTime);
                             const diffTime = now.getTime() - sendDate.getTime();
                             if (diffTime > 604800000){
-                                let obj = JSON.parse(JSON.stringify(notiList[i]));
-                                obj.Display = 0;
+                                let obj = JSON.parse(JSON.stringify(changeList[i]));
+                                obj.DisplayChange = 0;
+                                obj.RefuseChange = 0;
                                 obj.AcceptTime = moment(sendDate).add(7, 'd');
                                 temp.push(obj);
                             }
                         }
                     }
                     else{
-                        let obj = JSON.parse(JSON.stringify(notiList[i]));
-                        obj.Display = 0;
+                        let obj = JSON.parse(JSON.stringify(changeList[i]));
+                        obj.DisplayChange = 0;
+                        obj.RefuseChange = 0;
                         temp.push(obj);
                     }
                 }
+                else if (changeList[i].Status === 2){
+                    let obj = JSON.parse(JSON.stringify(changeList[i]));
+                    obj.DisplayChange = 0;
+                    obj.RefuseChange = 1;
+                    temp.push(obj);
+                }
             }
+            for (let i = 0; i < permissionList.length; i++){
+                permissionList[i].Permission = 1;
+                if (permissionList[i].Status === 1){
+                    let obj = JSON.parse(JSON.stringify(permissionList[i]));
+                    obj.DisplayPermission = 1;
+                    temp.push(obj);
+
+                }
+                else if (permissionList[i].Status === 2){
+                    let obj = JSON.parse(JSON.stringify(permissionList[i]));
+                    obj.DisplayPermission = 0;
+                    temp.push(obj);
+                }
+            }
+            var auctionTemp = [];
+            for (let i = 0; i < auctionList.length; i++){
+                auctionList[i].Auction = 1;
+                if (auctionList[i].Status === 0){
+                    let obj = JSON.parse(JSON.stringify(auctionList[i]));
+                    var flag = true;
+                    for (let j = 0; j < auctionTemp.length; j++){
+                        if (auctionTemp[j].ProID == obj.ProID){
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag){
+                        obj.DisplayAuction = 1;
+                        temp.push(obj);
+                        auctionTemp.push(obj);
+                    }
+                }
+            }
+            temp.sort(function(a,b){
+                return new Date(a.AcceptTime) - new Date(b.AcceptTime);
+            });
             res.locals.NotiListByUserID = temp.reverse();
             res.locals.lengthOfNotiList = temp.length;
-            if (list != null) {
-                res.locals.WatchListByUSerID = list;
-                res.locals.lengthOfWatchList = list.length;
+            res.locals.WatchListByUSerID = watchList;
+            if (watchList === null){
+                res.locals.lengthOfWatchList = 0
+            }else {
+                res.locals.lengthOfWatchList = watchList.length;
             }
+            const auctioningList = await productModels.getAuctioningList(userID, now);
+            res.locals.lengthOfAuctionList = auctioningList.length;
         }
         next()
     })

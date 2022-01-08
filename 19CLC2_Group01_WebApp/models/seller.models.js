@@ -127,4 +127,8 @@ export default {
     async updateStatusPermission(userID, proid, time){
         return db('Permission').where('BidderID', userID).andWhere('ProID', proid).update('Status', 1).update('AcceptTime', time)
     },
+
+    async updateStatusDenyPermission(userID, proid, time){
+        return db('Permission').where('BidderID', userID).andWhere('ProID', proid).update('Status', 2).update('AcceptTime', time)
+    },
 }

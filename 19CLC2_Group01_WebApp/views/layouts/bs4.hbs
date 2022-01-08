@@ -141,7 +141,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/">Trang chủ <span class="sr-only">(current)</span></a>
             </li>
             {{#if auth}}
                 <li class="nav-item dropdown">
@@ -151,9 +151,12 @@
                         </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/bidder/upgrade">Nâng cấp thành Seller</a>
-                                <a class="dropdown-item" href="#">Another action</a>
+
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="/products/AuctionList">
+                                    <i class="fa fa-list"></i>
+                                    Đấu giá: <span><b>{{lengthOfAuctionList}} sản phẩm</b></span>
+                                </a>
                             </div>
                         {{/if}}
                         {{#if actorSeller}}
@@ -176,8 +179,8 @@
                                 <a class="dropdown-item" href="/admin/categories/lv1">Danh mục cấp 1</a>
                                 <a class="dropdown-item" href="/admin/categories/lv2">Danh mục cấp 2</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">User</a>
-                                <a class="dropdown-item" href="#">Product</a>
+                                <a class="dropdown-item" href="/admin/user">User</a>
+                                <a class="dropdown-item" href="/admin/products">Product</a>
                             </div>
                         {{/if}}
                 </li>
@@ -213,12 +216,40 @@
                                     {{#each NotiListByUserID}}
                                         <a class="content not-active" href="#">
                                             <div class="notification-item">
-                                                {{#if this.Display}}
-                                                    <h4 class="item-title">Tài khoản đã được nâng cấp</h4>
-                                                    <p class="item-info" style="color: #fb6542">{{format_date this.AcceptTime}}</p>
+                                                {{#if this.Level}}
+                                                    {{#if this.DisplayChange}}
+                                                        <h4 class="item-title">Tài khoản đã được nâng cấp</h4>
+                                                        <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                    {{else}}
+                                                        {{#if this.RefuseChange}}
+                                                            <h4 class="item-title">Yêu cầu nâng cấp bị từ chối</h4>
+                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                        {{else}}
+                                                            <h4 class="item-title">Tài khoản đã bị giảm cấp</h4>
+                                                            <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                        {{/if}}
+                                                    {{/if}}
                                                 {{else}}
-                                                    <h4 class="item-title">Tài khoản đã bị giảm cấp</h4>
-                                                    <p class="item-info" style="color: #fb6542">{{format_date this.AcceptTime}}</p>
+                                                    {{#if this.Permission}}
+                                                        {{#if this.DisplayPermission}}
+                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã được duyệt</h4>
+                                                                <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                            </a>
+                                                        {{else}}
+                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã bị từ chối</h4>
+                                                                <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                            </a>
+                                                        {{/if}}
+                                                    {{else}}
+                                                        {{#if this.DisplayAuction}}
+                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Tài khoản không thể đấu giá sản phẩm {{this.ProID}}</h4>
+                                                                <p class="item-info">{{format_date this.AcceptTime}}</p>
+                                                            </a>
+                                                        {{/if}}
+                                                    {{/if}}
                                                 {{/if}}
                                             </div>
                                         </a>
@@ -250,7 +281,7 @@
                         <div class="dropdown-divider"></div>
                         <form action="/account/logout" method="post" id="formLogout"></form>
                         <a class="dropdown-item" href="javascript: $('#formLogout').submit();">
-                            <i class="fa fa-sign-out"></i> Sign Out
+                            <i class="fa fa-sign-out"></i> Đăng xuất
                         </a>
                     </div>
                 </li>
@@ -258,13 +289,13 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/account/register">
                         <i class="fa fa-user-plus"></i>
-                        Register
+                        Đăng ký
                     </a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="/account/login">
                         <i class="fa fa-sign-in"></i>
-                        Sign In
+                        Đăng nhập
                     </a>
                 </li>
             {{/if}}

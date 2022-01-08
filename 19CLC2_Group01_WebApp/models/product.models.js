@@ -63,6 +63,7 @@ export default {
 
     async getCatID2FromProID(ProID){
         const CatID2 = await db('Product').select('Product.CatID2').where('ProID', ProID);
+        console.log(CatID2[0].CatID2)
         return CatID2[0]
     },
 
@@ -83,11 +84,6 @@ export default {
             'UserID': entity.UserID,
             'ProID': entity.ProID
         }).del();
-    },
-
-    async getLengthAuction(id){
-        const lst = await db('Auction').where('ProID', id);
-        return lst.length;
     },
 
     async countWatchList(userID){
@@ -323,7 +319,12 @@ export default {
     },
 
     async updateStatusAuctionByUserID(userID){
-        return db('Auction').where('UserID', userID).update('Status', 0)
+        const now = new Date()
+        return db('Auction').where('UserID', userID).update({
+            Status: 0,
+            AcceptTime: now
+        })
+
     },
 
     async getProNameByProID(proID){
@@ -345,12 +346,7 @@ export default {
             return null
         return ans[0]
     },
-    async getMaxPriceByProID(proID){
-        const ans = await db('MaxPrice').where('ProID', proID).select('MaxPrice').orderBy('MaxPrice', 'DESC')
-        if(ans.length === 0)
-            return null
-        return ans[0]
-    },
+
     async getUserIDHasMaxPrice(proID, maxPrice){
         const ans = await db('MaxPrice').where('ProID', proID).andWhere('MaxPrice', maxPrice).select('UserID')
         if(ans.length === 0)
@@ -361,14 +357,14 @@ export default {
         return db('MaxPrice').where('UserID', userID).del()
     },
     async getSecondPriceInAuction(proID){
-        const ans = await db('Auction').where('ProID', proID).orderBy('Price', 'DESC')
+        const ans = await db('Auction').where('ProID', proID).orderBy('Price', 'ASC')
         if(ans.length === 0)
             return null
         else
             return ans[ans.length - 2]
     },
     async updateCurrentPriceByProID(proID, newPrice){
-        return db('Product').update('CurrentPrice', newPrice).where('ProID', proID)
+        return db('Product').where('ProID', proID).update('CurrentPrice', newPrice)
     },
 
     async delWatchListOutDate(){
@@ -397,18 +393,6 @@ export default {
         return ans[0]
     },
 
-    async getAuctionByProIDWithLimit(id, limit){
-        const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
-            '=', 'Account.UserID').where('ProID', id).orderBy('Auction.Time', 'desc').offset(0).limit(limit).select();
-        return lst;
-    },
-
-    async getAuctionByProID(id){
-        const lst = await db('Account', 'Auction').join('Auction', 'Auction.UserID',
-            '=', 'Account.UserID').where('ProID', id).orderBy('Auction.Time', 'desc').select();
-        return lst;
-    },
-
     // sort by price by CatID2.
     async getProductsByCatID2ByPrice(CatID2, limit, offset){
         const res = await db('Product').where('CatID2', CatID2).whereNull('Winner').andWhere('EndDate', '>', new Date()).orderBy('CurrentPrice', 'ASC').limit(limit).offset(offset).select('ProID')
@@ -428,5 +412,113 @@ export default {
         if(res.length === 0)
             return null
         return res
+    },
+
+    // Minh
+    findAllWithIdCate(){
+        return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2');
+    },
+
+    findBidderByProId(ProID){
+        return db.select().table('User').join('MaxPrice','MaxPrice.UserID','=','User.UserID').where('MaxPrice.ProID',ProID);
+    },
+
+    findSellerByProId(ProID){
+        return db.select().table('User').join('Product','Product.UploadUser','=','User.UserID').where('Product.ProID',ProID);
+    },
+
+    delPermisByProId(ProID){
+        return db('Permission').where('ProID', ProID).del();
+    },
+
+    delMaxPriceByProId(ProID){
+        return db('MaxPrice').where('ProID', ProID).del();
+    },
+
+    delAuctionByProId(ProID){
+        return db('Auction').where('ProID', ProID).del();
+    },
+
+    delDescriptionByProId(ProID){
+        return db('DescriptionHistory').where('ProID', ProID).del();
+    },
+
+    delWatchListByProId(ProID){
+        return db('WatchList').where('ProID', ProID).del();
+    },
+
+    delProInfoSearchByProId(ProID){
+        return db('ProInfoSearch').where('ProID', ProID).del();
+    },
+
+    delProductByProId(ProID){
+        return db('Product').where('ProID', ProID).del();
+    },
+
+    async getAuctionByProIDWithLimit(id, limit, offset){
+        const raw_sql = `select * from Account acc join Auction auc on acc.UserID = auc.UserID where ProID = '${id}' and auc.UserID in (select distinct UserID from Auction where ProID = '${id}' and UserID not in (select UserID from Auction where Status = 0 and ProID = '${id}')) order by auc.Time desc limit ${limit} offset ${offset}`;
+        const lst = await db.raw(raw_sql);
+        return lst[0];
+    },
+
+    async getAuctionByProID(id){
+        const lst = await db('Auction').where('ProID', id).select();
+        return lst;
+    },
+
+    async getLengthAuction(id){
+        const raw_sql = `select * from Auction where ProID = '${id}' and UserID in (select distinct UserID from Auction where ProID = '${id}' and UserID not in (select UserID from Auction where Status = 0 and ProID = '${id}'))`;
+        const lst = await db.raw(raw_sql);
+        return lst[0].length;
+    },
+
+    async getMaxPriceByProID(ProID){
+        const lst = await db('MaxPrice').where('ProID', ProID).orderBy('MaxPrice', 'desc').orderBy('Time', 'asc').select();
+        return lst[0];
+    },
+
+    insertAuction(entity){
+        return db('Auction').insert(entity);
+    },
+
+    updatePriceProduct(entity){
+        return db('Product').where('ProID', entity.ProID).update({
+            'CurrentPrice': entity.Price
+        });
+    },
+
+    updateWinnerProduct(entity){
+        return db('Product').where('ProID', entity.ProID).update({
+            'Winner': entity.Header
+        });
+    },
+
+    async getAuctionByProIDAndUserID(UserID, ProID){
+        const lst = await db('Auction').where({
+            'ProID': ProID,
+            'UserID': UserID
+        }).select();
+        return lst;
+    },
+
+    async getAuctionByUserID(UserID){
+        const lst = await db('Auction').where('UserID', UserID).orderBy('AcceptTime', 'asc').select();
+        return lst;
+    },
+
+    async getAuctioningList(UserID, time){
+        const lst = await db('Auction').join('Product', 'Auction.ProID', '=',
+            'Product.ProID').where('Auction.UserID', UserID).where('EndDate', '>', time).distinct('Auction.ProID');
+        return lst;
+    },
+
+    async getAuctioningListWithLimitOffset(UserID, time, limit, offset){
+        const lst = await db('Auction').join('Product', 'Auction.ProID', '=',
+            'Product.ProID').where('Auction.UserID', UserID).where('EndDate', '>', time).distinct('Auction.ProID').limit(limit).offset(offset);
+        return lst;
+    },
+
+    deleteMaxPriceByProIDUserID(proid, userid){
+        return db('MaxPrice').where('ProID', proid).andWhere('UserID', userid).del()
     }
 }

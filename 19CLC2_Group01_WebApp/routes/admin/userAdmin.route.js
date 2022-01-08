@@ -54,6 +54,8 @@ router.post('/seller/downgrade',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     const userID=req.query.id;
     // Lấy thông tin user
     const userInfo=await accountModel.getUserInfo(userID);
@@ -65,7 +67,7 @@ router.post('/seller/downgrade',auth,async function(req,res){
         service: 'gmail',
         auth: {
             user: 'binhkggffs@gmail.com',
-            pass: ''
+            pass: '01051993qwe'
         }
     });
 
@@ -107,6 +109,8 @@ router.post('/seller/disable',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     const userID=req.query.id;
     // Lấy thông tin user
     const userInfo=await accountModel.getUserInfo(userID);
@@ -121,7 +125,7 @@ router.post('/seller/disable',auth,async function(req,res){
         service: 'gmail',
         auth: {
             user: 'binhkggffs@gmail.com',
-            pass: ''
+            pass: '01051993qwe'
         }
     });
 
@@ -165,6 +169,8 @@ router.get('/bidder/detail',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     const userID=req.query.id;
     const userInfo = await accountModel.getUserInfo(userID);
     res.render('admin/vwUser/detailBidder',{
@@ -179,6 +185,7 @@ router.post('/bidder/disable',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
 
     const userID=req.query.id;
     // Lấy thông tin user
@@ -194,7 +201,7 @@ router.post('/bidder/disable',auth,async function(req,res){
         service: 'gmail',
         auth: {
             user: 'binhkggffs@gmail.com',
-            pass: ''
+            pass: '01051993qwe'
         }
     });
 
@@ -240,6 +247,8 @@ router.post('/upgrade/accept',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     const userID=req.query.id;
 
     // Lấy info user
@@ -252,7 +261,7 @@ router.post('/upgrade/accept',auth,async function(req,res){
         service: 'gmail',
         auth: {
             user: 'binhkggffs@gmail.com',
-            pass: ''
+            pass: '01051993qwe'
         }
     });
 
@@ -292,6 +301,8 @@ router.post('/upgrade/deny',auth,async function(req,res){
             res.redirect('/')
         }
     }
+    req.session.retURL=req.originalUrl;
+
     const userID=req.query.id;
 
     // Lấy info user
@@ -304,7 +315,7 @@ router.post('/upgrade/deny',auth,async function(req,res){
         service: 'gmail',
         auth: {
             user: 'binhkggffs@gmail.com',
-            pass: ''
+            pass: '01051993qwe'
         }
     });
 
@@ -324,8 +335,7 @@ router.post('/upgrade/deny',auth,async function(req,res){
 
     const entity=await userModel.findChangeLevelByID(userID);
     // Update bảng Change Level
-    entity["Change"]=0;
-    entity["Status"]=1;
+    entity["Status"]=2;
     let now= new Date();
     entity["AcceptTime"]=now;
     // Vẫn dùng hàm upgradeChangeLevel tuy nhiên ở đây do đã đổi change =0 nên không sao

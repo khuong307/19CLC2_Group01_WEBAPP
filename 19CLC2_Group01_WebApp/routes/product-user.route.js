@@ -7,6 +7,7 @@ import moment from 'moment';
 import mails from "nodemailer";
 import bidderModels from "../models/bidder.models.js";
 import sellerModels from "../models/seller.models.js"; //format date.
+import FuncMdw from "../middlewares/func.mdw.js";
 const router = express.Router();
 //Khuong.
 router.get('/byCat/:id', async function(req, res){
@@ -304,25 +305,56 @@ router.get('/detail/:id', async function(req, res){
     if (res.locals.authUser != null){
         const userID = res.locals.authUser.UserID;
         var userInfo = await accountModels.getUserInfo(userID);
-        const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
-        if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
-            const permissionList = await bidderModels.getPermissionByUserID(userID, proID);
-            if (permissionList.length === 0){
-                userInfo.Auction = 0;
-                userInfo.Show = 1;
+        var flag = true;
+        const auctionList = await productModel.getAuctionByProIDAndUserID(userID, proID);
+        const fullAuctionList = await productModel.getAuctionByProID(proID);
+        for (let i = 0; i < fullAuctionList.length; i++){
+            if (fullAuctionList[i].isBuyNow === 1){
+                flag = false;
+                break;
+            }
+        }
+        if (!flag){
+            userInfo.NotShow = 1;
+            userInfo.Message = 1;
+        }
+        else{
+            for (let i = 0; i < auctionList.length; i++){
+                if (auctionList[i].Status === 0){
+                    flag = false;
+                    break;
+                }
+            }
+            if (!flag){
+                userInfo.NotShow = 1;
+                userInfo.Message = 0;
             }
             else{
-                if (permissionList[permissionList.length-1].Status === 0){
-                    userInfo.Auction = 0;
-                    userInfo.Show = 0;
+                const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
+                if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
+                    const permissionList = await bidderModels.getPermissionByUserIDAndProID(userID, proID);
+                    if (permissionList.length === 0){
+                        userInfo.Auction = 0;
+                        userInfo.Show = 1;
+                    }
+                    else{
+                        if (permissionList[permissionList.length-1].Status === 0){
+                            userInfo.Auction = 0;
+                            userInfo.Show = 0;
+                        }
+                        else if (permissionList[permissionList.length-1].Status === 1){
+                            userInfo.Auction = 1;
+                        }
+                        else{
+                            userInfo.Auction = 0;
+                            userInfo.Show = 1;
+                        }
+                    }
                 }
                 else{
                     userInfo.Auction = 1;
                 }
             }
-        }
-        else{
-            userInfo.Auction = 1;
         }
     }
 
@@ -522,12 +554,15 @@ router.post('/denyRequest', async function(req, res){
         }
     });
 
-    //is highest bidder.
+    // //is highest bidder.
     const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
     const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID.MaxPrice);
     if (userID === highestBidder.UserID){
-        const secondPrice = productModel.getSecondPriceInAuction(proID)
+        const secondPrice = await productModel.getSecondPriceInAuction(proID)
         productModel.updateCurrentPriceByProID(proID, secondPrice.Price)
+        console.log(userID)
+        console.log(proID)
+        await productModel.deleteMaxPriceByProIDUserID(proID, userID)
     }
 
 
@@ -573,8 +608,45 @@ router.post('/approveRequest', async function(req, res){
     const url = req.headers.referer || '/'
     res.redirect(url)
 })
+
+
+//approve request new bidder
+router.post('/denyRequestFirstTime', async function(req, res){
+    const proID = req.query.ProID
+    const userID = req.query.UserID
+    const mail = await productModel.getEmailByUserID(userID)
+    const proName = await productModel.getProNameByProID(proID)
+    const time = new Date()
+    sellerModels.updateStatusDenyPermission(userID, proID, time);
+//send OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'khuong16lop9a6@gmail.com',
+            pass: '0903024916'
+        }
+    });
+
+    //send email
+    var mailOptions = {
+        from: 'khuong16lop9a6@gmail.com',
+        to: mail.Email,
+        subject: 'Bidding Wep App: Người bán ra không đồng ý cho phép bạn ra giá!',
+        text: 'Sản phẩm có mã ('+ proID +'): ' + proName.ProName + '. Bạn không thể ra giá cho sản phẩm này!'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+})
 //history
 router.get('/history', async function (req, res){
+    req.session.retURL = req.originalUrl
     const ProID = req.query.ProID;
     const type = req.query.show;
     const page = req.query.page || 1;
@@ -620,9 +692,10 @@ router.get('/history', async function (req, res){
     });
 });
 
-router.post('/auction/:id', function (req, res){
+router.post('/auction/:id', async function (req, res){
+    const d = new Date();
+    console.log(req.body.txtPrice);
     if (req.body.txtRequest !== undefined){
-        const d = new Date();
         const entity = {
             BidderID: res.locals.authUser.UserID,
             ProID: req.params.id,
@@ -630,10 +703,165 @@ router.post('/auction/:id', function (req, res){
             Status: 0,
             AcceptTime: null
         };
-        const ret = bidderModels.insertToPermission(entity);
+        await bidderModels.insertToPermission(entity);
+    }
+    else{
+        const entity = {
+            UserID: res.locals.authUser.UserID,
+            ProID: req.params.id,
+            MaxPrice: req.body.txtPrice,
+            Time: d
+        };
+        const product = await productModel.findById(entity.ProID);
+        const priceList = await productModel.getMaxPriceByProID(entity.ProID);
+        if (priceList.length === 0){
+            await bidderModels.insertMaxPrice(entity);
+            const new_entity = {
+                UserID: res.locals.authUser.UserID,
+                ProID: req.params.id,
+                Time: d,
+                Price: product.CurrentPrice,
+                Status: 1,
+                Header: res.locals.authUser.UserID,
+            };
+            if (req.body.txtBuyNow !== undefined) {
+                new_entity.isBuyNow = 1;
+                new_entity.Price = product.PriceBuyNow;
+            }
+            await productModel.insertAuction(new_entity);
+            await productModel.updatePriceProduct(new_entity);
+            if (req.body.txtBuyNow !== undefined)
+                await productModel.updateWinnerProduct(new_entity);
+            await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
+            await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+        }
+        else{
+            const obj = await bidderModels.selectMaxPrice(entity);
+            if (obj[0].Num !== 0)
+                await bidderModels.updateMaxPrice(entity);
+            else
+                await bidderModels.insertMaxPrice(entity);
+            if (product.CurrentPrice != entity.MaxPrice){
+                const new_entity = {
+                    ProID: req.params.id,
+                    Time: d,
+                    Status: 1,
+                };
+                if (priceList[0].MaxPrice >= entity.MaxPrice){
+                    if (req.body.txtBuyNow !== undefined){
+                        new_entity.Price = entity.MaxPrice;
+                        new_entity.Header = res.locals.authUser.UserID;
+                        new_entity.UserID = res.locals.authUser.UserID;
+                        new_entity.isBuyNow = 1
+                    }
+                    else{
+                        new_entity.Price = entity.MaxPrice;
+                        new_entity.Header = priceList[0].UserID;
+                        new_entity.UserID = priceList[0].UserID;
+                    }
+                }
+                else{
+                    if (req.body.txtBuyNow !== undefined){
+                        new_entity.Price = entity.MaxPrice;
+                        new_entity.Header = res.locals.authUser.UserID;
+                        new_entity.UserID = res.locals.authUser.UserID;
+                        new_entity.isBuyNow = 1
+                    }
+                    else{
+                        new_entity.Price = priceList[0].MaxPrice + product.StepPrice;
+                        new_entity.Header = res.locals.authUser.UserID;
+                        new_entity.UserID = res.locals.authUser.UserID;
+                    }
+                }
+                if ((priceList[0].UserID !== entity.UserID) || (priceList[0].UserID === entity.UserID && req.body.txtBuyNow !== undefined)){
+                    await productModel.insertAuction(new_entity);
+                    await productModel.updatePriceProduct(new_entity);
+                    if (req.body.txtBuyNow !== undefined)
+                        await productModel.updateWinnerProduct(new_entity);
+                    await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
+                    await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+                    if (new_entity.UserID !== priceList[0].UserID)
+                        await FuncMdw.sendEmail(priceList[0].UserID, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+                }
+            }
+            else{
+                if (req.body.txtBuyNow !== undefined){
+                    const new_entity = {
+                        UserID: res.locals.authUser.UserID,
+                        ProID: req.params.id,
+                        Time: d,
+                        Price: product.CurrentPrice,
+                        Status: 1,
+                        Header: res.locals.authUser.UserID,
+                        isBuyNow: 1
+                    };
+                    await productModel.insertAuction(new_entity);
+                    await productModel.updatePriceProduct(new_entity);
+                    await productModel.updateWinnerProduct(new_entity);
+                    await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
+                    await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+                    if (new_entity.UserID !== priceList[0].UserID)
+                        await FuncMdw.sendEmail(priceList[0].UserID, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+                }
+            }
+        }
     }
     const url = req.headers.referer || '/';
     res.redirect(url);
 })
 
+router.get("/AuctionList", async function (req, res){
+    req.session.retURL = req.originalUrl;
+    const userID = res.locals.authUser.UserID;
+    const d = new Date();
+
+    const limit = 3
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = res.locals.lengthOfAuctionList;
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const ProIDList = await productModel.getAuctioningListWithLimitOffset(userID, d, limit, offset);
+    var list = [];
+    console.log(ProIDList);
+    for (let i = 0; i < ProIDList.length; i++){
+        const product = await productModel.findById(ProIDList[i].ProID);
+        list.push(product);
+    }
+
+    //check wwhich product selected in watch list
+    if (res.locals.WatchListByUSerID != undefined){
+        for(const c of list){
+            for (const d of res.locals.WatchListByUSerID){
+                if (c.ProID === d.ProID){
+                    c.isWatchList = 1;
+                }
+            }
+        }
+    }
+    const isLogin = req.session.auth || false
+    console.log(isLogin)
+
+    res.render('vwProducts/byCat', {
+        products: list,
+        empty: list.length === 0,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        isLogin
+    })
+});
 export default router;
