@@ -98,7 +98,7 @@ export default function(app){
         // Khang
         if(res.locals.authUser != false){
             const userID = res.locals.authUser.UserID;
-            const list = await productModels.getWatchListByUserID(userID);
+            const watchList = await productModels.getWatchListByUserID(userID);
             const changeList = await bidderModels.findById(userID);
             const permissionList = await bidderModels.getPermissionByUserID(userID);
             const auctionList = await productModels.getAuctionByUserID(userID);
@@ -175,8 +175,11 @@ export default function(app){
             });
             res.locals.NotiListByUserID = temp.reverse();
             res.locals.lengthOfNotiList = temp.length;
-            res.locals.WatchListByUSerID = list;
-            res.locals.lengthOfWatchList = list.length;
+            res.locals.WatchListByUSerID = watchList;
+            res.locals.lengthOfWatchList = watchList.length;
+            const auctioningList = await productModels.getAuctioningList(userID, now);
+            res.locals.lengthOfAuctionList = auctioningList.length;
+            console.log(res.locals.lengthOfAuctionList);
         }
         // Khang
         next()

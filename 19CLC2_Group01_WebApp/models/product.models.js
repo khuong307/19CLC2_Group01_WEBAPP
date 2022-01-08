@@ -119,6 +119,18 @@ export default {
         const lst = await db('Auction').where('UserID', UserID).orderBy('AcceptTime', 'asc').select();
         return lst;
     },
+
+    async getAuctioningList(UserID, time){
+        const lst = await db('Auction').join('Product', 'Auction.ProID', '=',
+            'Product.ProID').where('Auction.UserID', UserID).where('EndDate', '>', time).distinct('Auction.ProID');
+        return lst;
+    },
+
+    async getAuctioningListWithLimitOffset(UserID, time, limit, offset){
+        const lst = await db('Auction').join('Product', 'Auction.ProID', '=',
+            'Product.ProID').where('Auction.UserID', UserID).where('EndDate', '>', time).distinct('Auction.ProID').limit(limit).offset(offset);
+        return lst;
+    },
     // Khang
 
     async getWatchListByUserID(userID){

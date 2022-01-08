@@ -130,11 +130,21 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <!--Khang-->
-                        <a class="dropdown-item" href="/bidder/upgrade">Nâng cấp thành Seller</a>
-                        <!--Khang-->
-                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="/bidder/upgrade">
+                            <i class="fa fa-level-up"></i>
+                            Nâng cấp thành Seller
+                        </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
+                        <a class="dropdown-item" href="/products/WatchList">
+                            <i class="fa fa-heart"></i>
+                            Yêu thích: <span><b>{{lengthOfWatchList}} sản phẩm</b></span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/products/AuctionList">
+                            <i class="fa fa-list"></i>
+                            Đấu giá: <span><b>{{lengthOfAuctionList}} sản phẩm</b></span>
+                        </a>
+                        <!--Khang-->
                     </div>
                 </li>
             {{/if}}
@@ -219,13 +229,6 @@
                             <i class="fa fa-user"></i>
                             Profile
                         </a>
-                        <div class="dropdown-divider"></div>
-                        <!--Khang: View Watch List to layout-->
-                        <a class="dropdown-item" href="/products/WatchList">
-                            <i class="fa fa-heart"></i>
-                            Watch List: <span><b>{{lengthOfWatchList}} item(s)</b></span>
-                        </a>
-                        <!--Khang: View Watch List to layout-->
                         <div class="dropdown-divider"></div>
                         <form action="/account/logout" method="post" id="formLogout"></form>
                         <a class="dropdown-item" href="javascript: $('#formLogout').submit();">

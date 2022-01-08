@@ -4,6 +4,7 @@
         .carousel-control-prev-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
         }
+
         .carousel-control-next-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
         }
@@ -19,17 +20,15 @@
                 var $this = $(this), finalDate = $(this).data('countdown');
                 $this.countdown(finalDate, function(event) {
                     $this.html(event.strftime('%D days %H:%M:%S'))}).on('finish.countdown', function() {
-                    alert("Finish");
                 });
             });
         });
     </script>
 
 {{/section}}
-
 <div class="card text">
     <h4 class="card-header d-flex justify-content-between">
-        Yêu thích
+        Đang đấu giá
     </h4>
     <div class="card-body">
         {{#if this.empty}}
@@ -94,23 +93,22 @@
                                     <i class="fa fa-eye"></i>
                                     Details
                                 </a>
-
                                 <a class="btn btn-outline-success" href="#" role="button">
-                                    <i class="fa fa-cart-plus"></i>
+                                    <i class="fa fa-eye"></i>
                                     Cart
                                 </a>
-
-                                <!--Khang: Del from watch list-->
-                                <div class="float-right">
-                                    <form action="/products/delWatchList" method="post">
-                                        <input type="hidden" name="ProID" value={{ProID}}>
-                                        <button class="btn btn-danger" type="submit">
-                                            <i class="fa fa-heart-o text-light"></i>
-                                        </button>
-                                    </form>
-                                </div>
                                 <!--Khang: Add to watch list-->
-
+                                {{#if ../this.isLogin}}
+                                    <div class="float-right">
+                                        <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
+                                            <input type="hidden" name="ProID" value={{ProID}}>
+                                            <button class="btn btn{{#if isWatchList}}-danger{{else}}-outline-danger{{/if}}" type="submit">
+                                                <i class="fa fa-heart-o"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <!--Khang: Add to watch list-->
+                                {{/if}}
                             </div>
                         </div>
                     </div>

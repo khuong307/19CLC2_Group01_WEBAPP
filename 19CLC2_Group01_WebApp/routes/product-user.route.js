@@ -5,6 +5,7 @@ import auth from '../middlewares/auth.mdw.js'
 import ProductModels from "../models/product.models.js";
 import AccountModels from "../models/account.models.js";
 import BidderModels from "../models/bidder.models.js";
+import FuncMdw from "../middlewares/func.mdw.js";
 const router = express.Router();
 //Khuong.
 router.get('/byCat/:id', async function(req, res){
@@ -179,16 +180,7 @@ router.get('/detail/:id', async function(req, res){
 
 // Khang
 router.get('/WatchList', auth, async function (req, res){
-
     req.session.retURL = req.originalUrl
-    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
-        d.numberPro = 0;
-        for (const c of res.locals.lcCategories){
-            if (d.CatID1 === c.CatID1){
-                d.numberPro += c.ProductCount;
-            }
-        }
-    }
 
     const limit = 3
     const page = req.query.page || 1 //Paging
@@ -275,6 +267,7 @@ router.post('/delWatchList', async function(req, res){
 });
 
 router.get('/history', async function (req, res){
+    req.session.retURL = req.originalUrl
     const ProID = req.query.ProID;
     const type = req.query.show;
     const page = req.query.page || 1;
@@ -354,6 +347,8 @@ router.post('/auction/:id', async function (req, res){
             };
             await ProductModels.insertAuction(new_entity);
             await ProductModels.updatePriceAndWinnerProduct(new_entity);
+            await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
+            await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
         }
         else{
             const obj = await BidderModels.selectMaxPrice(entity);
@@ -362,7 +357,6 @@ router.post('/auction/:id', async function (req, res){
             else
                 await BidderModels.insertMaxPrice(entity);
             if (product.CurrentPrice != entity.MaxPrice){
-                console.log("Hi")
                 const new_entity = {
                     ProID: req.params.id,
                     Time: d,
@@ -381,6 +375,10 @@ router.post('/auction/:id', async function (req, res){
                 if (priceList[0].UserID !== entity.UserID){
                     await ProductModels.insertAuction(new_entity);
                     await ProductModels.updatePriceAndWinnerProduct(new_entity);
+                    await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
+                    await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+                    if (new_entity.UserID !== priceList[0].UserID)
+                        await FuncMdw.sendEmail(priceList[0].UserID, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
                 }
             }
         }
@@ -388,5 +386,60 @@ router.post('/auction/:id', async function (req, res){
     const url = req.headers.referer || '/';
     res.redirect(url);
 })
+
+router.get("/AuctionList", async function (req, res){
+    req.session.retURL = req.originalUrl;
+    const userID = res.locals.authUser.UserID;
+    const d = new Date();
+
+    const limit = 3
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = res.locals.lengthOfAuctionList;
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const ProIDList = await productModel.getAuctioningListWithLimitOffset(userID, d, limit, offset);
+    var list = [];
+    console.log(ProIDList);
+    for (let i = 0; i < ProIDList.length; i++){
+        const product = await productModel.findById(ProIDList[i].ProID);
+        list.push(product);
+    }
+
+    //check wwhich product selected in watch list
+    if (res.locals.WatchListByUSerID != undefined){
+        for(const c of list){
+            for (const d of res.locals.WatchListByUSerID){
+                if (c.ProID === d.ProID){
+                    c.isWatchList = 1;
+                }
+            }
+        }
+    }
+    const isLogin = req.session.auth || false
+    console.log(isLogin)
+
+    res.render('vwProducts/byCat', {
+        products: list,
+        empty: list.length === 0,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        isLogin
+    })
+});
 // Khang
 export default router;
