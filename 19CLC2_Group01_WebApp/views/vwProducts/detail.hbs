@@ -65,6 +65,11 @@
                 Đấu giá
             </button>
 
+            <button type="button" class="btn btn-outline-success float-right mr-2" data-toggle="modal" data-target="#BuyNowModal" data-whatever="@mdo">
+                <i class="fa fa-shopping-cart"></i>
+                Mua ngay
+            </button>
+
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -75,16 +80,25 @@
                             </button>
                         </div>
                         {{#if this.userInfo.NotShow}}
-                            <div class="modal-body">
-                                Tài khoản không được phép đấu giá sản phẩm này.
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                            </div>
+                            {{#if this.userInfo.Message}}
+                                <div class="modal-body">
+                                    Phiên đấu giá đã kết thúc
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                </div>
+                            {{else}}
+                                <div class="modal-body">
+                                    Tài khoản không được phép đấu giá sản phẩm này.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                </div>
+                            {{/if}}
                         {{else}}
                             {{#if this.userInfo.Auction}}
                                 <div class="modal-body">
-                                    <form id="myform" method="post" action="/products/auction/{{this.product.ProID}}">
+                                    <form id="myform1" method="post" action="/products/auction/{{this.product.ProID}}">
                                         <div class="form-group">
                                             <label for="recipient-name" class="col-form-label">Ra giá</label>
                                             <input type="number" step={{this.product.StepPrice}} min={{this.product.CurrentPrice}} max={{this.product.PriceBuyNow}} class="form-control" id="recipient-name" name="txtPrice" value="{{this.product.CurrentPrice}}">
@@ -98,7 +112,73 @@
                             {{else}}
                                 {{#if this.userInfo.Show}}
                                     <div class="modal-body">
-                                        <form id="myform" method="post" action="/products/auction/{{this.product.ProID}}">
+                                        <form id="myform1" method="post" action="/products/auction/{{this.product.ProID}}">
+                                            Tài khoản hiện không đủ điều kiện đấu giá. Để tiếp tục đấu giá, bạn cần gửi yêu cầu cho người bán
+                                            <input type="hidden" name="txtRequest" value="1">
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                        <button type="submit" form="myform" class="btn btn-primary">Gửi</button>
+                                    </div>
+                                {{else}}
+                                    <div class="modal-body">
+                                        Yêu cầu đã được gửi. Vui lòng chờ người bán chấp nhận.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                    </div>
+                                {{/if}}
+                            {{/if}}
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="BuyNowModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger" id="exampleModalLabel">Mua ngay</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {{#if this.userInfo.NotShow}}
+                            {{#if this.userInfo.Message}}
+                                <div class="modal-body">
+                                    Phiên đấu giá đã kết thúc
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                </div>
+                            {{else}}
+                                <div class="modal-body">
+                                    Tài khoản không được phép đấu giá sản phẩm này.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                </div>
+                            {{/if}}
+                        {{else}}
+                            {{#if this.userInfo.Auction}}
+                                <div class="modal-body">
+                                    <form id="myform2" method="post" action="/products/auction/{{this.product.ProID}}">
+                                        <div class="form-group">
+                                            <label for="recipient-name" class="col-form-label">Giá mua ngay</label>
+                                            <input type="text" class="form-control" id="recipient-name" name="txtPrice" value="{{this.product.PriceBuyNow}}" readonly>
+                                            <input type="hidden" value="1" name="txtBuyNow">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-dismiss="modal">Gửi</button>
+                                </div>
+                            {{else}}
+                                {{#if this.userInfo.Show}}
+                                    <div class="modal-body">
+                                        <form id="myform2" method="post" action="/products/auction/{{this.product.ProID}}">
                                             Tài khoản hiện không đủ điều kiện đấu giá. Để tiếp tục đấu giá, bạn cần gửi yêu cầu cho người bán
                                             <input type="hidden" name="txtRequest" value="1">
                                         </form>
@@ -135,7 +215,27 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Từ chối</button>
-                            <button type="submit" form="myform" class="btn btn-primary">Đồng ý</button>
+                            <button type="submit" form="myform1" class="btn btn-primary">Đồng ý</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger" id="exampleModalLabel">Xác nhận</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Bạn có chắc chắn với lần ra giá này không?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Từ chối</button>
+                            <button type="submit" form="myform2" class="btn btn-primary">Đồng ý</button>
                         </div>
                     </div>
                 </div>

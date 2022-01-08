@@ -129,41 +129,55 @@ router.get('/detail/:id', async function(req, res){
         var userInfo = await AccountModels.getUserInfo(userID);
         var flag = true;
         const auctionList = await ProductModels.getAuctionByProIDAndUserID(userID, proID);
-        for (let i = 0; i < auctionList.length; i++){
-            if (auctionList[i].Status === 0){
+        const fullAuctionList = await ProductModels.getAuctionByProID(proID);
+        for (let i = 0; i < fullAuctionList.length; i++){
+            if (fullAuctionList[i].isBuyNow === 1){
                 flag = false;
                 break;
             }
         }
         if (!flag){
             userInfo.NotShow = 1;
+            userInfo.Message = 1;
         }
         else{
-            const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
-            if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
-                const permissionList = await BidderModels.getPermissionByUserIDAndProID(userID, proID);
-                if (permissionList.length === 0){
-                    userInfo.Auction = 0;
-                    userInfo.Show = 1;
+            for (let i = 0; i < auctionList.length; i++){
+                if (auctionList[i].Status === 0){
+                    flag = false;
+                    break;
                 }
-                else{
-                    if (permissionList[permissionList.length-1].Status === 0){
-                        userInfo.Auction = 0;
-                        userInfo.Show = 0;
-                    }
-                    else if (permissionList[permissionList.length-1].Status === 1){
-                        userInfo.Auction = 1;
-                    }
-                    else{
+            }
+            if (!flag){
+                userInfo.NotShow = 1;
+                userInfo.Message = 0;
+            }
+            else{
+                const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
+                if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
+                    const permissionList = await BidderModels.getPermissionByUserIDAndProID(userID, proID);
+                    if (permissionList.length === 0){
                         userInfo.Auction = 0;
                         userInfo.Show = 1;
                     }
+                    else{
+                        if (permissionList[permissionList.length-1].Status === 0){
+                            userInfo.Auction = 0;
+                            userInfo.Show = 0;
+                        }
+                        else if (permissionList[permissionList.length-1].Status === 1){
+                            userInfo.Auction = 1;
+                        }
+                        else{
+                            userInfo.Auction = 0;
+                            userInfo.Show = 1;
+                        }
+                    }
                 }
+                else{
+                    userInfo.Auction = 1;
+                }
+                console.log(userInfo);
             }
-            else{
-                userInfo.Auction = 1;
-            }
-            console.log(userInfo);
         }
     }
     // Khang
@@ -315,7 +329,7 @@ router.get('/history', async function (req, res){
 
 router.post('/auction/:id', async function (req, res){
     const d = new Date();
-    console.log(req.body.txtRequest)
+    console.log(req.body.txtPrice);
     if (req.body.txtRequest !== undefined){
         const entity = {
             BidderID: res.locals.authUser.UserID,
@@ -343,10 +357,16 @@ router.post('/auction/:id', async function (req, res){
                 Time: d,
                 Price: product.CurrentPrice,
                 Status: 1,
-                Header: res.locals.authUser.UserID
+                Header: res.locals.authUser.UserID,
             };
+            if (req.body.txtBuyNow !== undefined) {
+                new_entity.isBuyNow = 1;
+                new_entity.Price = product.PriceBuyNow;
+            }
             await ProductModels.insertAuction(new_entity);
-            await ProductModels.updatePriceAndWinnerProduct(new_entity);
+            await ProductModels.updatePriceProduct(new_entity);
+            if (req.body.txtBuyNow !== undefined)
+                await ProductModels.updateWinnerProduct(new_entity);
             await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
             await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
         }
@@ -363,18 +383,56 @@ router.post('/auction/:id', async function (req, res){
                     Status: 1,
                 };
                 if (priceList[0].MaxPrice >= entity.MaxPrice){
-                    new_entity.Price = entity.MaxPrice;
-                    new_entity.Header = priceList[0].UserID;
-                    new_entity.UserID = priceList[0].UserID;
+                    if (req.body.txtBuyNow !== undefined){
+                        new_entity.Price = entity.MaxPrice;
+                        new_entity.Header = res.locals.authUser.UserID;
+                        new_entity.UserID = res.locals.authUser.UserID;
+                        new_entity.isBuyNow = 1
+                    }
+                    else{
+                        new_entity.Price = entity.MaxPrice;
+                        new_entity.Header = priceList[0].UserID;
+                        new_entity.UserID = priceList[0].UserID;
+                    }
                 }
                 else{
-                    new_entity.Price = priceList[0].MaxPrice + product.StepPrice;
-                    new_entity.Header = res.locals.authUser.UserID;
-                    new_entity.UserID = res.locals.authUser.UserID;
+                    if (req.body.txtBuyNow !== undefined){
+                        new_entity.Price = entity.MaxPrice;
+                        new_entity.Header = res.locals.authUser.UserID;
+                        new_entity.UserID = res.locals.authUser.UserID;
+                        new_entity.isBuyNow = 1
+                    }
+                    else{
+                        new_entity.Price = priceList[0].MaxPrice + product.StepPrice;
+                        new_entity.Header = res.locals.authUser.UserID;
+                        new_entity.UserID = res.locals.authUser.UserID;
+                    }
                 }
-                if (priceList[0].UserID !== entity.UserID){
+                if ((priceList[0].UserID !== entity.UserID) || (priceList[0].UserID === entity.UserID && req.body.txtBuyNow !== undefined)){
                     await ProductModels.insertAuction(new_entity);
-                    await ProductModels.updatePriceAndWinnerProduct(new_entity);
+                    await ProductModels.updatePriceProduct(new_entity);
+                    if (req.body.txtBuyNow !== undefined)
+                        await ProductModels.updateWinnerProduct(new_entity);
+                    await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
+                    await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+                    if (new_entity.UserID !== priceList[0].UserID)
+                        await FuncMdw.sendEmail(priceList[0].UserID, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
+                }
+            }
+            else{
+                if (req.body.txtBuyNow !== undefined){
+                    const new_entity = {
+                        UserID: res.locals.authUser.UserID,
+                        ProID: req.params.id,
+                        Time: d,
+                        Price: product.CurrentPrice,
+                        Status: 1,
+                        Header: res.locals.authUser.UserID,
+                        isBuyNow: 1
+                    };
+                    await ProductModels.insertAuction(new_entity);
+                    await ProductModels.updatePriceProduct(new_entity);
+                    await ProductModels.updateWinnerProduct(new_entity);
                     await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
                     await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
                     if (new_entity.UserID !== priceList[0].UserID)

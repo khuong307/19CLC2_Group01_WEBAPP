@@ -85,6 +85,11 @@ export default {
         return lst[0];
     },
 
+    async getAuctionByProID(id){
+        const lst = await db('Auction').where('ProID', id).select();
+        return lst;
+    },
+
     async getLengthAuction(id){
         const raw_sql = `select * from Auction where ProID = '${id}' and UserID in (select distinct UserID from Auction where ProID = '${id}' and UserID not in (select UserID from Auction where Status = 0 and ProID = '${id}'))`;
         const lst = await db.raw(raw_sql);
@@ -100,10 +105,15 @@ export default {
         return db('Auction').insert(entity);
     },
 
-    updatePriceAndWinnerProduct(entity){
+    updatePriceProduct(entity){
         return db('Product').where('ProID', entity.ProID).update({
-            'Winner': entity.Header,
             'CurrentPrice': entity.Price
+        });
+    },
+
+    updateWinnerProduct(entity){
+        return db('Product').where('ProID', entity.ProID).update({
+            'Winner': entity.Header
         });
     },
 
