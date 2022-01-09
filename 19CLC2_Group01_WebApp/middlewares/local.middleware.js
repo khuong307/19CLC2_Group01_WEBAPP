@@ -6,10 +6,28 @@ import accountModels from "../models/account.models.js";
 import bidderModels from "../models/bidder.models.js";
 import moment from "moment";
 import ProductModels from "../models/product.models.js";
+import FuncMdw from "./func.mdw.js";
 
 export default function(app){
     //Khang
     app.use(async function(req, res, next){
+        const productList = await ProductModels.findAll();
+        const now = new Date();
+
+        for (let i = 0; i < productList.length; i++){
+            const endDate = new Date(productList[i].EndDate);
+            if (now.getTime() > endDate.getTime() && productList[i].isSendEmail === 0){
+                if (productList[i].Winner){
+                    await FuncMdw.sendEmail(productList[i].UploadUser, `Người dùng ${productList[i].Winner} đã chiến thắng sản phẩm ${productList[i].ProName} với mức giá ${productList[i].CurrentPrice}`);
+                    await FuncMdw.sendEmail(productList[i].Winner, `Bạn đã chiến thắng sản phẩm ${productList[i].ProName} với mức giá ${productList[i].CurrentPrice}`);
+                }
+                else{
+                    await FuncMdw.sendEmail(productList[i].UploadUser, `Sản phẩm ${productList[i].ProName} đã kết thúc mà không có người đấu giá`);
+                }
+                await ProductModels.updateProductSendEmailStatus(productList[i].ProID);
+            }
+        }
+
         if(typeof (req.session.auth) === 'undefined'){
             req.session.auth = false;
         }
@@ -184,6 +202,8 @@ export default function(app){
             const winningList = await productModels.getWinningList(userID);
             res.locals.WinningListByUserID = winningList;
             res.locals.lengthOfWinningList = winningList.length;
+            const reviewList = await BidderModels.getReviewWithUserID(userID);
+            res.locals.lengthOfReviewList = reviewList.length;
             console.log(res.locals.lengthOfAuctionList);
         }
         // Khang

@@ -155,6 +155,10 @@ export default {
     updateProductEndTime(ProID, time){
         return db('Product').where('ProID', ProID).update('EndDate', time);
     },
+
+    updateProductSendEmailStatus(ProID){
+        return db('Product').where('ProID', ProID).update('isSendEmail', 1);
+    },
     // Khang
 
     async getWatchListByUserID(userID){

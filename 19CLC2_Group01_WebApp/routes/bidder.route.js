@@ -2,6 +2,7 @@ import express from 'express';
 import auth from '../middlewares/auth.mdw.js'
 import BidderModels from "../models/bidder.models.js";
 import ProductModels from "../models/product.models.js";
+import AccountModels from "../models/account.models.js";
 
 const router = express.Router();
 
@@ -72,6 +73,20 @@ router.post('/comment/:id', async function (req, res){
     await BidderModels.insertReview(entity);
     await BidderModels.updatePoint(entity);
     res.redirect("/");
+});
+
+router.get('/review', async function (req, res){
+    const UserID = res.locals.authUser.UserID;
+    const reviewList = await BidderModels.getReviewWithUserID(UserID);
+    const userInfo = await AccountModels.getUserInfo(UserID);
+    for (let i = 0; i < reviewList.length; i++){
+        const product = await ProductModels.findById(reviewList[i].ProID);
+        reviewList[i].ProName = product.ProName;
+    }
+    res.render('vwBidder/review', {
+        reviewList,
+        userInfo
+    });
 });
 
 export default router;
