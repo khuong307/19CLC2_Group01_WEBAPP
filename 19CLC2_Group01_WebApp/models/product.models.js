@@ -131,15 +131,29 @@ export default {
     },
 
     async getAuctioningList(UserID, time){
-        const raw_sql = `select distinct auc.ProID from Auction auc join Product p on auc.ProID = p.ProID where auc.UserID = '${UserID}' and '${time}' < EndDate and auc.ProID not in (select ProID from Auction where Status = 0)`;
+        const raw_sql = `select distinct auc.ProID from Auction auc join Product p on auc.ProID = p.ProID where auc.UserID = '${UserID}' and '${time}' < EndDate and auc.ProID not in (select ProID from Auction where Status = 0 and UserID = '${UserID}')`;
         const lst = await db.raw(raw_sql);
         return lst[0];
     },
 
     async getAuctioningListWithLimitOffset(UserID, time, limit, offset){
-        const raw_sql = `select distinct auc.ProID from Auction auc join Product p on auc.ProID = p.ProID where auc.UserID = '${UserID}' and '${time}' < EndDate and auc.ProID not in (select ProID from Auction where Status = 0) order by auc.ProID limit ${limit} offset ${offset}`;
+        const raw_sql = `select distinct auc.ProID from Auction auc join Product p on auc.ProID = p.ProID where auc.UserID = '${UserID}' and '${time}' < EndDate and auc.ProID not in (select ProID from Auction where Status = 0 and UserID = '${UserID}') order by auc.ProID limit ${limit} offset ${offset}`;
         const lst = await db.raw(raw_sql);
         return lst[0];
+    },
+
+    async getWinningList(userID){
+        const lst = await db('Product').where('Winner', userID).select();
+        return lst;
+    },
+
+    async getWinningListWithLimitOffset(userID, limit, offset){
+        const lst = await db('Product').where('Winner', userID).limit(limit).offset(offset);
+        return lst;
+    },
+
+    updateProductEndTime(ProID, time){
+        return db('Product').where('ProID', ProID).update('EndDate', time);
     },
     // Khang
 

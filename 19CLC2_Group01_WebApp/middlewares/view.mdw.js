@@ -34,7 +34,7 @@ export default function(app){
                 return moment.utc(val).format('DD/MM/YYYY')
             },
             formatDateCountdown(val){
-                return moment.utc(val).format('MM/DD/YYYY')
+                return moment(val).utcOffset("+0700").format('YYYY-MM-DD HH:mm:ss')
             },
             MaskCharacter(str) {
                 var tmp = str;

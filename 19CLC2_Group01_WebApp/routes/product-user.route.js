@@ -50,7 +50,7 @@ router.get('/byCat/:id', async function(req, res){
 
     const list = await productModel.findPageByCatID(catID2, limit, offset)
 
-    //check wwhich product selected in watch list
+    // Khang
     if (res.locals.WatchListByUSerID != undefined){
         for(const c of list){
             for (const d of res.locals.WatchListByUSerID){
@@ -60,6 +60,18 @@ router.get('/byCat/:id', async function(req, res){
             }
         }
     }
+
+    if (res.locals.WinningListByUserID != undefined){
+        for(const c of list){
+            for (const d of res.locals.WinningListByUserID){
+                if (c.ProID === d.ProID){
+                    c.isWinning = 1;
+                }
+            }
+        }
+    }
+    // Khang
+
     const isLogin = req.session.auth || false
     console.log(isLogin)
 
@@ -348,6 +360,9 @@ router.post('/auction/:id', async function (req, res){
             Time: d
         };
         const product = await ProductModels.findById(entity.ProID);
+        const endDate = new Date(product.EndDate);
+        const diffTime = endDate.getTime() - d.getTime();
+        console.log(diffTime);
         const priceList = await ProductModels.getMaxPriceByProID(entity.ProID);
         if (priceList.length === 0){
             await BidderModels.insertMaxPrice(entity);
@@ -367,6 +382,8 @@ router.post('/auction/:id', async function (req, res){
             await ProductModels.updatePriceProduct(new_entity);
             if (req.body.txtBuyNow !== undefined)
                 await ProductModels.updateWinnerProduct(new_entity);
+            if (diffTime <= 300000 && product.AutoExtendTime === 1)
+                await ProductModels.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
             await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
             await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
         }
@@ -413,6 +430,8 @@ router.post('/auction/:id', async function (req, res){
                     await ProductModels.updatePriceProduct(new_entity);
                     if (req.body.txtBuyNow !== undefined)
                         await ProductModels.updateWinnerProduct(new_entity);
+                    if (diffTime <= 300000 && product.AutoExtendTime === 1)
+                        await ProductModels.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
                     await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
                     await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
                     if (new_entity.UserID !== priceList[0].UserID)
@@ -477,6 +496,12 @@ router.get("/AuctionList", async function (req, res){
         list.push(product);
     }
 
+    for (const obj of list){
+        const CatID2 = obj.CatID2;
+        const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
+        obj.CatID1 = CatID1.CatID1;
+    }
+
     //check wwhich product selected in watch list
     if (res.locals.WatchListByUSerID != undefined){
         for(const c of list){
@@ -490,7 +515,7 @@ router.get("/AuctionList", async function (req, res){
     const isLogin = req.session.auth || false
     console.log(isLogin)
 
-    res.render('vwProducts/byCat', {
+    res.render('vwProducts/auctionList', {
         products: list,
         empty: list.length === 0,
         pageNumbers,
@@ -502,7 +527,56 @@ router.get("/AuctionList", async function (req, res){
 });
 
 router.get('/WinList', async function(req, res){
-    res.render('vwProducts/winList');
+    req.session.retURL = req.originalUrl;
+    const userID = res.locals.authUser.UserID;
+
+    const limit = 3
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = res.locals.lengthOfWinningList;
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const list = await ProductModels.getWinningListWithLimitOffset(userID, limit, offset);
+
+    for (const obj of list){
+        const CatID2 = obj.CatID2;
+        const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
+        obj.CatID1 = CatID1.CatID1;
+    }
+    //check wwhich product selected in watch list
+    if (res.locals.WatchListByUSerID != undefined){
+        for(const c of list){
+            for (const d of res.locals.WatchListByUSerID){
+                if (c.ProID === d.ProID){
+                    c.isWatchList = 1;
+                }
+            }
+        }
+    }
+    const isLogin = req.session.auth || false
+    console.log(isLogin)
+
+    res.render('vwProducts/winList', {
+        products: list,
+        empty: list.length === 0,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        isLogin
+    })
 })
 // Khang
 export default router;

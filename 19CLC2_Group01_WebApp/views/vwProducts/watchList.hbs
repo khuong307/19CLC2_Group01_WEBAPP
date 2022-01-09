@@ -94,11 +94,12 @@
                                     <i class="fa fa-eye"></i>
                                     Details
                                 </a>
-
-                                <a class="btn btn-outline-success" href="#" role="button">
-                                    <i class="fa fa-cart-plus"></i>
-                                    Cart
-                                </a>
+                                {{#if Winner}}
+                                    <a class="btn btn-outline-success" href="/bidder/comment/{{ProID}}" role="button">
+                                        <i class="fa fa-comment-o"></i>
+                                        Review
+                                    </a>
+                                {{/if}}
 
                                 <!--Khang: Del from watch list-->
                                 <div class="float-right">

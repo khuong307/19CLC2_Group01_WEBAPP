@@ -5,6 +5,7 @@ import BidderModels from "../models/bidder.models.js";
 import accountModels from "../models/account.models.js";
 import bidderModels from "../models/bidder.models.js";
 import moment from "moment";
+import ProductModels from "../models/product.models.js";
 
 export default function(app){
     //Khang
@@ -180,6 +181,9 @@ export default function(app){
             const current = now.toISOString().slice(0, 19).replace('T', ' ');
             const auctioningList = await productModels.getAuctioningList(userID, current);
             res.locals.lengthOfAuctionList = auctioningList.length;
+            const winningList = await productModels.getWinningList(userID);
+            res.locals.WinningListByUserID = winningList;
+            res.locals.lengthOfWinningList = winningList.length;
             console.log(res.locals.lengthOfAuctionList);
         }
         // Khang
