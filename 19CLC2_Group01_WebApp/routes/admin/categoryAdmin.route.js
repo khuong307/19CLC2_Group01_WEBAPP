@@ -7,8 +7,6 @@ const router = express.Router();
 
 // View category lv1
 router.get('/lv1',auth, async function(req, res){
-    //nếu không phải là admin trả về trang chủ ==> tránh trường hợp nhớ đường link.
-    // nếu trường hợp authUser = null thì sao ? ==> nếu bằng null sẽ bắt đăng nhập, đăng nhập thành công thì sẽ != null. ('biến auth' trước function)
     if(res.locals.authUser != null){
         if (res.locals.authUser.Type != 3){
             res.redirect('/')
@@ -16,16 +14,26 @@ router.get('/lv1',auth, async function(req, res){
     }
     req.session.retURL=req.originalUrl;
 
-    const list = await categoryModel.findALlCategoryL1();
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
 
-    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
-        d.numberPro = 0;
-        for (const c of res.locals.lcCategories){
-            if (d.CatID1 === c.CatID1){
-                d.numberPro += c.ProductCount;
-            }
-        }
+    const total = await categoryModel.countCateL1()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
     }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const list = await categoryModel.findPageByCateL1(limit, offset)
 
     // Thêm một thuộc tính ProductCount vào CategoryL1 ( Đếm tổng số lượng sản phầm trong 1 CategoryL1)
     list.forEach(element => {
@@ -38,7 +46,11 @@ router.get('/lv1',auth, async function(req, res){
 
     res.render('admin/vwAdminCategory/categoryLV1List', {
         categories: list,
-        isAdmin:true
+        isAdmin:true,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
     })
 })
 
@@ -51,18 +63,10 @@ router.get('/lv1/detailL2',auth, async function(req, res){
     }
     req.session.retURL=req.originalUrl;
 
+
     // Lấy id từ query string
     const id = req.query.id || 0;
     const list = await categoryModel.findCateL2ByIdCateL1(id);
-    // count tổng số lượng sản phẩm trong 1 CategoryL1.
-    for (const d of res.locals.CategoryL1){
-        d.numberPro = 0;
-        for (const c of res.locals.lcCategories){
-            if (d.CatID1 === c.CatID1){
-                d.numberPro += c.ProductCount;
-            }
-        }
-    }
 
     res.render('admin/vwAdminCategory/categoryLV2List', {
         categories: list
@@ -142,16 +146,20 @@ router.post('/lv1/add',auth,async function(req,res){
         })
     }
     else{
-        // Trường hợp chưa có tồn tại CatName1 mới cho tạo
-        // Lấy ra CatID1 của phần tử cuối trong bảng CategoryL1
-        const lastCatID=list[list.length-1].CatID1;
-        // Cắt CatID1 của phần tử cuối ra hai phần chuỗi + số
-        const firstLetter=lastCatID.slice(0,1);
-        const numberID=lastCatID.slice(1);
+        // // Trường hợp chưa có tồn tại CatName1 mới cho tạo
+        // // Lấy ra CatID1 của phần tử cuối trong bảng CategoryL1
+        // const lastCatID=list[list.length-1].CatID1;
+        // // Cắt CatID1 của phần tử cuối ra hai phần chuỗi + số
+        // const firstLetter=lastCatID.slice(0,1);
+        // const numberID=lastCatID.slice(1);
+        //
+        // // Tạo CatID1 cho phần tử mới
+        // const newNumberID=parseInt(numberID)+1;
+        // const CatID1=firstLetter+newNumberID;
+        const ans = await categoryModel.findMaxCatID1()
+        const stt = parseInt(ans.CatID1.slice(1,4)) + 1
+        var CatID1 = "L" + stt
 
-        // Tạo CatID1 cho phần tử mới
-        const newNumberID=parseInt(numberID)+1;
-        const CatID1=firstLetter+newNumberID;
         // Tạo phần tử mới
         const entity={};
         entity["CatID1"]=CatID1;
@@ -272,19 +280,35 @@ router.get('/lv2',auth, async function(req, res){
     }
     req.session.retURL=req.originalUrl;
 
-    const list = await categoryModel.findDetailCateL2();
-    // count tổng số lượng sản phẩm trong 1 CategoryL1.
-    for (const d of res.locals.CategoryL1){
-        d.numberPro = 0;
-        for (const c of res.locals.lcCategories){
-            if (d.CatID1 === c.CatID1){
-                d.numberPro += c.ProductCount;
-            }
-        }
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await categoryModel.countCateL2()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
     }
 
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const list = await categoryModel.findPageByCateL2(limit, offset)
+
+    //const list = await categoryModel.findDetailCateL2();
+
     res.render('admin/vwAdminCategory/categoryLV2List', {
-        categories: list
+        categories: list,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
     })
 })
 
@@ -341,17 +365,22 @@ router.post('/lv2/add', auth,async function(req, res){
         })
     }
     else{
-        //Lấy danh sách những item trong CategoryL2
-        const listL2 = await categoryModel.findAllWithDetails();
-        // Lấy ra CatID2 của phần tử cuối trong bảng CategoryL1
-        const lastCatID=listL2[listL2.length-1].CatID2;
-        // Cắt CatID2 của phần tử cuối ra hai phần chuỗi + số
-        const firstLetter=lastCatID.slice(0,1);
-        const numberID=lastCatID.slice(1);
+        // //Lấy danh sách những item trong CategoryL2
+        // const listL2 = await categoryModel.findAllWithDetails();
+        // // Lấy ra CatID2 của phần tử cuối trong bảng CategoryL1
+        // const lastCatID=listL2[listL2.length-1].CatID2;
+        // console.log(lastCatID)
+        // // Cắt CatID2 của phần tử cuối ra hai phần chuỗi + số
+        // const firstLetter=lastCatID.slice(0,1);
+        // const numberID=lastCatID.slice(1);
+        //
+        // // Tạo CatID2 cho phần tử mới
+        // const newNumberID=parseInt(numberID)+1;
+        // const CatID2=firstLetter+newNumberID;
 
-        // Tạo CatID2 cho phần tử mới
-        const newNumberID=parseInt(numberID)+1;
-        const CatID2=firstLetter+newNumberID;
+        const ans = await categoryModel.findMaxCatID2()
+        const stt = parseInt(ans.CatID2.slice(1,4)) + 1
+        var CatID2 = "L" + stt
 
         // Tạo phần tử mới
         const entity={};
@@ -470,7 +499,7 @@ router.post('/lv2/patch',auth, async function(req, res){
     }
     else{
         const ret = await categoryModel.updateCategoryLV2(req.body);
-        return res.redirect('/admin/categories/lv2/');
+        return res.redirect('/admin/categories/lv2');
     }
 })
 

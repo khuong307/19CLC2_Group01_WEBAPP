@@ -27,9 +27,37 @@ router.get('/seller',auth,async function(req,res){
         }
     }
     req.session.retURL=req.originalUrl;
-    const sellerList=await userModel.findALlSeller();
-    res.render('admin/vwUser/sellerList',{sellerList});
+
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await userModel.countSeller()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const sellerList = await userModel.findPageBySeller(limit, offset)
+
+    res.render('admin/vwUser/sellerList',{
+        sellerList:sellerList,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+    });
 })
+
 
 // get seller detail
 router.get('/seller/detail',auth,async function(req,res){
@@ -41,7 +69,8 @@ router.get('/seller/detail',auth,async function(req,res){
     req.session.retURL=req.originalUrl;
 
     const userID=req.query.id;
-    const userInfo = await accountModel.getUserInfo(userID);
+    const userInfo = await accountModel.getDetailUserInfo(userID);
+    console.log(userInfo);
     res.render('admin/vwUser/detailSeller',{
         UserInfo:userInfo
     })
@@ -158,8 +187,35 @@ router.get('/bidder',auth,async function(req,res){
     }
     req.session.retURL=req.originalUrl;
     const userID=res.locals.authUser.UserID;
-    const bidderList=await userModel.findAllBidderExceptAdmin(userID);
-    res.render('admin/vwUser/bidderList',{bidderList});
+
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await userModel.countBidderExceptAdmin(userID)
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const bidderList = await userModel.findPageByBidderExAdmin(userID,limit, offset)
+
+    res.render('admin/vwUser/bidderList',{
+        bidderList,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+    });
 })
 
 // get bidder detail
@@ -172,7 +228,7 @@ router.get('/bidder/detail',auth,async function(req,res){
     req.session.retURL=req.originalUrl;
 
     const userID=req.query.id;
-    const userInfo = await accountModel.getUserInfo(userID);
+    const userInfo = await accountModel.getDetailUserInfo(userID);
     res.render('admin/vwUser/detailBidder',{
         UserInfo:userInfo
     })
@@ -234,9 +290,36 @@ router.get('/upgrade',auth,async function(req,res){
         }
     }
     req.session.retURL=req.originalUrl;
-    const upgradeList=await userModel.findAllBidderUpgrade();
+
+    // Paging
+    const limit = 8
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await userModel.countUpgradeBidder()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const upgradeList = await userModel.findPageByUpgradeBidder(limit, offset)
+    console.log(upgradeList)
+
     res.render('admin/vwUser/upgradeList',{
-        upgradeList
+        upgradeList,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        empty: upgradeList.length == 0
     });
 })
 
@@ -314,13 +397,13 @@ router.post('/upgrade/deny',auth,async function(req,res){
     var transporter = mails.createTransport({
         service: 'gmail',
         auth: {
-            user: 'binhkggffs@gmail.com',
-            pass: '01051993qwe'
+            user: 'khuong16lop9a6@gmail.com',
+            pass: '0903024916'
         }
     });
 
     var mailOptions = {
-        from: 'binhkggffs@gmail.com',
+        from: 'khuong16lop9a6@gmail.com',
         to: email,
         subject: 'Bidding Wep App: Hủy nâng cấp thành Seller',
         text: 'Tài khoản của bạn không được admin chấp nhận thành Seller'
@@ -338,14 +421,13 @@ router.post('/upgrade/deny',auth,async function(req,res){
     entity["Status"]=2;
     let now= new Date();
     entity["AcceptTime"]=now;
-    // Vẫn dùng hàm upgradeChangeLevel tuy nhiên ở đây do đã đổi change =0 nên không sao
+    // Vẫn dùng hàm upgradeChangeLevel
     const ret=await userModel.upgradeChangeLevel(entity);
     res.json({
         msg:"Hủy yêu cầu thành công",
         status:1,
     });
 })
-
 
 
 export default router;

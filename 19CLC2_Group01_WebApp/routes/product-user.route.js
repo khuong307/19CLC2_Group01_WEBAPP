@@ -524,6 +524,7 @@ router.post('/denyRequest', async function(req, res){
     const userID = req.query.UserID
 
     const MaxBidder = await productModel.getMaxBidderByProID(proID)
+    console.log(MaxBidder)
     productModel.updateStatusAuctionByUserID(userID)
 
     //send OTP emails.
@@ -556,12 +557,11 @@ router.post('/denyRequest', async function(req, res){
 
     // //is highest bidder.
     const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
-    const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID.MaxPrice);
+    const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[0].MaxPrice);
+    console.log(highestBidder)
     if (userID === highestBidder.UserID){
         const secondPrice = await productModel.getSecondPriceInAuction(proID)
         productModel.updateCurrentPriceByProID(proID, secondPrice.Price)
-        console.log(userID)
-        console.log(proID)
         await productModel.deleteMaxPriceByProIDUserID(proID, userID)
     }
 

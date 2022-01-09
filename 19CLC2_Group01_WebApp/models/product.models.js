@@ -63,7 +63,6 @@ export default {
 
     async getCatID2FromProID(ProID){
         const CatID2 = await db('Product').select('Product.CatID2').where('ProID', ProID);
-        console.log(CatID2[0].CatID2)
         return CatID2[0]
     },
 
@@ -474,7 +473,7 @@ export default {
 
     async getMaxPriceByProID(ProID){
         const lst = await db('MaxPrice').where('ProID', ProID).orderBy('MaxPrice', 'desc').orderBy('Time', 'asc').select();
-        return lst[0];
+        return lst;
     },
 
     insertAuction(entity){
@@ -520,5 +519,21 @@ export default {
 
     deleteMaxPriceByProIDUserID(proid, userid){
         return db('MaxPrice').where('ProID', proid).andWhere('UserID', userid).del()
-    }
+    },
+
+
+    //Minh
+
+    // Đếm số lượng product
+    async countProduct(){
+        let now=new Date();
+        const list = await db('Product').whereNull('Winner').andWhere('EndDate','>=',now).count({amount: 'ProID' })
+        return list[0].amount
+    },
+
+    // Lấy toàn bộ product chia bởi page
+    findPageByProduct(limit, offset){
+        let now=new Date();
+        return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2').whereNull('Winner').andWhere('EndDate','>=',now).orderBy('Product.ProID').limit(limit).offset(offset);
+    },
 }

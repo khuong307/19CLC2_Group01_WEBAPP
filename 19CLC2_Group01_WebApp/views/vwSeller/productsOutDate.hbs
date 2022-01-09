@@ -31,10 +31,9 @@
         Sản phẩm hết hạn của: {{this.sellerUsername}}
     </h4>
     <div class="card-body">
-        {{#if this.isOwner}}
-            {{#if this.empty}}
-                <h5 class="card-title">Không có bất kỳ sản phẩm nào!</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content</p>
+        {{#if isOwner}}
+            {{#if empty}}
+                <h5 class="card-title">Không có bất kỳ sản phẩm hết hạn nào!</h5>
             {{else}}
                 <div class="row">
                     {{#each this.ProductOfSeller}}
@@ -96,7 +95,7 @@
                                 <div class="card-footer text-muted" style="text-align: center">
                                     <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
                                         <i class="fa fa-eye"></i>
-                                        Details
+                                        Chi tiết
                                     </a>
                                 </div>
                             </div>

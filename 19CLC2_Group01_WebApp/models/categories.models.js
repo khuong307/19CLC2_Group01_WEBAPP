@@ -115,4 +115,40 @@ export default {
         return db('CategoryL2').where('CatID2', id).del()
     },
 
+    // Minh:Đếm số lượng CateL2
+    async countCateL2(){
+        const list = await db('CategoryL2').count({amount: 'CatID2' })
+        return list[0].amount
+    },
+
+    // Minh: Tìm CateL2 chia theo Page
+    async findPageByCateL2(limit, offset){
+        const sql = 'select c.*,c1.CatName1, count(p.ProID) as ProductCount from CategoryL2 c left join CategoryL1 c1 on c.CatID1 = c1.CatID1 left join Product p on c.CatID2 = p.CatID2 group by c.CatID2, c.CatName2 limit '+limit+' offset '+offset;
+        const raw=await db.raw(sql);
+        return raw[0];
+    },
+
+    // Minh:Đếm số lượng CateL1
+    async countCateL1(){
+        const list = await db('CategoryL1').count({amount: 'CatID1' })
+        return list[0].amount
+    },
+
+    // Minh: Tìm CateL1 theo page
+    findPageByCateL1(limit, offset) {
+        return db.select().table('CategoryL1').limit(limit).offset(offset);
+    },
+
+    // Khuong: Max CatID2
+    async findMaxCatID2() {
+        const ans = await db.select().table('CategoryL2').orderBy('CatID2', 'DESC');
+        return ans[0]
+    },
+
+    // Khuong: Max CatID1
+    async findMaxCatID1() {
+        const ans = await db.select().table('CategoryL1').orderBy('CatID1', 'DESC');
+        return ans[0]
+    },
+
 }

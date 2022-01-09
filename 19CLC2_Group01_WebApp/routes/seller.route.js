@@ -28,7 +28,6 @@ router.get('/ProductsOf/:sellerUsername', async function(req, res){
     const uploadUser = await sellerModel.getUserIDByUsername(sellerUsername)
     const productCount = await sellerModel.countProductByUserID(uploadUser.UserID)
     const total = productCount.total
-    console.log(total)
     let nPages = Math.floor(total/limit)
     let pageNumbers = []
     if(total % limit > 0){
@@ -82,11 +81,10 @@ router.get('/ProductsOf/:sellerUsername', async function(req, res){
             }
         }
     }
-    console.log(ProductOfSeller)
     res.render('vWSeller/productsOfSeller',{
         ProductOfSeller,
         sellerUsername,
-        empty: ProductOfSeller.length === 0,
+        empty: ProductOfSeller === null,
         pageNumbers,
         currentPageIndex: page,
         isFirstPage: +page != 1,
@@ -125,16 +123,15 @@ router.post('/addProduct', async function(req,res){
     const catid2 = await sellerModel.getCatID2ByCatName2(catname2)
     var numPro = await sellerModel.countProID()
     var newProID = ""
-    const stt = numPro[0].total + 1
+    const stt = parseInt(numPro[0].ProID.slice(1,4)) + 1
 
-    if (numPro[0].total + 1 < 10){
-
+    if (stt + 1 < 10){
         newProID = 'P00'+ stt
     }
-    else if (numPro[0].total + 1 < 100){
+    else if (stt + 1 < 100){
         newProID = 'P0'+ stt
     }
-    else if (numPro[0].total + 1 < 1000) {
+    else if (stt + 1 < 1000) {
         newProID = 'P' + stt
     }
 
@@ -182,7 +179,6 @@ router.post('/addProduct', async function(req,res){
     const upload = multer({storage})
     const username = res.locals.authUser.Username
     upload.array('main', 3)(req, res, function (err){
-        console.log(req.body)
         if(err){
             console.error(err)
         }else{
@@ -242,16 +238,16 @@ router.get('/productsOutDate/:sellerUsername', auth,async function(req, res){
     const uploadUser = await sellerModel.getUserIDByUsername(sellerUsername)
     const productCount = await sellerModel.countOutdateProductByUserID(uploadUser.UserID)
 
-    if(tmp === null){
-        return res.render('vWSeller/productsOutDate',{
-            empty: 1,
-            sellerUsername
-        })
-    }
+    // if(tmp === null){
+    //     return res.render('vWSeller/productsOutDate',{
+    //         empty: 1,
+    //         sellerUsername
+    //     })
+    // }
 
     var isOwner = 0
     if(res.locals.authUser != null){
-        if(uploadUser.UserID === res.locals.authUser.UserID){
+        if(sellerUsername === res.locals.authUser.Username){
             isOwner = 1
         }
         else{
@@ -314,11 +310,10 @@ router.get('/productsOutDate/:sellerUsername', auth,async function(req, res){
         }
     }
 
-
     res.render('vWSeller/productsOutDate',{
         ProductOfSeller,
         sellerUsername,
-        empty: ProductOfSeller.length === 0,
+        empty: tmp === null,
         pageNumbers,
         currentPageIndex: page,
         isFirstPage: +page != 1,
@@ -343,12 +338,6 @@ router.get('/productsSold/:sellerUsername', auth,async function(req, res){
     const uploadUser = await sellerModel.getUserIDByUsername(sellerUsername)
     const productCount = await sellerModel.countSoldProductByUserID(uploadUser.UserID)
 
-    if(tmp === null){
-        return res.render('vWSeller/productsSold',{
-            empty: 1,
-            sellerUsername
-        })
-    }
 
     var isOwner = 0
     if(res.locals.authUser != null){
@@ -411,7 +400,7 @@ router.get('/productsSold/:sellerUsername', auth,async function(req, res){
     res.render('vWSeller/productsSold',{
         ProductOfSeller,
         sellerUsername,
-        empty: ProductOfSeller.length === 0,
+        empty: tmp === null,
         pageNumbers,
         currentPageIndex: page,
         isFirstPage: +page != 1,
@@ -435,7 +424,6 @@ router.post('/reviewBidder', async function(req, res){
         Comment: comment,
         Time: now
     }
-    console.log(newReview)
     const tmp = await sellerModel.checkReview(sellerID, bidderID, proID)
     if(tmp === null){
         sellerModel.addNewReviewBySeller(newReview)
@@ -460,7 +448,6 @@ router.post('/sellerLike', async function(req, res){
         Status: 1
     }
     const tmp = await sellerModel.checkReview(sellerID, bidderID, proID)
-    console.log(tmp)
     if(tmp === null){
         sellerModel.addNewReviewBySeller(newReview)
     }else{
@@ -495,7 +482,7 @@ router.post('/sellerDisLike', async function(req, res){
 
 })
 
-router.post('/AutoCancel', async function(req, res){
+router.post('/AutoCancel', auth,async function(req, res){
     const sellerID = req.query.seller;
     const bidderID = req.query.bidder;
     const proID = req.query.proid;

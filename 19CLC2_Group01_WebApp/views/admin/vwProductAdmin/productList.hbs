@@ -1,16 +1,5 @@
-{{#section 'css'}}
-    <style>
-        .carousel-control-prev-icon {
-            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
-        }
-
-        .carousel-control-next-icon {
-            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
-        }
-    </style>
-{{/section}}
 <div class="card">
-    <div class="card-header" style="background-color: antiquewhite; text-align: center">
+    <div class="card-header" style="background-color: antiquewhite">
         <h4>
             Danh sách sản phẩm
         </h4>
@@ -22,6 +11,7 @@
             <th scope="col">ProID</th>
             <th scope="col">Hình ảnh</th>
             <th scope="col">Sản phẩm</th>
+            <th scope="col">Giá hiện tại</th>
             <th scope="col" style="text-align: center">Tính năng</th>
         </tr>
         </thead>
@@ -53,6 +43,7 @@
                     </div>
                 </th>
                 <td>{{ProName}}</td>
+                <td>{{format_number CurrentPrice}}</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/products/detail/{{ProID}}" role="button">
                         <i class="fa fa-pencil" aria-hidden="true"></i>
@@ -70,13 +61,43 @@
         </tbody>
     </table>
 </div>
+<div class="card-footer">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <li class="page-item">
+                {{#if this.isFirstPage}}
+                    <a class="page-link" href="?page={{decrease_one this.currentPageIndex}}">
+                    Previous
+                    </a>
+                {{/if}}
+
+            </li>
+            {{#each this.pageNumbers}}
+                {{#if isCurrentPage}}
+                    <li class="page-item active">
+                        <a class="page-link" href="javascript:;">{{value}}</a>
+                    </li>
+                {{else}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{value}}">{{value}}</a>
+                    </li>
+                {{/if}}
+            {{/each}}
+            {{#if this.isLastPage}}
+                <a class="page-link" href="?page={{increase_one this.currentPageIndex}}">
+                Next
+                </a>
+            {{/if}}
+        </ul>
+    </nav>
+</div>
 
 {{#section 'js'}}
     <script>
         $("#ProductTable tbody").on("click", "#btnDelete", function (e) {
             var ProID = $(this).attr('value');
             var ProName = $(this).attr('value1');
-            var url = window.location + "/del?id=" + ProID;
+            var url = window.location.origin+window.location.pathname + "/del?id=" + ProID;
             var answer = window.confirm('Bạn có muốn xóa sản phẩm ' + ProName);
             if (answer) {
                 $.post(url, function (data) {

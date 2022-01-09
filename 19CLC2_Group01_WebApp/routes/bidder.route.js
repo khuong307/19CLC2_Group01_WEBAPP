@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/upgrade', auth, async function (req, res){
     req.session.retURL = req.originalUrl;
+    console.log(res.locals.upgrade)
     if (res.locals.upgrade === "Can upgrade")
         res.render('vwBidder/upgrade', {
             view: true
@@ -18,7 +19,6 @@ router.get('/upgrade', auth, async function (req, res){
 });
 
 router.post('/send-request', async function (req, res){
-    req.session.retURL = req.originalUrl;
     const status = req.body.isAccept;
     const userid = req.session.authUser.UserID;
     const now = new Date();
@@ -39,7 +39,7 @@ router.post('/send-request', async function (req, res){
     else{
         const ret = await BidderModels.sendToAdmin(entity);
         console.log(ret)
-        res.render('vwBidder/upgrade')
+        res.redirect('/')
     }
 });
 

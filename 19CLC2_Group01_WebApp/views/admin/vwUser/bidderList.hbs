@@ -21,7 +21,7 @@
             <th scope="col">UserID</th>
             <th scope="col">Username</th>
             <th scope="col">Loại</th>
-            <th scope="col">Tình trạng kích hoạt</th>
+            <th scope="col">Tình trạng</th>
             <th scope="col" style="text-align: center">Tính năng</th>
         </tr>
         </thead>
@@ -33,8 +33,7 @@
                 <td>
                     {{#ifCond Type 1}}
                         Bidder
-                    {{/ifCond}}
-                    {{#ifCond Type 2}}
+                    {{else}}
                         Seller
                     {{/ifCond}}
                 </td>
@@ -42,11 +41,11 @@
                     {{#ifCond Activate 1}}
                         Đã kích hoạt
                     {{/ifCond}}
-                    {{#ifCond Activate 0}}
-                        Chưa xác nhận mã OTP
-                    {{/ifCond}}
                     {{#ifCond Activate -1}}
                         Đã vô hiệu hóa
+                    {{/ifCond}}
+                    {{#ifCond Activate 0}}
+                        Chưa xác nhận mã otp
                     {{/ifCond}}
                 </td>
                 <td class="text-center">
@@ -54,10 +53,9 @@
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Chi tiết
                     </a>
-
-                    {{#ifCond Activate -1}}
-                    {{else}}
-                        <a class="btn btn-sm btn-warning" value="{{UserID}}" value1="{{Username}}" id="btnDisable" role="button">
+                    {{#ifCond Activate 1}}
+                        <a class="btn btn-sm btn-warning" value="{{UserID}}" value1="{{Username}}" id="btnDisable"
+                           role="button">
                             <i class=" fa fa-ban" aria-hidden="true"></i>
                             Vô hiệu hóa
                         </a>
@@ -68,13 +66,44 @@
         </tbody>
     </table>
 </div>
+<div class="card-footer">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <li class="page-item">
+                {{#if this.isFirstPage}}
+                    <a class="page-link" href="?page={{decrease_one this.currentPageIndex}}">
+                    Previous
+                    </a>
+                {{/if}}
+
+            </li>
+            {{#each this.pageNumbers}}
+                {{#if isCurrentPage}}
+                    <li class="page-item active">
+                        <a class="page-link" href="javascript:;">{{value}}</a>
+                    </li>
+                {{else}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{value}}">{{value}}</a>
+                    </li>
+                {{/if}}
+            {{/each}}
+            {{#if this.isLastPage}}
+                <a class="page-link" href="?page={{increase_one this.currentPageIndex}}">
+                Next
+                </a>
+            {{/if}}
+        </ul>
+    </nav>
+</div>
+
 
 {{#section 'js'}}
     <script>
         $("#BidderTable tbody").on("click", "#btnDisable", function (e) {
             var UserID = $(this).attr('value');
             var Username = $(this).attr('value1');
-            var url = window.location + "/disable?id=" + UserID;
+            var url = window.location.origin+window.location.pathname + "/disable?id=" + UserID;
             var answer = window.confirm('Bạn có muốn vô hiệu hóa tài khoản ' + Username);
             if (answer) {
                 $.post(url, function (data) {

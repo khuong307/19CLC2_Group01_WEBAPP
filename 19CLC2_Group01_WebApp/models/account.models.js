@@ -144,5 +144,15 @@ export default {
 
     async updateEmailByUserID(userID, newEmail) {
         return db('User').where('UserID', userID).update({Email: newEmail})
-    }
+    },
+
+
+    //Minh
+    // Minh: Lấy chi tiết User
+    async getDetailUserInfo(userID){
+        const list = await db('User').join('Account','Account.UserID','=','User.UserID').where('User.UserID', userID);
+        if(list.length === 0)
+            return null
+        return list[0]
+    },
 }

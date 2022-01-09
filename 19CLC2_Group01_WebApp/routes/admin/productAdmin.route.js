@@ -3,7 +3,6 @@ import express from 'express';
 import productModel from '../../models/product.models.js';
 import auth from "../../middlewares/auth.mdw.js";
 import mails from "nodemailer";
-import {rmdirSync} from 'fs';
 
 const router = express.Router();
 
@@ -16,9 +15,33 @@ router.get('/', auth,async function(req, res){
     }
     req.session.retURL=req.originalUrl;
 
-    const list = await productModel.findAllWithIdCate()
+    // Paging
+    const limit = 4
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = await productModel.countProduct()
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const list = await productModel.findPageByProduct(limit, offset)
+
     res.render('admin/vwProductAdmin/productList', {
-        products: list
+        products: list,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
     })
 })
 
@@ -61,16 +84,6 @@ router.post('/del',auth,async function(req,res){
     const retWatchList=await productModel.delWatchListByProId(ProID);
     const retProInfo=await productModel.delProInfoSearchByProId(ProID);
     const retProduct=await productModel.delProductByProId(ProID);
-
-    try {
-        const Cat2 = await productModel.getCatID2FromProID(ProID)
-        console.log(Cat2)
-        const catId1 = await productModel.getCatID1FromCatID2(Cat2.CatID2)
-        const folderDelPro = './public/imgs/sp/'+catId1.CatID1+'/'+Cat2.CatID2+'/'+ProInfo.ProID
-        rmdirSync(folderDelPro, { recursive: true });
-        console.log(folderDelPro)
-    } catch (err) {
-    }
 
     res.json({
         msg:"Xóa thành công",
@@ -147,7 +160,7 @@ function sendEmail(email,ProName){
     });
 
     var mailOptions = {
-        from: 'binhkggffs@gmail.com',
+        from: 'khuong16lop9a6@gmail.com',
         to: email,
         subject: 'Bidding Wep App: Xóa sản phẩm đang đấu giá',
         text: 'Sản phẩm '+ ProName +' đã bị xóa vì vi phạm các tiêu chuẩn đăng bán trên website'

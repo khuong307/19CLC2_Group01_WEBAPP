@@ -55,7 +55,7 @@ export default {
     },
 
     async countProID(){
-        return db('Product').count({total: 'ProID' })
+        return db('Product').orderBy('ProID', 'DESC')
     },
 
     async InsertProInfo(entity){
