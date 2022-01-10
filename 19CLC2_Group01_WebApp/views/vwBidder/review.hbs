@@ -17,6 +17,13 @@
     <div class="card-body">
         <h5>Tổng số lượt thích: <span class="badge badge-danger ml-2">{{this.userInfo.LikePoint}}</span></h5>
         <h5>Tổng số lượt không thích: <span class="badge badge-danger ml-2">{{this.userInfo.DislikePoint}}</span></h5>
+        <h5>Phần trăm điểm: <span class="badge badge-danger ml-2">{{roundPercentage this.userInfo.Percentage}}%</span></h5>
+        {{#if this.userInfo.Show}}
+            <h5>Tình trạng: Đủ điều kiện đấu giá
+        {{else}}
+            <h5>Tình trạng: Không đủ điều kiện đấu giá
+        {{/if}}
+        <span> (phần trăm điểm đã được làm tròn khi hiển thị)</span></h5>
         <div class="comment-list mt-3">
             {{#each this.reviewList}}
                 <div class="text-danger ml-3">{{format_date Time}}</div>

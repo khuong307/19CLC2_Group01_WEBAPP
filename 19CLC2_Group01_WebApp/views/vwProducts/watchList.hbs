@@ -94,11 +94,10 @@
                                     <i class="fa fa-eye"></i>
                                     Details
                                 </a>
-                                {{#if Winner}}
-                                    <a class="btn btn-outline-success" href="/bidder/comment/{{ProID}}" role="button">
-                                        <i class="fa fa-comment-o"></i>
-                                        Review
-                                    </a>
+                                {{#if Show}}
+                                    <button class="btn btn-warning not-active">
+                                        <i class="fa fa-gavel"></i>
+                                    </button>
                                 {{/if}}
 
                                 <!--Khang: Del from watch list-->

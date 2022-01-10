@@ -8,6 +8,11 @@
         .carousel-control-next-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
         }
+
+        .not-active{
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 {{/section}}
 
@@ -93,6 +98,11 @@
                                     <i class="fa fa-eye"></i>
                                     Details
                                 </a>
+                                {{#if Show}}
+                                    <button class="btn btn-warning not-active">
+                                        <i class="fa fa-gavel"></i>
+                                    </button>
+                                {{/if}}
                                 <!--Khang: Add to watch list-->
                                 {{#if ../this.isLogin}}
                                     <div class="float-right">

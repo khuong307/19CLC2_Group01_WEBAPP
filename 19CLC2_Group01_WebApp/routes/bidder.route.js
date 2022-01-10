@@ -83,6 +83,11 @@ router.get('/review', async function (req, res){
         const product = await ProductModels.findById(reviewList[i].ProID);
         reviewList[i].ProName = product.ProName;
     }
+    userInfo.Percentage = userInfo.LikePoint * 100 / (userInfo.LikePoint + userInfo.DislikePoint);
+    if (userInfo.Percentage >= 80)
+        userInfo.Show = 1;
+    else
+        userInfo.Show = 0;
     res.render('vwBidder/review', {
         reviewList,
         userInfo

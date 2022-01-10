@@ -49,6 +49,11 @@ router.get('/byCat/:id', async function(req, res){
     }
 
     const list = await productModel.findPageByCatID(catID2, limit, offset)
+    for (let i = 0; i < list.length; i++){
+        const auction = await productModel.getAuctionByProID(list[i].ProID);
+        if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
+            list[i].Show = 1;
+    }
 
     // Khang
     if (res.locals.WatchListByUSerID != undefined){
@@ -229,6 +234,13 @@ router.get('/WatchList', auth, async function (req, res){
 
 
     const WatchList = await productModel.getWatchListFromUserID(userID, limit, offset);
+    console.log(WatchList)
+
+    for (let i = 0; i < WatchList.length; i++){
+        const auction = await productModel.getAuctionByProID(WatchList[i].ProID);
+        if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
+            WatchList[i].Show = 1;
+    }
 
     for (const obj of WatchList){
         const CatID2 = obj.CatID2;
@@ -490,9 +502,11 @@ router.get("/AuctionList", async function (req, res){
     const current = d.toISOString().slice(0, 19).replace('T', ' ');
     const ProIDList = await productModel.getAuctioningListWithLimitOffset(userID, current, limit, offset);
     var list = [];
-    console.log(ProIDList);
     for (let i = 0; i < ProIDList.length; i++){
         const product = await productModel.findById(ProIDList[i].ProID);
+        const auction = await productModel.getAuctionByProID(ProIDList[i].ProID);
+        if (auction[0].UserID === userID)
+            product.Show = 1;
         list.push(product);
     }
 
