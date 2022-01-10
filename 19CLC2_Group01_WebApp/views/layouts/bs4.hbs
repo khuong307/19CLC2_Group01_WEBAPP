@@ -98,6 +98,54 @@
             opacity: 0.8;
             text-decoration: none;
         }
+
+        @media (min-width: 768px) {
+            .animate {
+                animation-duration: 0.3s;
+                -webkit-animation-duration: 0.3s;
+                animation-fill-mode: both;
+                -webkit-animation-fill-mode: both;
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(1rem);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0rem);
+                opacity: 1;
+            }
+
+            0% {
+                transform: translateY(1rem);
+                opacity: 0;
+            }
+        }
+
+        @-webkit-keyframes slideIn {
+            0% {
+                -webkit-transform: transform;
+                -webkit-opacity: 0;
+            }
+
+            100% {
+                -webkit-transform: translateY(0);
+                -webkit-opacity: 1;
+            }
+
+            0% {
+                -webkit-transform: translateY(1rem);
+                -webkit-opacity: 0;
+            }
+        }
+
+        .slideIn {
+            -webkit-animation-name: slideIn;
+            animation-name: slideIn;
+        }
         /*Khang*/
     </style>
 </head>
@@ -128,7 +176,7 @@
                             Admin
                         {{/if}}
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
                         <!--Khang-->
                         <a class="dropdown-item" href="/bidder/upgrade">
                             <i class="fa fa-arrow-up"></i>
@@ -174,7 +222,7 @@
                             <!--<a class="dropdowyle="cursor: pointer"n-item waves-effect waves-light" href="#">Action <span class="badge badge-danger ml-2">4</span></a>
                             <a class="dropdown-item waves-effect waves-light" href="#">Another action <span class="badge badge-danger ml-2">1</span></a>
                             <a class="dropdown-item waves-effect waves-light" href="#">Something else here <span class="badge badge-danger ml-2">4</span></a>-->
-                            <ul class="dropdown-menu dropdown-menu-lg-right notifications" role="menu" aria-labelledby="dLabel">
+                            <ul class="dropdown-menu dropdown-menu-lg-right notifications animate slideIn" role="menu" aria-labelledby="dLabel">
 
                                 <div class="notification-heading"><h4 class="menu-title">Notifications</h4></div>
                                 <li class="divider"></li>
@@ -234,7 +282,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                         Chào,  <b>{{authUser.Username}}!</b>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-right animate slideIn" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/account/profile">
                             <i class="fa fa-user"></i>
                             Profile
@@ -270,7 +318,7 @@
                 <h4 class="card-header">
                     Danh mục
                 </h4>
-                <div class="just-padding">
+                <div class="just-padding hidden">
                     <div class="list-group list-group-root well">
                         {{#each CategoryL1}}
                             <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if isActive}}style="color: blue" {{/if}} data-toggle="collapse">
