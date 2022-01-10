@@ -5,6 +5,8 @@ import userModel from '../../models/user.models.js';
 import accountModel from "../../models/account.models.js";
 import auth from "../../middlewares/auth.mdw.js";
 import mails from "nodemailer";
+import BCrypt from "bcrypt";
+import productModel from "../../models/product.models.js";
 
 const router = express.Router();
 
@@ -177,6 +179,54 @@ router.post('/seller/disable',auth,async function(req,res){
     });
 })
 
+// Reset Password Seller
+router.post('/seller/detail/resetpass',auth,async function(req,res){
+    if(res.locals.authUser != null){
+        if (res.locals.authUser.Type != 3){
+            res.redirect('/')
+        }
+    }
+    req.session.retURL=req.originalUrl;
+
+    const userID = req.query.id
+    // Lấy thông tin user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+    // Tạo password mới
+    const newPass = "12345";
+    const newHashPass = BCrypt.hashSync(newPass, 10);
+    accountModel.UpdatePassByUserID(userID, newHashPass);
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: '01051993qwe'
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Reset Password for account',
+        text: 'Password của tài khoản bạn đã được reset.Password mặc định là '+newPass,
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    res.json({
+        msg:"Reset password thành công",
+        status:1,
+    });
+})
+
 // BIDDER
 // Xem danh sách bidder
 router.get('/bidder',auth,async function(req,res){
@@ -276,6 +326,54 @@ router.post('/bidder/disable',auth,async function(req,res){
     });
     res.json({
         msg:"Vô hiệu hóa tài khoản thành công",
+        status:1,
+    });
+})
+
+// Reset Password Bidder
+router.post('/bidder/detail/resetpass',auth,async function(req,res){
+    if(res.locals.authUser != null){
+        if (res.locals.authUser.Type != 3){
+            res.redirect('/')
+        }
+    }
+    req.session.retURL=req.originalUrl;
+
+    const userID = req.query.id
+    // Lấy thông tin user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+    // Tạo password mới
+    const newPass = "12345";
+    const newHashPass = BCrypt.hashSync(newPass, 10);
+    accountModel.UpdatePassByUserID(userID, newHashPass);
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: '01051993qwe'
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Reset Password for account',
+        text: 'Password của tài khoản bạn đã được reset.Password mặc định là '+newPass,
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    res.json({
+        msg:"Reset password thành công",
         status:1,
     });
 })
@@ -385,7 +483,6 @@ router.post('/upgrade/deny',auth,async function(req,res){
     req.session.retURL=req.originalUrl;
 
     const userID=req.query.id;
-
     // Lấy info user
     const userInfo=await accountModel.getUserInfo(userID);
     // láy ra email user
@@ -427,5 +524,75 @@ router.post('/upgrade/deny',auth,async function(req,res){
     });
 })
 
+
+// Xóa tài khoản
+router.post('/delete',async function(req,res){
+    if(res.locals.authUser != null){
+        if (res.locals.authUser.Type != 3){
+            res.redirect('/')
+        }
+    }
+    req.session.retURL=req.originalUrl;
+
+    const userID=req.query.id;
+    // Lấy info user
+    const userInfo=await accountModel.getUserInfo(userID);
+    // láy ra email user
+    const email=userInfo.Email;
+
+    // Lấy danh sách ProID theo UserID trong bảng Product
+    const listProID=await userModel.findProIDByUserID(userID);
+
+    //gửi OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'binhkggffs@gmail.com',
+            pass: '01051993qwe'
+        }
+    });
+
+    var mailOptions = {
+        from: 'binhkggffs@gmail.com',
+        to: email,
+        subject: 'Bidding Wep App: Xóa tài khoảnr',
+        text: 'Tài khoản của bạn đã bị xóa khỏi hệ thống đấu giá trực tuyến'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    //Xóa bảng WatchList + User+Review+Product+Permission+MaxPrice+ChangeLevel+Auction+Account
+    // Xóa đúng theo thứ tự --> Khóa ngoại --> Khóa chính
+    const retWatchList=await userModel.deleteWatchList(userID);
+    const retChangeLV=await userModel.deleteChangeLevel(userID);
+    const retPer=await userModel.deletePermission(userID);
+    const retReview=await userModel.deleteReview(userID);
+    // Xóa những product được upload bởi user
+    for(let i=0;i<listProID.length;i++){
+        let ret2Permis=await productModel.delPermisByProId(listProID[i].ProID);
+        let ret2MaxPrice=await productModel.delMaxPriceByProId(listProID[i].ProID);
+        let ret2Auction=await productModel.delAuctionByProId(listProID[i].ProID);
+        let ret2Description=await productModel.delDescriptionByProId(listProID[i].ProID);
+        let ret2WatchList=await productModel.delWatchListByProId(listProID[i].ProID);
+        let ret2ProInfo=await productModel.delProInfoSearchByProId(listProID[i].ProID);
+        let ret2Product=await productModel.delProductByProId(listProID[i].ProID);
+    }
+    const retAuction=await userModel.deleteAuction(userID);
+    const retMaxPrice=await userModel.deleteMaxPrice(userID);
+    const retProduct=await userModel.deleteProduct(userID);
+
+    const retUser=await userModel.deleteUser(userID);
+    const retAcc = await userModel.deleteAccount(userID);
+
+    res.json({
+        msg:"Xóa tài khoản thành công",
+        status:1,
+    });
+})
 
 export default router;

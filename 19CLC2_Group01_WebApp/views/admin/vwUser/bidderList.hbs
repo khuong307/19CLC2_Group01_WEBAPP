@@ -43,6 +43,12 @@
                         <i class=" fa fa-ban" aria-hidden="true"></i>
                         Vô hiệu hóa
                     </a>
+
+                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}" id="btnDelete"
+                       role="button">
+                        <i class=" fa fa-trash" aria-hidden="true"></i>
+                        Xóa
+                    </a>
                 </td>
             </tr>
         {{/each}}
@@ -88,6 +94,21 @@
             var Username = $(this).attr('value1');
             var url = window.location.origin+window.location.pathname + "/disable?id=" + UserID;
             var answer = window.confirm('Bạn có muốn vô hiệu hóa tài khoản ' + Username);
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+
+        $("#BidderTable tbody").on("click", "#btnDelete", function (e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location.origin + "/admin/user/delete?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn xóa tài khoản ' + Username);
             if (answer) {
                 $.post(url, function (data) {
                     if (data.status == 1) {
