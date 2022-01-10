@@ -89,20 +89,20 @@ export default {
         if(userID === null){
             return null
         }
-        const lst = await db('WatchList').count({ WatchListCount: 'UserID' }).where('UserID',userID);
+        const lst = await db('WatchList').count({ WatchListCount: 'UserID' }).where('UserID',userID).join('Product', 'Product.ProID', '=', 'WatchList.ProID').whereNull('Product.Winner')
         return lst[0].WatchListCount;
     },
 
     async getWatchListFromUserID(id, limit, offset){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const lst = await db('Product').join('WatchList', 'Product.ProID',
-            '=', 'WatchList.ProID').where('WatchList.UserID', id).andWhere('Product.EndDate','>', now ).limit(limit).offset(offset).select();
+            '=', 'WatchList.ProID').where('WatchList.UserID', id).andWhere('Product.EndDate','>', now ).whereNull('Product.Winner').limit(limit).offset(offset).select();
         return lst;
     },
     // Khang
 
     async getWatchListByUserID(userID){
-        const list = await db('WatchList').where('UserID', userID)
+        const list = await db('WatchList').join('Product', 'Product.ProID', '=', 'WatchList.ProID').whereNull('Product.Winner').andWhere('WatchList.UserID', userID)
         if (list.length === 0){
             return null
         }
@@ -385,6 +385,7 @@ export default {
             return null;
         return ans[0]
     },
+
     async getReviewBidderSide(bidderID,sellerID, proID){
         const ans = await db('Review').where('SenderID', bidderID).andWhere('ReceiverID', sellerID).andWhere('ProID', proID)
         if (ans.length === 0)
@@ -461,7 +462,7 @@ export default {
     },
 
     async getAuctionByProID(id){
-        const lst = await db('Auction').where('ProID', id).select();
+        const lst = await db('Auction').where('ProID', id).orderBy('Time', 'desc').select();
         return lst;
     },
 
@@ -506,16 +507,17 @@ export default {
     },
 
     async getAuctioningList(UserID, time){
-        const lst = await db('Auction').join('Product', 'Auction.ProID', '=',
-            'Product.ProID').where('Auction.UserID', UserID).where('EndDate', '>', time).distinct('Auction.ProID');
-        return lst;
+        const raw_sql = `select distinct auc.ProID from Auction auc join Product p on auc.ProID = p.ProID where auc.UserID = '${UserID}' and '${time}' < EndDate and Winner is null and auc.ProID not in (select ProID from Auction where Status = 0 and UserID = '${UserID}')`;
+        const lst = await db.raw(raw_sql);
+        return lst[0];
     },
 
     async getAuctioningListWithLimitOffset(UserID, time, limit, offset){
-        const lst = await db('Auction').join('Product', 'Auction.ProID', '=',
-            'Product.ProID').where('Auction.UserID', UserID).where('EndDate', '>', time).distinct('Auction.ProID').limit(limit).offset(offset);
-        return lst;
+        const raw_sql = `select distinct auc.ProID from Auction auc join Product p on auc.ProID = p.ProID where auc.UserID = '${UserID}' and '${time}' < EndDate and Winner is null and auc.ProID not in (select ProID from Auction where Status = 0 and UserID = '${UserID}') order by auc.ProID limit ${limit} offset ${offset}`;
+        const lst = await db.raw(raw_sql);
+        return lst[0];
     },
+
 
     deleteMaxPriceByProIDUserID(proid, userid){
         return db('MaxPrice').where('ProID', proid).andWhere('UserID', userid).del()
@@ -536,4 +538,23 @@ export default {
         let now=new Date();
         return db.select().table('Product').join('CategoryL2','Product.CatID2','=','CategoryL2.CatID2').whereNull('Winner').andWhere('EndDate','>=',now).orderBy('Product.ProID').limit(limit).offset(offset);
     },
+
+    async getWinningList(userID){
+        const lst = await db('Product').where('Winner', userID).select();
+        return lst;
+    },
+
+    async getWinningListWithLimitOffset(userID, limit, offset){
+        const lst = await db('Product').where('Winner', userID).limit(limit).offset(offset);
+        return lst;
+    },
+
+    updateProductEndTime(ProID, time){
+        return db('Product').where('ProID', ProID).update('EndDate', time);
+    },
+
+    updateProductSendEmailStatus(ProID){
+        return db('Product').where('ProID', ProID).update('isSendEmail', 1);
+    },
+    // Khang
 }

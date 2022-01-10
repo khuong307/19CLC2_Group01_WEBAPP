@@ -55,6 +55,9 @@ export default function(app){
                 var d = new Date(date);
                 return moment(d).format("DD/MM/YYYY HH:mm:ss");
             },
+            roundPercentage(val){
+                return Math.round(val);
+            }
             // Khang
         }
     }));

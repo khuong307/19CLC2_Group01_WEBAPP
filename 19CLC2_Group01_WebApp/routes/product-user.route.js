@@ -51,6 +51,11 @@ router.get('/byCat/:id', async function(req, res){
     }
 
     const list = await productModel.findPageByCatID(catID2, limit, offset)
+    for (let i = 0; i < list.length; i++){
+        const auction = await productModel.getAuctionByProID(list[i].ProID);
+        if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
+            list[i].Show = 1;
+    }
     //check which product selected in watch list
     if (res.locals.WatchListByUSerID != null){
         for(const c of list){
@@ -93,6 +98,15 @@ router.get('/byCat/:id', async function(req, res){
     }
 
     const isLogin = req.session.auth || false
+    if (res.locals.WinningListByUserID != null){
+        for(const c of list){
+            for (const d of res.locals.WinningListByUserID){
+                if (c.ProID === d.ProID){
+                    c.isWinning = 1;
+                }
+            }
+        }
+    }
 
     res.render('vwProducts/byCat', {
         products: list,
@@ -256,7 +270,7 @@ router.get('/detail/:id', async function(req, res){
 
     // Khang
     const WatchList = res.locals.WatchListByUSerID;
-    if (WatchList != undefined){
+    if (WatchList != null){
         for (var i = 0; i < WatchList.length; i++){
             if (WatchList[i].ProID === product.ProID){
                 product.isActive = true;
@@ -272,14 +286,14 @@ router.get('/detail/:id', async function(req, res){
     product.sellerUsername = sellerUsername.Username
 
     var highestBidder = "0"
-    var highestBidderPoint = ""
     const UploadUserPoint = await accountModels.getPointByUserID(product.UploadUser)
     const Bidder =  await productModel.getUsernameMaxPriceByProID(product.ProID)
+    var bidderID = ""
     if (Bidder === null){
         highestBidder = 'None'
     }else{
         highestBidder = Bidder.Username
-        highestBidderPoint = await accountModels.getPointByUserID(Bidder.UserID)
+        bidderID = Bidder.UserID
     }
 
 
@@ -360,11 +374,10 @@ router.get('/detail/:id', async function(req, res){
 
     //get all request.
     const allRequest = await sellerModels.getBidderFirstRequest(proID);
-    console.log(allRequest)
     for(const c of allRequest){
         c.Username = await sellerModels.getUsernameByUserID(c.BidderID)
     }
-    console.log(allRequest)
+
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
@@ -372,14 +385,15 @@ router.get('/detail/:id', async function(req, res){
         Category1: catID1.CatID1,
         UploadUserPoint,
         highestBidder,
-        highestBidderPoint,
         desHistory,
         isOwner,
         bidderInfo,
         proID,
         hasWinner: product.Winner === null,
         userInfo,
-        allRequest
+        allRequest,
+        bidderID,
+        hasBidder: highestBidder != 'None'
     })
 })
 //Khuong.
@@ -681,6 +695,9 @@ router.get('/history', async function (req, res){
     for (var i = 0; i < lst.length; i++) {
         lst[i].No = (i + 1) + (page - 1) * 6;
     }
+    const product = await productModel.getProductByProID(ProID)
+    const catid2 = await productModel.getCatID2FromProID(ProID)
+    const catid1 =  await productModel.getCatID1FromCatID2(catid2.CatID2)
     res.render('vwProducts/history', {
         Users: lst,
         ProID,
@@ -688,7 +705,9 @@ router.get('/history', async function (req, res){
         currentPageIndex: page,
         isFirstPage: +page != 1,
         isLastPage: +page != nPages,
-        display
+        display,
+        product,
+        CatID1: catid1.CatID1
     });
 });
 
@@ -833,15 +852,53 @@ router.get("/AuctionList", async function (req, res){
         })
     }
 
-    const ProIDList = await productModel.getAuctioningListWithLimitOffset(userID, d, limit, offset);
+    const current = d.toISOString().slice(0, 19).replace('T', ' ');
+    const ProIDList = await productModel.getAuctioningListWithLimitOffset(userID, current, limit, offset);
     var list = [];
-    console.log(ProIDList);
     for (let i = 0; i < ProIDList.length; i++){
         const product = await productModel.findById(ProIDList[i].ProID);
+        const auction = await productModel.getAuctionByProID(ProIDList[i].ProID);
+        if (auction[0].UserID === userID)
+            product.Show = 1;
         list.push(product);
     }
 
-    //check wwhich product selected in watch list
+    for (const obj of list){
+        const CatID2 = obj.CatID2;
+        const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
+        obj.CatID1 = CatID1.CatID1;
+    }
+    //get highest bidder + number of auction
+    for(const c of list){
+        const highestBidder =  await productModel.getUsernameMaxPriceByProID(c.ProID)
+        if (highestBidder === null){
+            c.highestBidder = 'None'
+        }else{
+            c.highestBidder = highestBidder.Username
+        }
+
+        const numberofAuction = await productModel.getNumberofAuctionByProID(c.ProID)
+        if(numberofAuction === null){
+            c.numberAuction = 0
+        }else{
+            c.numberAuction = numberofAuction.NumberOfAuction
+        }
+
+        //check í new product. (3 days)
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(c.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            c.isNew = true
+        }
+        else
+            c.isNew = false
+    }
+
+    //check which product selected in watch list
     if (res.locals.WatchListByUSerID != undefined){
         for(const c of list){
             for (const d of res.locals.WatchListByUSerID){
@@ -852,9 +909,8 @@ router.get("/AuctionList", async function (req, res){
         }
     }
     const isLogin = req.session.auth || false
-    console.log(isLogin)
 
-    res.render('vwProducts/byCat', {
+    res.render('vwProducts/auctionList', {
         products: list,
         empty: list.length === 0,
         pageNumbers,
@@ -864,4 +920,57 @@ router.get("/AuctionList", async function (req, res){
         isLogin
     })
 });
+
+//Khang
+router.get('/WinList', auth,async function(req, res){
+    req.session.retURL = req.originalUrl;
+    const userID = res.locals.authUser.UserID;
+
+    const limit = 3
+    const page = req.query.page || 1 //Paging
+    const offset = (page - 1) *limit
+
+    const total = res.locals.lengthOfWinningList;
+    let nPages = Math.floor(total/limit)
+    let pageNumbers = []
+    if(total % limit > 0){
+        nPages++
+    }
+
+    for (let i = 1; i <= nPages; i++){
+        pageNumbers.push({
+            value: i,
+            isCurrentPage: +page === i,
+        })
+    }
+
+    const list = await productModel.getWinningListWithLimitOffset(userID, limit, offset);
+
+    for (const obj of list){
+        const CatID2 = obj.CatID2;
+        const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
+        obj.CatID1 = CatID1.CatID1;
+    }
+    //check wwhich product selected in watch list
+    if (res.locals.WatchListByUSerID != null){
+        for(const c of list){
+            for (const d of res.locals.WatchListByUSerID){
+                if (c.ProID === d.ProID){
+                    c.isWatchList = 1;
+                }
+            }
+        }
+    }
+    const isLogin = req.session.auth || false
+
+    res.render('vwProducts/winList', {
+        products: list,
+        empty: list.length === 0,
+        pageNumbers,
+        currentPageIndex: page,
+        isFirstPage: +page != 1,
+        isLastPage: +page != nPages,
+        isLogin
+    })
+})
 export default router;

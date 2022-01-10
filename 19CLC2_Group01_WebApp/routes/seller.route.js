@@ -6,6 +6,9 @@ import multer from'multer'
 import {mkdirSync} from 'fs';
 import {existsSync} from 'fs';
 import auth from "../middlewares/auth.mdw.js";
+import BidderModels from "../models/bidder.models.js";
+import AccountModels from "../models/account.models.js";
+import ProductModels from "../models/product.models.js";
 const router = express.Router();
 //register.
 router.get('/ProductsOf/:sellerUsername', async function(req, res){
@@ -502,5 +505,28 @@ router.post('/AutoCancel', auth,async function(req, res){
     const url = req.headers.referer || '/'
     res.redirect(url)
 })
+
+router.get('/review/:id', auth, async function (req, res){
+    const UserID = req.params.id
+    const username = await productModel.getUsernameByUserID(UserID)
+    const reviewList = await BidderModels.getReviewWithUserID(UserID);
+    const userInfo = await AccountModels.getUserInfo(UserID);
+    if (reviewList != null){
+        for (let i = 0; i < reviewList.length; i++){
+            const product = await productModel.findById(reviewList[i].ProID);
+            reviewList[i].ProName = product.ProName;
+        }
+    }
+    userInfo.Percentage = userInfo.LikePoint * 100 / (userInfo.LikePoint + userInfo.DislikePoint);
+    if (userInfo.Percentage >= 80)
+        userInfo.Show = 1;
+    else
+        userInfo.Show = 0;
+    res.render('vwSeller/review', {
+        reviewList,
+        userInfo,
+        username: username.Username
+    });
+});
 
 export default router;

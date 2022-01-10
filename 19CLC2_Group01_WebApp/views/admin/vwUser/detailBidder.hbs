@@ -97,8 +97,14 @@
     </style>
 {{/section}}
 <div class="container">
+    <a href="javascript:history.back()" role="button">
+        <i class="fa fa-backward" aria-hidden="true"></i>
+        Quay lại
+    </a>
     <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #9b59b6);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px">Thông tin cá nhân</div>
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px">
+        Thông tin cá nhân
+    </div>
     <form id="formRegister" method="POST">
         <div class="user-details">
             <div class="col-md-6">
@@ -122,12 +128,6 @@
                         <input type="text"  name="Address" value = "{{UserInfo.Address}}" readonly required>
                     </div>
                 </div>
-                <div class="card-footer mt-2 border-0" style="background-color: white">
-                    <a class="btn btn-success mr-2" href="javascript:history.back()" role="button">
-                        <i class="fa fa-backward" aria-hidden="true"></i>
-                        Quay lại
-                    </a>
-                </div>
             </div>
             <div class="col-md-6">
                 <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
@@ -138,7 +138,30 @@
                         <input type="text" name="Username" id="Username" value="{{UserInfo.Username}}" readonly required>
                     </div>
                 </div>
+                <div class="button">
+                    <a value="{{UserInfo.UserID}}" value1="{{UserInfo.Username}}" id="btnResetPass">
+                        <input  value="Reset password" style="text-align: center">
+                    </a>
+                </div>
             </div>
         </div>
     </form>
 </div>
+{{#section 'js'}}
+    <script>
+        $('#btnResetPass').on('click', function(e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location.origin+window.location.pathname + "/resetpass?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn reset password của ' + Username);
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+{{/section}}

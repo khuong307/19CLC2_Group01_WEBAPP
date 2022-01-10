@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header" style="background-color: antiquewhite">
-        <h4>
+        <h4 style="text-align: center">
             Danh sách Seller
             <div style="float: right">
                 <a class="btn btn-sm btn-outline-primary" href="/admin/user/bidder" role="button">
@@ -44,7 +44,7 @@
                     Chi tiết
                     </a>
 
-                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}" id="btnDisable"
+                    <a class="btn btn-sm btn-secondary" value="{{UserID}}" value1="{{Username}}" id="btnDisable"
                        role="button">
                         <i class=" fa fa-ban" aria-hidden="true"></i>
                         Vô hiệu hóa
@@ -54,6 +54,11 @@
                        role="button">
                         <i class="fa fa-arrow-down" aria-hidden="true"></i>
                         Giáng cấp
+                    </a>
+                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}" id="btnDelete"
+                       role="button">
+                        <i class=" fa fa-trash" aria-hidden="true"></i>
+                        Xóa
                     </a>
                 </td>
             </tr>
@@ -114,6 +119,21 @@
             var Username = $(this).attr('value1');
             var url = window.location.origin+window.location.pathname + "/disable?id=" + UserID;
             var answer = window.confirm('Bạn có muốn vô hiệu hóa tài khoản ' + Username);
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+
+        $("#BidderTable tbody").on("click", "#btnDelete", function (e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location.origin + "/admin/user/delete?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn xóa tài khoản ' + Username);
             if (answer) {
                 $.post(url, function (data) {
                     if (data.status == 1) {

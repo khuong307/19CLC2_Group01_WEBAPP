@@ -1,0 +1,130 @@
+{{#section 'css'}}
+    <style>
+        .comment-list{
+            overflow: auto;
+            max-height: 200px;
+            border-radius: 5px;
+            border-style: solid;
+            border-width: 1px;
+        }
+    </style>
+{{/section}}
+
+{{#section 'js'}}
+    <script>
+        $("#btn-like").click(function (){
+            if ($("#btn-like").hasClass("btn-outline-primary")){
+                $("#btn-like").removeClass("btn-outline-primary");
+                $("#btn-like").addClass("btn-primary");
+                $("#like").val(1);
+                if ($("#btn-dislike").hasClass("btn-primary")){
+                    $("#btn-dislike").removeClass("btn-primary");
+                    $("#btn-dislike").addClass("btn-outline-primary");
+                    $("#dislike").val(0);
+                }
+            }
+            else{
+                $("#btn-like").removeClass("btn-primary");
+                $("#btn-like").addClass("btn-outline-primary");
+                $("#like").val(0);
+            }
+        });
+        $("#btn-dislike").click(function (){
+            if ($("#btn-dislike").hasClass("btn-outline-primary")){
+                $("#btn-dislike").removeClass("btn-outline-primary");
+                $("#btn-dislike").addClass("btn-primary");
+                $("#dislike").val(1);
+                if ($("#btn-like").hasClass("btn-primary")){
+                    $("#btn-like").removeClass("btn-primary");
+                    $("#btn-like").addClass("btn-outline-primary");
+                    $("#like").val(0);
+                }
+            }
+            else{
+                $("#btn-dislike").removeClass("btn-primary");
+                $("#btn-dislike").addClass("btn-outline-primary");
+                $("dislike").val(0);
+            }
+        });
+        $("#submit").click(function (event){
+            const like = $("#like").val();
+            const dislike = $("#dislike").val();
+            const comment = $("#comment").val();
+            if ((like == 0 && dislike == 0) || (comment == "")){
+                event.preventDefault();
+                alert("Người dùng chưa nhập bình luận hay đánh giá thích/không thích người bán");
+            }
+        });
+    </script>
+{{/section}}
+
+<div class="card text">
+    <h4 class="card-header d-flex justify-content-between">
+        Đánh giá
+    </h4>
+    <div class="card-body">
+        {{#if hasReview}}
+            <form method="post" action="/bidder/comment/{{ProID}}" id="review">
+                <div class="form-group">
+                    <label for="comment" style="text-decoration: underline">Nhận xét:</label>
+                    <textarea class="form-control" rows="5" id="comment" placeholder="Text here..." name="txtComment"></textarea>
+                </div>
+                <input id="like" type="hidden" name="txtLike" value="0">
+                <input id="dislike" type="hidden" name="txtDislike" value="0">
+                <div class="float-right">
+                    <button id="submit" class="btn btn-md btn-primary" type="submit">Gửi</button>
+                </div>
+            </form>
+            <button id="btn-like" class="btn btn-md btn-outline-primary">
+                <i class="fa fa-thumbs-up"></i>
+            </button>
+            <button id="btn-dislike" class="btn btn-md btn-outline-primary">
+                <i class="fa fa-thumbs-down"></i>
+            </button>
+        {{else}}
+            <p> Bạn đã đánh giá sản phẩm này rồi!</p>
+        <div class="form-group">
+            <label for="comment" style="text-decoration: underline">Nhận xét:</label>
+
+            <div>
+                <i class="fa fa-pencil"></i> {{formatDateTime BidderReview.Time}} {{BidderReview.Comment}}
+                <span>
+                    {{#if BidderReview.Status}}
+                        <button disabled="disabled" class="btn btn-primary" style="height:35px;width:37px; margin:auto;
+    text-align:center;">
+                            <i class="fa fa-thumbs-up float-left"></i>
+                        </button>
+                    {{else}}
+                        <button disabled="disabled" class="btn btn-primary" >
+                            <i class="fa fa-thumbs-down"></i>
+                        </button>
+                    {{/if}}
+                </span>
+            </div>
+        </div>
+
+
+        {{/if}}
+
+        <div class="comment-list mt-3">
+            {{#each this.reviewList}}
+                <div class="text-danger ml-3">{{format_date Time}}</div>
+                <div class="d-flex flex-row comment-row mt-2">
+                    <div class="p-2"><img src="https://www.seekpng.com/png/full/50-507252_customer-and-seller-icon.png" alt="user" width="50" class="rounded-circle"></div>
+                    <div class="comment-text w-100">
+                        <h6 class="font-medium">{{Username}}
+                            {{#if Status}}
+                                <i class="fa fa-thumbs-up text-primary"></i>
+                            {{else}}
+                                <i class="fa fa-thumbs-down text-primary"></i>
+                            {{/if}}
+                        </h6> <span class="m-b-15 d-block">{{Comment}}</span>
+                    </div>
+                </div>
+                {{#unless @last}}
+                    <div class="dropdown-divider"></div>
+                {{/unless}}
+            {{/each}}
+        </div>
+    </div>
+</div>

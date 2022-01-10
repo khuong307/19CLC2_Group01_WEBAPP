@@ -81,4 +81,55 @@ export default {
     insertDownSeller(entity){
         return db('ChangeLevel').insert(entity);
     },
+
+    // Xóa user khỏi Watchlist
+    deleteWatchList(userID){
+        return db('WatchList').where('UserID',userID).del();
+    },
+
+    // Xóa user khỏi User
+    deleteUser(userID){
+        return db('User').where('UserID',userID).del();
+    },
+
+    // Xóa user khỏi Review
+    deleteReview(userID){
+        return db('Review').where('SenderID',userID).orWhere('ReceiverID',userID).del();
+    },
+
+    // Xóa user khỏi Product
+    deleteProduct(userID){
+        return db('Product').where('UploadUser',userID).orWhere('Winner',userID).del();
+    },
+
+    // Xóa user khỏi Permission
+    deletePermission(userID){
+        return db('Permission').where('BidderID',userID).del();
+    },
+
+    // Xóa user khỏi MaxPrice
+    deleteMaxPrice(userID){
+        return db('MaxPrice').where('UserID',userID).del();
+    },
+
+    // Xóa user khỏi Changelevel
+    deleteChangeLevel(userID){
+        return db('ChangeLevel').where('UserID',userID).del();
+    },
+
+    // Xóa user khỏi Auction
+    deleteAuction(userID){
+        return db('Auction').where('UserID',userID).orWhere('Header',userID).del();
+    },
+
+    // Xóa user khỏi Account
+    deleteAccount(userID){
+        return db('Account').where('UserID',userID).del();
+    },
+
+    // Tìm kiếm ProID theo UserID trong bảng Product
+    async findProIDByUserID(userID){
+        const listProID= await db('Product').select('ProID').where('UploadUser',userID);
+        return listProID;
+    },
 }
