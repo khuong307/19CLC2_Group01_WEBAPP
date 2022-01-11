@@ -1,7 +1,10 @@
 import db from '../utils/db.js'
 export default {
     async countUser() {
-        return db('User').count({NumberOfUser: 'UserID'})
+        const ans = await db('User').orderBy('UserID', 'DESC').select('UserID')
+        if (ans.length === 0)
+            return null
+        return ans[0]
     },
     async addNewAccount(newUser) {
         return db('Account').insert(newUser)
