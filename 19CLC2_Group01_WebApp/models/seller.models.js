@@ -8,7 +8,7 @@ export default {
     },
 
     async getOutDateProductsBySellerUsername(username, limit, offset){
-        const list = await db.select('*').from('Product').where('Product.EndDate', '<', new Date()).join('Account', {'Account.UserID': 'Product.UploadUser'}).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset ).where('Account.Username', username)
+        const list = await db.select('*').from('Product').where('Product.EndDate', '<', new Date()).whereNull('Winner').join('Account', {'Account.UserID': 'Product.UploadUser'}).orderBy('Product.UploadDate', 'DESC').limit(limit).offset(offset ).where('Account.Username', username)
         if(list.length === 0)
             return null;
         return list
@@ -67,7 +67,7 @@ export default {
 
     //outdate
     async countOutdateProductByUserID(userID){
-        const list = await db('Product').where('UploadUser', userID).andWhere('Product.EndDate', '<', new Date()).count({total: 'ProID' })
+        const list = await db('Product').where('UploadUser', userID).andWhere('Product.EndDate', '<', new Date()).whereNull('Winner').count({total: 'ProID' })
         if(list.length === 0)
             return null
         return list[0]

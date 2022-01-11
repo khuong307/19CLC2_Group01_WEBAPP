@@ -16,6 +16,23 @@
         $('#datetimepicker').datetimepicker();
         $('#Name').select();
 
+        $('#formAddProduct').on('submit', function(e){
+            e.preventDefault()
+            const Cat = $('#CateL1').val()
+            const date =  $('#datetimepicker').val()
+
+            if(Cat === null){
+                alert('Hãy chọn danh mục cấp 1');
+                return;
+            }
+
+            if(new Date(date) < new Date()){
+                alert('Ngày kết khúc không hợp lệ');
+                return;
+            }else{
+                $('#formAddProduct').off('submit').submit()
+            }
+        })
 
         window.onload = function() {
             var CateL1 = document.getElementById("CateL1");

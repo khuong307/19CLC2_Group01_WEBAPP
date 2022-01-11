@@ -241,12 +241,6 @@ router.get('/productsOutDate/:sellerUsername', auth,async function(req, res){
     const uploadUser = await sellerModel.getUserIDByUsername(sellerUsername)
     const productCount = await sellerModel.countOutdateProductByUserID(uploadUser.UserID)
 
-    // if(tmp === null){
-    //     return res.render('vWSeller/productsOutDate',{
-    //         empty: 1,
-    //         sellerUsername
-    //     })
-    // }
 
     var isOwner = 0
     if(res.locals.authUser != null){

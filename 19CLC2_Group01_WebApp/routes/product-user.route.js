@@ -53,8 +53,10 @@ router.get('/byCat/:id', async function(req, res){
     const list = await productModel.findPageByCatID(catID2, limit, offset)
     for (let i = 0; i < list.length; i++){
         const auction = await productModel.getAuctionByProID(list[i].ProID);
-        if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
-            list[i].Show = 1;
+        if (auction != null && res.locals.authUser != null){
+            if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
+                list[i].Show = 1;
+        }
     }
     //check which product selected in watch list
     if (res.locals.WatchListByUSerID != null){
@@ -753,6 +755,9 @@ router.post('/auction/:id', async function (req, res){
             Time: d
         };
         const product = await productModel.findById(entity.ProID);
+        const endDate = new Date(product.EndDate);
+        const diffTime = endDate.getTime() - d.getTime();
+        console.log(diffTime);
         const priceList = await productModel.getMaxPriceByProID(entity.ProID);
         if (priceList.length === 0){
             await bidderModels.insertMaxPrice(entity);
@@ -772,6 +777,8 @@ router.post('/auction/:id', async function (req, res){
             await productModel.updatePriceProduct(new_entity);
             if (req.body.txtBuyNow !== undefined)
                 await productModel.updateWinnerProduct(new_entity);
+            if (diffTime <= 300000 && product.AutoExtendTime === 1)
+                await productModel.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
             await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
             await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
         }
@@ -818,6 +825,8 @@ router.post('/auction/:id', async function (req, res){
                     await productModel.updatePriceProduct(new_entity);
                     if (req.body.txtBuyNow !== undefined)
                         await productModel.updateWinnerProduct(new_entity);
+                    if (diffTime <= 300000 && product.AutoExtendTime === 1)
+                        await productModel.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
                     await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
                     await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
                     if (new_entity.UserID !== priceList[0].UserID)
@@ -850,7 +859,7 @@ router.post('/auction/:id', async function (req, res){
     res.redirect(url);
 })
 
-router.get("/AuctionList", async function (req, res){
+router.get("/AuctionList", auth, async function (req, res){
     req.session.retURL = req.originalUrl;
     const userID = res.locals.authUser.UserID;
     const d = new Date();
