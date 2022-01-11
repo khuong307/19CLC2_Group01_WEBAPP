@@ -501,6 +501,7 @@ router.post('/AutoCancel', auth,async function(req, res){
 })
 
 router.get('/review/:id', auth, async function (req, res){
+    console.log(123)
     const UserID = req.params.id
     const username = await productModel.getUsernameByUserID(UserID)
     const reviewList = await BidderModels.getReviewWithUserID(UserID);
