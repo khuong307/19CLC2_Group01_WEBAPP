@@ -120,7 +120,7 @@ router.get('/is_available_account', async function(req, res){
 
 //OTP CHECK.
 router.get('/OTP/:email', async function(req, res){
-    res.render('vWAccount/OTPConfirm')
+    res.render('vwAccount/OTPConfirm')
 
 })
 
@@ -138,7 +138,7 @@ router.post('/OTP/:email', async function(req, res){
 
         return res.redirect('/account/login')
     }else{
-        return res.render('vWAccount/OTPConfirm',{
+        return res.render('vwAccount/OTPConfirm',{
             err_message: 'Mã OTP không khớp!'
         })
     }
@@ -147,7 +147,7 @@ router.post('/OTP/:email', async function(req, res){
 
 //login.
 router.get('/login', async function(req, res){
-    res.render('vWAccount/login', {
+    res.render('vwAccount/login', {
         layout:false
     })
 })
@@ -158,7 +158,7 @@ router.post('/login', async function(req, res){
 
     const user = await accountModel.getAccountInfoByUsername(username)
     if(user === null){
-        return res.render('vWAccount/login', {
+        return res.render('vwAccount/login', {
             layout: false,
             err_message: 'Username và mật khẩu không hợp lệ!'
         })
@@ -166,7 +166,7 @@ router.post('/login', async function(req, res){
 
     const checkPass = BCrypt.compareSync(password, user.Password)
     if(checkPass===false){
-        return res.render('vWAccount/login', {
+        return res.render('vwAccount/login', {
             layout: false,
             err_message: 'Username và mật khẩu không hợp lệ!'
         })
@@ -199,7 +199,7 @@ router.post('/login', async function(req, res){
 
 //forget pass
 router.get('/forgetPass', async function(req, res){
-    res.render('vWAccount/forgetPass', {
+    res.render('vwAccount/forgetPass', {
         layout: false
     })
 })
@@ -209,7 +209,7 @@ router.post('/forgetPass', async function(req, res){
 
     const email_check = await accountModel.checkEmailInUser(email);
     if (email_check === null){
-        res.render('vWAccount/forgetPass', {
+        res.render('vwAccount/forgetPass', {
             layout: false,
             err_message: 'Email không tồn tại!'
         })
@@ -253,14 +253,14 @@ router.post('/forgetPass', async function(req, res){
         res.redirect(`OTPPassword/${email}`)
     }
 
-    res.render('vWAccount/forgetPass', {
+    res.render('vwAccount/forgetPass', {
         layout: false
     })
 })
 
 //OTP CHECK.
 router.get('/OTPPassword/:email', async function(req, res){
-    res.render('vWAccount/OTPPassConfirm', {
+    res.render('vwAccount/OTPPassConfirm', {
         layout: false
     })
 
@@ -277,7 +277,7 @@ router.post('/OTPPassword/:email', async function(req, res){
         const username = await accountModel.findUserIDByEmail(email)
         return res.redirect(`/account/newPassword/${email}`)
     }else{
-        return res.render('vWAccount/OTPPassConfirm',{
+        return res.render('vwAccount/OTPPassConfirm',{
             layout: false,
             err_message: 'Mã OTP không hợp lệ'
         })
@@ -286,7 +286,7 @@ router.post('/OTPPassword/:email', async function(req, res){
 
 //OTP new pass.
 router.get('/newPassword/:email', async function(req, res){
-    res.render('vWAccount/newPassword', {
+    res.render('vwAccount/newPassword', {
         layout: false
     })
 
@@ -321,7 +321,7 @@ router.get('/profile', auth, async function(req, res){
     req.session.retURL = req.originalUrl
     const userID = req.session.authUser.UserID
     const UserInfo = await accountModel.getUserInfo(userID)
-    res.render('vWAccount/profile',{
+    res.render('vwAccount/profile',{
         UserInfo
     })
 })
@@ -342,7 +342,7 @@ router.get('/changePassword', auth, async function(req, res){
     const userID = req.session.authUser.UserID || "0"
 
     const UserInfo = await accountModel.getUserInfo(userID)
-    res.render('vWAccount/changePassword',{
+    res.render('vwAccount/changePassword',{
         UserInfo
     })
 })
@@ -351,13 +351,13 @@ router.get('/changePassword', auth, async function(req, res){
 router.get('/changeEmail', auth, async function(req, res){
     const userID = req.session.authUser.UserID || "0"
     const email = await accountModel.getEmailByUserID(userID)
-    res.render('vWAccount/changeEmail',{
+    res.render('vwAccount/changeEmail',{
         Email: email.Email
     })
 })
 
 router.get('/OTPEmailConfirm/:email', auth, function(req, res){
-    res.render('vWAccount/OTPEmailConfirm')
+    res.render('vwAccount/OTPEmailConfirm')
 })
 
 router.post('/OTPEmailConfirm/:email', auth, async function(req, res){
@@ -366,12 +366,12 @@ router.post('/OTPEmailConfirm/:email', auth, async function(req, res){
     const real_otp = await accountModel.findOTPByEmail(email)
 
     if (otp.length != 4){
-        res.render('vWAccount/OTPEmailConfirm',{
+        res.render('vwAccount/OTPEmailConfirm',{
             err_message: "Mã OTP bao gồm 4 ký tự!"
         })
     }
     else if(parseInt(real_otp.OTPCode) != parseInt(otp)){
-        res.render('vWAccount/OTPEmailConfirm',{
+        res.render('vwAccount/OTPEmailConfirm',{
             err_message: "Mã OTP không khớp!"
         })
     }
@@ -428,7 +428,7 @@ router.post('/changeEmail', auth, async function(req, res){
     }else {
         const userID = req.session.authUser.UserID || "0"
         const email = await accountModel.getEmailByUserID(userID)
-        res.render('vWAccount/changeEmail',{
+        res.render('vwAccount/changeEmail',{
             Email: email.Email,
             err_message: "Tài khoản email này đã được sử dụng!"
         })
@@ -442,7 +442,7 @@ router.post('/changePassword', auth, async function(req, res){
     const newPass = req.body.newPassword;
     const checkPass = BCrypt.compareSync(oldPass, UserInfo.Password)
     if(checkPass === false){
-        return res.render('vWAccount/changePassword',{
+        return res.render('vwAccount/changePassword',{
             err_message: 'Mật khẩu cũ không đúng!'
         })
     }
@@ -469,7 +469,7 @@ router.get('/search/:content', async function(req, res){
     const proIDs = await productModel.searchProductFulltext(content)
 
     if( proIDs === null){
-        return res.render('vWAccount/searchByUser',{
+        return res.render('vwAccount/searchByUser',{
             empty: true,
             content,
         })
@@ -541,7 +541,7 @@ router.get('/search/:content', async function(req, res){
             }
         }
         const isLogin = req.session.auth || false
-        res.render('vWAccount/searchByUser',{
+        res.render('vwAccount/searchByUser',{
             empty: 0,
             resultList,
             content,
@@ -565,7 +565,7 @@ router.get('/search', async function(req, res){
     const proIDs = await productModel.searchProductFulltext(content)
 
     if( proIDs.length === 0){
-        return res.render('vWAccount/searchByUser',{
+        return res.render('vwAccount/searchByUser',{
             empty: true,
             content,
         })
@@ -650,7 +650,7 @@ router.get('/search', async function(req, res){
         else if(type === '2')
             isDateClose = 1
 
-        res.render('vWAccount/searchByUser',{
+        res.render('vwAccount/searchByUser',{
             empty: 0,
             isLowtoHighPrice,
             isDateClose,

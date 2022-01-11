@@ -23,7 +23,7 @@ router.get('/ProductsOf/:sellerUsername', async function(req, res){
     const tmp = await sellerModel.getProductsBySellerUsername(sellerUsername, limit, offset);
 
     if(tmp === null){
-        return res.render('vWSeller/productsOfSeller',{
+        return res.render('vwSeller/productsOfSeller',{
             empty: 1,
             sellerUsername
         })
@@ -84,7 +84,7 @@ router.get('/ProductsOf/:sellerUsername', async function(req, res){
             }
         }
     }
-    res.render('vWSeller/productsOfSeller',{
+    res.render('vwSeller/productsOfSeller',{
         ProductOfSeller,
         sellerUsername,
         empty: ProductOfSeller === null,
@@ -307,7 +307,7 @@ router.get('/productsOutDate/:sellerUsername', auth,async function(req, res){
         }
     }
 
-    res.render('vWSeller/productsOutDate',{
+    res.render('vwSeller/productsOutDate',{
         ProductOfSeller,
         sellerUsername,
         empty: tmp === null,
@@ -394,7 +394,7 @@ router.get('/productsSold/:sellerUsername', auth,async function(req, res){
     }
 
 
-    res.render('vWSeller/productsSold',{
+    res.render('vwSeller/productsSold',{
         ProductOfSeller,
         sellerUsername,
         empty: tmp === null,
