@@ -17,7 +17,7 @@ router.get('/register', async function(req, res){
             }
         }
     }
-    res.render('vWAccount/register')
+    res.render('vwAccount/register')
 })
 //send email;
 
