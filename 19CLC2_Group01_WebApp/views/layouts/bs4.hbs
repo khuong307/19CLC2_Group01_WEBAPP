@@ -127,6 +127,48 @@
             pointer-events: none;
             cursor: default;
         }
+        @media (min-width: 768px) {
+            .animate {
+                animation-duration: 0.3s;
+                -webkit-animation-duration: 0.3s;
+                animation-fill-mode: both;
+                -webkit-animation-fill-mode: both;
+            }
+        }
+        @keyframes slideIn {
+            0% {
+                transform: translateY(1rem);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0rem);
+                opacity: 1;
+            }
+            0% {
+                transform: translateY(1rem);
+                opacity: 0;
+            }
+        }
+        @-webkit-keyframes slideIn {
+            0% {
+                -webkit-opacity: 0;
+            }
+            0% {
+                -webkit-transform: transform;
+            }
+            100% {
+                -webkit-transform: translateY(0);
+                -webkit-opacity: 1;
+            }
+            0% {
+                -webkit-transform: translateY(1rem);
+                -webkit-opacity: 0;
+            }
+        }
+        .slideIn {
+            -webkit-animation-name: slideIn;
+            animation-name: slideIn;
+        }
     </style>
 </head>
 <body>
@@ -149,7 +191,7 @@
                     {{#if actorBidder}}
                         <span style="color: #c42e23; font-weight: bold">Bidder</span>
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/bidder/upgrade">Xin nâng cấp thành Seller</a>
 
                         <div class="dropdown-divider"></div>
@@ -173,8 +215,8 @@
                         {{#if actorSeller}}
                             <span style="font-weight: bold">Seller</span>
                         </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item"  href="/seller/addProduct">Đăng bán sản phẩm</a>
+                            <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"  href="/seller/addProduct"><i class="fa fa-plus-circle"></i> Đăng bán sản phẩm</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="/seller/productsOf/{{authUser.Username}}"><i class="fa fa-check-circle-o"></i> Sản phẩm còn hạn</a>
                                 <a class="dropdown-item" href="/seller/productsSold/{{authUser.Username}}"><i class="fa fa-list"></i> Sản phẩm giao dịch</a>
@@ -187,7 +229,7 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false" style="color: #c42e23; font-weight: bold">
                                     Bidder
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/products/AuctionList">
                                     <i class="fa fa-list"></i>
                                     Đấu giá: <span><b>{{lengthOfAuctionList}} sản phẩm</b></span>
@@ -206,7 +248,7 @@
                         {{#if actorAdmin}}
                             <span style="font-weight: bold; color: darkblue">Admin</span>
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/admin/categories/lv1">Danh mục cấp 1</a>
                                 <a class="dropdown-item" href="/admin/categories/lv2">Danh mục cấp 2</a>
                                 <div class="dropdown-divider"></div>
@@ -218,8 +260,8 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false" style="color: darkorange; font-weight: bold">
                                     Seller
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item"  href="/seller/addProduct">Đăng bán sản phẩm</a>
+                                <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item"  href="/seller/addProduct"><i class="fa fa-plus-circle"></i> Đăng bán sản phẩm</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="/seller/productsOf/{{authUser.Username}}"><i class="fa fa-check-circle-o"></i> Sản phẩm còn hạn</a>
                                     <a class="dropdown-item" href="/seller/productsSold/{{authUser.Username}}"><i class="fa fa-list"></i> Sản phẩm giao dịch</a>
@@ -230,7 +272,7 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false" style="color: #c42e23; font-weight: bold">
                                 Bidder
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="/products/AuctionList">
                                     <i class="fa fa-list"></i>
                                     Đấu giá: <span><b>{{lengthOfAuctionList}} sản phẩm</b></span>
@@ -270,7 +312,7 @@
                                 <span class="badge badge-danger ml-2">{{lengthOfNotiList}}</span>
                                 <i class="fa fa-bell text-warning" st></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-lg-right notifications" role="menu" aria-labelledby="dLabel">
+                            <ul class="dropdown-menu dropdown-menu-lg-right notifications animate slideIn" role="menu" aria-labelledby="dLabel">
 
                                 <div class="notification-heading"><h6 class="menu-title">Notifications</h6></div>
                                 <li class="divider"></li>
@@ -330,7 +372,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
                         Chào,  <b style="color: #0f3596">{{authUser.Username}}!</b>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdown">
+                    <div class="dropdown-menu dropdown-menu-right animate slideIn" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/account/profile">
                             <i class="fa fa-user"></i>
                             Thông tin cá nhân

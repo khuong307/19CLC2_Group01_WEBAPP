@@ -123,12 +123,6 @@
                                         <i class="fa fa-gavel"></i>
                                     </button>
                                 {{/if}}
-                                {{#if isWinning}}
-                                    <a class="btn btn-outline-success" href="/bidder/comment/{{ProID}}" role="button">
-                                        <i class="fa fa-comment-o"></i>
-                                        Review
-                                    </a>
-                                {{/if}}
                                 {{#if ../this.isLogin}}
                                     <div class="float-right ml-2">
                                         <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
@@ -139,7 +133,7 @@
                                         </form>
                                     </div>
                                 {{/if}}
-                                </div>
+                            </div>
                         </div>
                     </div>
                 {{/each}}

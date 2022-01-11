@@ -3,6 +3,7 @@ import auth from '../middlewares/auth.mdw.js'
 import BidderModels from "../models/bidder.models.js";
 import ProductModels from "../models/product.models.js";
 import AccountModels from "../models/account.models.js";
+import productModel from "../models/product.models.js";
 
 const router = express.Router();
 
@@ -49,10 +50,13 @@ router.get('/comment/:id', auth, async function (req, res){
     const ProID = req.params.id;
     const product = await ProductModels.findById(ProID);
     const reviewList = await BidderModels.getReviewWithUserID(product.UploadUser, ProID);
-    console.log(reviewList);
+    const review = await productModel.getReviewBidderSide(product.Winner, product.UploadUser, product.ProID)
     res.render('vwBidder/comment', {
         ProID,
-        reviewList
+        reviewList,
+        hasReview: review == null,
+        BidderReview: review,
+        ProName: product.ProName
     });
 });
 

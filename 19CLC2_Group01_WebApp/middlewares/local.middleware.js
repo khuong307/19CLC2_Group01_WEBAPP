@@ -4,6 +4,7 @@ import productModels from "../models/product.models.js";
 import bidderModels from "../models/bidder.models.js";
 import accountModels from "../models/account.models.js";
 import moment from "moment";
+import FuncMdw from "../middlewares/func.mdw.js";
 
 
 export default function(app){
@@ -22,7 +23,7 @@ export default function(app){
                 else{
                     await FuncMdw.sendEmail(productList[i].UploadUser, `Sản phẩm ${productList[i].ProName} đã kết thúc mà không có người đấu giá`);
                 }
-                await ProductModels.updateProductSendEmailStatus(productList[i].ProID);
+                await productModels.updateProductSendEmailStatus(productList[i].ProID);
             }
         }
 

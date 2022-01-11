@@ -378,6 +378,27 @@ router.get('/detail/:id', async function(req, res){
         c.Username = await sellerModels.getUsernameByUserID(c.BidderID)
     }
 
+    var isWinner = 0 //để xem được detail sau khi sản phẩm có ng mua thì phải là ng bán và winner
+    if (res.locals.authUser != null){
+        if (res.locals.authUser.UserID == product.Winner){
+            isWinner = 1
+        }
+    }
+
+    //nếu sản phẩm đã có người mua thì chỉ có ng bán và người mua xem được
+    if (product.Winner !== null){
+        if (isWinner == 0 && isOwner == 0){
+            res.redirect('/')
+        }
+    }
+
+    //sản phẩm hết hạn + không có người mua chỉ có người bán mới xem được.
+    if (product.EndDate < new Date() && product.Winner == null){
+        if (isOwner == 0){
+            res.redirect('/')
+        }
+    }
+
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
@@ -393,7 +414,7 @@ router.get('/detail/:id', async function(req, res){
         userInfo,
         allRequest,
         bidderID,
-        hasBidder: highestBidder != 'None'
+        hasBidder: highestBidder != 'None',
     })
 })
 //Khuong.

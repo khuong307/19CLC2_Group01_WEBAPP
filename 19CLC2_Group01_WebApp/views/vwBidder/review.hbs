@@ -18,10 +18,15 @@
             {{/ifCond}}
         {{/ifCond}}
         {{#if this.userInfo.DislikePoint}}
-            {{roundPercentage this.userInfo.Percentage}}%
-        {{/if}}
-        {{#if this.userInfo.LikePoint}}
-            {{roundPercentage this.userInfo.Percentage}}%
+            {{#if this.userInfo.LikePoint}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{else}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{/if}}
+        {{else}}
+            {{#if this.userInfo.LikePoint}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{/if}}
         {{/if}}
 
     </span>

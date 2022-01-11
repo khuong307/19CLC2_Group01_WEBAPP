@@ -11,15 +11,32 @@
 
 <div class="card text">
     <h4 class="card-header d-flex">
-        Điểm đánh giá: <span style="color: #0f3596; font-weight: bold">&nbsp{{username}}</span><span class="badge badge-danger ml-2">{{roundPercentage this.userInfo.Percentage}}%</span>
+        Điểm đánh giá: <span style="color: #0f3596; font-weight: bold">&nbsp{{username}}</span><span class="badge badge-danger ml-2">
+        {{#ifCond this.userInfo.DislikePoint 0}}
+            {{#ifCond this.userInfo.LikePoint 0}}
+                0%
+            {{/ifCond}}
+        {{/ifCond}}
+        {{#if this.userInfo.DislikePoint}}
+            {{#if this.userInfo.LikePoint}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{else}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{/if}}
+        {{else}}
+            {{#if this.userInfo.LikePoint}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{/if}}
+        {{/if}}
+        </span>
     </h4>
     <div class="card-body">
         <h5>Tổng số lượt thích: <span class="badge badge-danger ml-2">{{this.userInfo.LikePoint}}</span></h5>
         <h5>Tổng số lượt không thích: <span class="badge badge-danger ml-2">{{this.userInfo.DislikePoint}}</span></h5>
         {{#if this.userInfo.Show}}
-        <h5> <span style="text-decoration: underline">Tình trạng đấu giá:</span> <span style="color: #0aa33a; font-weight: bold">Đủ điều kiện.</span>
+            <h5> <span style="text-decoration: underline">Tình trạng đấu giá:</span> <span style="color: #0aa33a; font-weight: bold">Đủ điều kiện.</span></h5>
         {{else}}
-        <h5><span style="text-decoration: underline">Tình trạng đấu giá:</span>  <span style="color: #c42e23; font-weight: bold">Không đủ điều kiện.</span>
+            <h5><span style="text-decoration: underline">Tình trạng đấu giá:</span>  <span style="color: #c42e23; font-weight: bold">Không đủ điều kiện.</span></h5>
         {{/if}}
         <div class="comment-list mt-3" style="background-color: #dfffd1">
             {{#each this.reviewList}}

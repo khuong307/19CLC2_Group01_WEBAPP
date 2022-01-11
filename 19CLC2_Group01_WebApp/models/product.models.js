@@ -150,25 +150,25 @@ export default {
 
     async searchProductFulltext(content){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
-        const sql = `select ProInfoSearch.ProID
-                     from ProInfoSearch
+        const sql = `select distinct ProInfoSearch.ProID
+                     from ProInfoSearch, Product
                      where
-                         ProInfoSearch.EndDate > '${now}'
+                         ProInfoSearch.EndDate > '${now}' AND ProInfoSearch.ProID = Product.ProID AND Product.Winner is null
                      AND
-                         MATCH(ProName)
+                         (MATCH(ProInfoSearch.ProName)
                          AGAINST('${content}')
                         or
-                         MATCH(TinyDes)
+                         MATCH(ProInfoSearch.TinyDes)
                          AGAINST('${content}')
                         or
-                         MATCH(FullDes)
+                         MATCH(ProInfoSearch.FullDes)
                          AGAINST('${content}')
                         or
-                         MATCH(CatName1)
+                         MATCH(ProInfoSearch.CatName1)
                          AGAINST('${content}')
                         or
-                         MATCH(CatName2)
-                         AGAINST('${content}')`;
+                         MATCH(ProInfoSearch.CatName2)
+                         AGAINST('${content}'))`;
 
         const raw = await db.raw(sql);
         console.log(raw[0].length)
@@ -181,23 +181,24 @@ export default {
     async searchProductFullTextSearchWithLimitOffset(content, limit, offset){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select distinct ProInfoSearch.ProID
-                     from ProInfoSearch
+                     from ProInfoSearch, Product
                      where
-                         ProInfoSearch.EndDate > '${now}'
-                        AND (MATCH(ProName)
-                         AGAINST('${content}')
-                        or
-                         MATCH(TinyDes)
-                         AGAINST('${content}')
-                        or
-                         MATCH(FullDes)
-                         AGAINST('${content}')
-                        or
-                         MATCH(CatName1)
-                         AGAINST('${content}')
-                        or
-                         MATCH(CatName2)
-                         AGAINST('${content}'))
+                         ProInfoSearch.EndDate > '${now}' AND ProInfoSearch.ProID = Product.ProID AND Product.Winner is null
+                       AND
+                         (MATCH(ProInfoSearch.ProName)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.TinyDes)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.FullDes)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.CatName1)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.CatName2)
+                             AGAINST('${content}'))
                          LIMIT ${limit} 
                          OFFSET ${offset}`;
 
@@ -211,24 +212,24 @@ export default {
     async searchProductFullTextSearchType1(content, limit, offset){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select distinct ProInfoSearch.ProID
-                     from ProInfoSearch
+                     from ProInfoSearch, Product
                      where
-                        ProInfoSearch.EndDate > '${now}'
-                         AND
-                         (MATCH(ProName)
-                         AGAINST('${content}')
-                        or
-                         MATCH(TinyDes)
-                         AGAINST('${content}')
-                        or
-                         MATCH(FullDes)
-                         AGAINST('${content}')
-                        or
-                         MATCH(CatName1)
-                         AGAINST('${content}')
-                        or
-                         MATCH(CatName2)
-                         AGAINST('${content}'))
+                         ProInfoSearch.EndDate > '${now}' AND ProInfoSearch.ProID = Product.ProID AND Product.Winner is null
+                       AND
+                         (MATCH(ProInfoSearch.ProName)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.TinyDes)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.FullDes)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.CatName1)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.CatName2)
+                             AGAINST('${content}'))
                      ORDER BY ProInfoSearch.CurrentPrice ASC
                          LIMIT ${limit} 
                          OFFSET ${offset}`;
@@ -243,24 +244,24 @@ export default {
     async searchProductFullTextSearchType2(content, limit, offset){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const sql = `select distinct ProInfoSearch.ProID
-                     from ProInfoSearch
+                     from ProInfoSearch, Product
                      where
-                         ProInfoSearch.EndDate > '${now}'
-                     AND
-                         (MATCH(ProName)
-                         AGAINST('${content}')
-                        or
-                         MATCH(TinyDes)
-                         AGAINST('${content}')
-                        or
-                         MATCH(FullDes)
-                         AGAINST('${content}')
-                        or
-                         MATCH(CatName1)
-                         AGAINST('${content}')
-                        or
-                         MATCH(CatName2)
-                         AGAINST('${content}'))
+                         ProInfoSearch.EndDate > '${now}' AND ProInfoSearch.ProID = Product.ProID AND Product.Winner is null
+                       AND
+                         (MATCH(ProInfoSearch.ProName)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.TinyDes)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.FullDes)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.CatName1)
+                             AGAINST('${content}')
+                             or
+                             MATCH(ProInfoSearch.CatName2)
+                             AGAINST('${content}'))
                      ORDER BY ProInfoSearch.EndDate DESC
                      LIMIT ${limit} 
                      OFFSET ${offset}`;
@@ -274,6 +275,14 @@ export default {
 
     async getProductByProID(proID){
         const list = await db('Product').where('ProID', proID);
+        if(list.length === 0)
+            return null
+        else{
+            return list[0]
+        }
+    },
+    async getValidProductByProID(proID){
+        const list = await db('Product').where('ProID', proID).whereNull('Winner');
         if(list.length === 0)
             return null
         else{

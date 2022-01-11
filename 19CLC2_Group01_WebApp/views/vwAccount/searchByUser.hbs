@@ -113,13 +113,18 @@
                                 </h7>
                                 <p class="card-text" style="font-weight: bold">Số lượt ra giá: <span>{{numberAuction}}</span><span class="float-right" style="color: #00B4CC">{{#if isNew}}<i class="fa fa-2x fa-check-circle-o" title="Sản phẩm mới đăng 72h qua"></i>{{/if}}</span></p>
                             </div>
-                            <div class="card-footer text-muted" style="text-align: center">
-                                <a class="btn btn-outline-primary ml-5" href="/products/detail/{{ProID}}" role="button">
+                            <div class="card-footer text-muted" style="display: flex; justify-content: center; align-items: center;">
+                                <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
                                     <i class="fa fa-eye"></i>
                                     Chi tiết
                                 </a>
+                                {{#if Show}}
+                                    <button class="btn btn-warning not-active">
+                                        <i class="fa fa-gavel"></i>
+                                    </button>
+                                {{/if}}
                                 {{#if ../this.isLogin}}
-                                    <div class="float-right">
+                                    <div class="float-right ml-2">
                                         <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
                                             <input type="hidden" name="ProID" value={{ProID}}>
                                             <button class="btn btn{{#if isWatchList}}-danger{{else}}-outline-danger{{/if}}" type="submit">
@@ -128,7 +133,7 @@
                                         </form>
                                     </div>
                                 {{/if}}
-                                </div>
+                            </div>
                         </div>
                     </div>
                 {{/each}}

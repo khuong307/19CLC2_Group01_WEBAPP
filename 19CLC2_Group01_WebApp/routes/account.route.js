@@ -158,7 +158,7 @@ router.post('/login', async function(req, res){
 
     const user = await accountModel.getAccountInfoByUsername(username)
     if(user === null){
-        return res.render('vwAccount/login', {
+        return res.render('vWAccount/login', {
             layout: false,
             err_message: 'Username và mật khẩu không hợp lệ!'
         })
@@ -166,7 +166,7 @@ router.post('/login', async function(req, res){
 
     const checkPass = BCrypt.compareSync(password, user.Password)
     if(checkPass===false){
-        return res.render('vwAccount/login', {
+        return res.render('vWAccount/login', {
             layout: false,
             err_message: 'Username và mật khẩu không hợp lệ!'
         })
@@ -357,7 +357,7 @@ router.get('/changeEmail', auth, async function(req, res){
 })
 
 router.get('/OTPEmailConfirm/:email', auth, function(req, res){
-    res.render('vwAccount/OTPEmailConfirm')
+    res.render('vWAccount/OTPEmailConfirm')
 })
 
 router.post('/OTPEmailConfirm/:email', auth, async function(req, res){
@@ -366,12 +366,12 @@ router.post('/OTPEmailConfirm/:email', auth, async function(req, res){
     const real_otp = await accountModel.findOTPByEmail(email)
 
     if (otp.length != 4){
-        res.render('vwAccount/OTPEmailConfirm',{
+        res.render('vWAccount/OTPEmailConfirm',{
             err_message: "Mã OTP bao gồm 4 ký tự!"
         })
     }
     else if(parseInt(real_otp.OTPCode) != parseInt(otp)){
-        res.render('vwAccount/OTPEmailConfirm',{
+        res.render('vWAccount/OTPEmailConfirm',{
             err_message: "Mã OTP không khớp!"
         })
     }
@@ -469,7 +469,7 @@ router.get('/search/:content', async function(req, res){
     const proIDs = await productModel.searchProductFulltext(content)
 
     if( proIDs === null){
-        return res.render('vwAccount/searchByUser',{
+        return res.render('vWAccount/searchByUser',{
             empty: true,
             content,
         })
@@ -541,7 +541,7 @@ router.get('/search/:content', async function(req, res){
             }
         }
         const isLogin = req.session.auth || false
-        res.render('vwAccount/searchByUser',{
+        res.render('vWAccount/searchByUser',{
             empty: 0,
             resultList,
             content,
@@ -565,7 +565,7 @@ router.get('/search', async function(req, res){
     const proIDs = await productModel.searchProductFulltext(content)
 
     if( proIDs.length === 0){
-        return res.render('vwAccount/searchByUser',{
+        return res.render('vWAccount/searchByUser',{
             empty: true,
             content,
         })
@@ -650,7 +650,7 @@ router.get('/search', async function(req, res){
         else if(type === '2')
             isDateClose = 1
 
-        res.render('vwAccount/searchByUser',{
+        res.render('vWAccount/searchByUser',{
             empty: 0,
             isLowtoHighPrice,
             isDateClose,
