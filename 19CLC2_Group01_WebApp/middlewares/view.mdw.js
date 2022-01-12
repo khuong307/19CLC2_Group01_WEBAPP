@@ -47,7 +47,7 @@ export default function(app){
                     return str;
                 }
                 var tmp = str;
-                var result = tmp.slice(4, str.length-1)
+                var result = tmp.slice(4, str.length)
                 return "####"+result
             },
             // Khang
