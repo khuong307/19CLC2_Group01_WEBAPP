@@ -103,34 +103,43 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 20px;
+            }
+
+            .card-title{
+                text-align: center;
+            }
+        }
     </style>
 {{/section}}
 <div class="container" style="border-radius: 20px">
     {{#if err_message}}
         <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center">
-            <strong>Wrong: </strong> {{err_message}}
+            <strong>Lỗi: </strong> {{err_message}}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
     {{/if}}
     <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #9b59b6);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Registration</div>
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Đăng ký tài khoản</div>
     <form id="formOTP"method="POST" style="align-items: center">
         <div class="row" style="justify-content: center">
             <div class="user-details" >
-                <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 30px;">
+                <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 30px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
 -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px"> OTP Code</h4>
                     <div class="input-box">
-                        <input type="text" placeholder="Check your email" name="OTP" id = "OTP" required>
+                        <input type="text" placeholder="Kiểm tra email của bạn" name="OTP" id = "OTP" required>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="button">
-            <input type="submit" value="Confirm">
+            <input type="submit" value="Xác nhận">
         </div>
     </form>
 </div>

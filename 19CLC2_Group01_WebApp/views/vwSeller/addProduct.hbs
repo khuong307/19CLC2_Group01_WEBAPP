@@ -1,0 +1,291 @@
+{{#section 'js'}}
+    <script src="https://cdn.tiny.cloud/1/lezpn41wtci0d11czy9qjlva8xxe5ttcdfov5wmx8c0fm25q/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.2.5/js/fileinput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.2.5/js/locales/vi.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.2.5/themes/fa/theme.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: '#FullDes',
+            plugins: 'paste image link autolink lists table media',
+            menubar: false,
+            toolbar: [
+                'undo redo | bold italic underline | numlist bullist | alignleft aligncenter alignright |'
+            ]
+        });
+        $('#datetimepicker').datetimepicker();
+        $('#Name').select();
+
+        $('#formAddProduct').on('submit', function(e){
+            e.preventDefault()
+            const Cat = $('#CateL1').val()
+            const date =  $('#datetimepicker').val()
+
+            if(Cat === null){
+                alert('Hãy chọn danh mục cấp 1');
+                return;
+            }
+
+            if(new Date(date) < new Date()){
+                alert('Ngày kết khúc không hợp lệ');
+                return;
+            }else{
+                $('#formAddProduct').off('submit').submit()
+            }
+        })
+
+        window.onload = function() {
+            var CateL1 = document.getElementById("CateL1");
+
+            CateL1.onchange = function() {
+                const Cat1 = CateL1.value
+
+                var CateL2 = document.getElementById("CateL2");
+                var CateL2Var = {{{CateL2String}}}
+                var CateL1Var = {{{CateL1String}}}
+                var CatID1 = ""
+                for (const c of CateL1Var){
+                    if(c.CatName1 === Cat1){
+                        CatID1 = c.CatID1
+                    }
+                }
+                var i = 0;
+                for (const y of CateL2Var) {
+                    if(y.CatID1 === CatID1){
+                        CateL2.options[i] = new Option(y.CatName2, y.CatName2)
+                        i++
+                    }
+                }
+            }
+        }
+        $("#main").fileinput({
+            dropZoneEnabled: false,
+            maxFileCount: 3,
+            allowedFileExtensions: ['jpg', 'png'],
+            theme: 'fa',
+            language: 'vi'
+
+        });
+
+        $('#Confirm').click(function(){
+            const CatName1 = $('#CateL1').val()
+            const CatName2 = $('#CateL2').val()
+            var path = '/seller/addProduct?CatName1='+CatName1+'&CatName2='+CatName2
+            $('#formAddProduct').prop('action', path);
+        });
+    </script>
+{{/section}}
+{{#section 'css'}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.2.5/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            max-width: 1200px;
+            width: 100%;
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 5px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+        .container .title{
+            font-size: 25px;
+            font-weight: 500;
+            position: relative;
+        }
+        .container .title::before{
+            content: '';
+            postion: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 30px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #71b7e6, #9b59b6);
+        }
+        .container form .user-details{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 20px 0 12px 0;
+        }
+        form .user-details .input-box{
+            margin-bottom: 15px;
+            width: calc(90%);
+        }
+        .user-details .input-box span.details{
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: midnightblue;
+            text-decoration: underline;
+        }
+        .user-details .input-box input{
+            height: 45px;
+            width: 100%;
+            outline: none;
+            /*border: 1px solid #ccc ;*/
+            padding-left: 15px;
+            font-size: 16px;
+            border-bottom-width: 2px;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            color: #c42e23;
+        }
+        .user-details .input-box input:focus,
+        .user-details .input-box input:valid{
+            border-color: #9b59b6;
+        }
+        form .button{
+            height: 45px;
+            margin: 45px 0;
+            padding-left: 200px;
+        }
+        form .button input{
+            height: 100%;
+            width: 50%;
+            outline: none;
+            color: #fff;
+            border: none;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 5px;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #71b7e6, #9b59b6);
+        }
+        form .button input:hover{
+            background: linear-gradient(-135deg, #71b7e6, #9b59b6);
+        }
+
+        select {
+            border-radius: 10px;
+            cursor:pointer;
+        }
+        select::-ms-expand {
+            display: none;
+        }
+        .select {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: .25em;
+        }
+        .select::after {
+            position: absolute;
+            cursor:pointer;
+            pointer-events:none;
+            transition:.25s all ease;
+        }
+        .select:hover::after {
+            color: white;
+        }
+
+        @media (max-width: 584px){
+            .container{
+                max-width: 100%;
+            }
+            form .user-details .input-box{
+                margin-bottom: 15px;
+                width: 100%;
+            }
+            .container form .user-details{
+                max-height: 300px;
+                overflow-y: scroll;
+            }
+            .user-details::-webkit-scrollbar{
+                width: 0;
+            }
+        }
+    </style>
+{{/section}}
+{{#if this.isSeller}}
+    <div class="container">
+        <div class="title"style="text-align: center; color: midnightblue; text-decoration: underline; padding-bottom: 5px"> Đăng bán sản phẩm</div>
+        <form id="formAddProduct" method="POST" enctype="multipart/form-data">
+            <div class="user-details" >
+                <div class="col-lg-6">
+                    <div class="card" style="align-items: center; border-radius: 10px;border-color: #0b409c">
+                        <div class="input-box">
+                            <div class="select">
+                                <span class="details justify-content-between mt-2">Danh mục cấp 1:
+                                    <select name="CateL1" id="CateL1" class="ml-3" style ="color: #c42e23">
+                                        <option selected disabled>Chọn danh mục<i class="fa fa-arrow-down float-right"></i></option>
+                                        {{#each this.CateL1}}
+                                            <option value="{{CatName1}}">{{CatName1}}</option>
+                                        {{/each}}
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="input-box">
+                            <div class="select">
+                                <span class="details">Danh mục cấp 2:
+                                    <select name="CateL2" id="CateL2" class="ml-3" style ="color: #c42e23">
+                                        <option value="" selected="selected">Chọn danh mục cấp 1 trước</option>
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Tên sản phẩm:</span>
+                            <input type="text" placeholder="Nhập tên sản phẩm" name="ProName" id="ProName" required>
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Giá khởi điểm:</span>
+                            <input type="number" placeholder="Nhập giá khởi điểm" required name="CurrentPrice">
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Giá tăng tối thiểu:</span>
+                            <input type="number" placeholder="Nhập giá tăng tối thiểu" name="StepPrice" required>
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Giá mua ngay:</span>
+                            <input type="number" placeholder="Nhập giá mua ngay (nếu có)" name="PriceBuyNow">
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Thời gian kết thúc</span>
+                            <input type="text" placeholder="Chọn thời gian kết thúc" name="EndDate" id="datetimepicker" required>
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Mô tả cơ bản</span>
+                            <input type="text" placeholder="Nhập mô tả cơ bản" name="TinyDes" required>
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Mô tả chi tiết:</span>
+                            <textarea id="FullDes" name="FullDes">Ghi mô tả chi tiết tại đây</textarea>
+                        </div>
+                        <div class="input-box">
+                            <span class="details">Tự động gia hạn khi có lượt đấu giá mới:
+                                <input class="form-check-input ml-4" type="checkbox" style="padding-left: 60px; width: 20px; height: 20px;" name="Extend">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card" style="border-color: #0b409c; border-radius: 10px;">
+                        <div class="mt-2 ml-3 mr-3 mb-3">
+                            <span class="details" style="color: midnightblue; text-decoration: underline">3 ảnh cơ bản</span>
+                            <input type="file" name="main" id="main" multiple required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="button" style="padding-left: 300px">
+                <input type="submit" value="Xác nhận" id="Confirm">
+            </div>
+        </form>
+    </div>
+{{else}}
+    <div class="card text">
+        <div class="card-body">
+            <h5 class="card-title">Bạn không có quyền truy cập vào tính năng này</h5>
+            <p class="card-text">Hãy gửi đề nghị để được thăng cấp làm Seller nhé!</p>
+        </div>
+    </div>
+{{/if}}

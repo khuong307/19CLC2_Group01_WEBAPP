@@ -19,7 +19,6 @@
                 var $this = $(this), finalDate = $(this).data('countdown');
                 $this.countdown(finalDate, function(event) {
                     $this.html(event.strftime('%D days %H:%M:%S'))}).on('finish.countdown', function() {
-                    alert("Finish");
                 });
             });
         });
@@ -28,13 +27,12 @@
 {{/section}}
 
 <div class="card text">
-    <h4 class="card-header d-flex justify-content-between">
-        Yêu thích
+    <h4 class="card-header d-flex">
+        Sản phẩm yêu thích - <span style="color: #c42e23; font-weight: bold">&nbsp {{authUser.Username}}</span>
     </h4>
     <div class="card-body">
         {{#if this.empty}}
-            <h5 class="card-title">No Information</h5>
-            <p class="card-text">With supporting text below as a natural lead-in to additional content</p>
+            <h5 class="card-title">Không có sản phẩm yêu thích</h5>
         {{else}}
             <div class="row">
                 {{#each this.products}}
@@ -62,20 +60,24 @@
                                 </button>
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title" style="text-align: center; font-weight: bold"><p>{{ProName}}</p></h5>
-                                <h7 class="card-title text-danger" style="text-align: center"><p style="font-weight: bold">{{format_number CurrentPrice}}</p></h7>
+                                <h5 class="card-title" style="text-align: center; font-weight: bold; color: #0f3185"><p>{{ProName}} </p></h5>
+                                <h7 class="card-title text-danger" style="text-align: center; font-size: 25px; font-weight: bold"><p>{{format_number CurrentPrice}}</p></h7>
                                 <h7 class="card-title">
-                                    <p>
+                                    <p >
                                         <i class="fa fa-arrow-up"></i>
                                         <i class="fa fa-user"></i>
-                                        Bidder.
+                                        Bidder: <span class="card-title" style="font-weight: bold; color: #f0842b">{{MaskCharacter highestBidder}}</span>
                                     </p>
                                 </h7>
                                 <h7 class="card-text">
                                     <p>
                                         <i class="fa fa-money"></i>
-                                        <span style="font-weight: bold">Mua ngay:</span> {{format_number PriceBuyNow}}
-                                    </p>
+                                        <span style="font-weight: bold;">Mua ngay:</span>
+                                        {{#if PriceBuyNow}}
+                                            {{format_number PriceBuyNow}}
+                                        {{else}}
+                                            Không có
+                                        {{/if}}                                    </p>
                                 </h7>
                                 <h7 class="card-text">
                                     <p>
@@ -85,20 +87,15 @@
                                 </h7>
                                 <h7 class="card-text">
                                     <span style="font-weight: bold"> <i class="fa fa-clock-o"></i> Thời gian hết hạn: </span>
-                                    <div style="text-align: center; color:#181f5e; font-weight: bold" id="example1" data-countdown="{{formatDateCountdown EndDate}}"></div>
+                                    <div class="card-title text-success" style="text-align: center; font-weight: bold; font-size: 25px" id="example1" data-countdown="{{formatDateCountdown EndDate}}"></div>
                                 </h7>
-                                <p class="card-text">Số lượt ra giá: </p>
+                                <p class="card-text" style="font-weight: bold">Số lượt ra giá: <span>{{numberAuction}}</span><span class="float-right" style="color: #00B4CC">{{#if isNew}}<i class="fa fa-2x fa-check-circle-o" title="Sản phẩm mới đăng 72h qua"></i>{{/if}}</span></p>
                             </div>
-                            <div class="card-footer text-muted">
-                                <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                            <div class="card-footer justify-content-center">
+                                <a class="btn btn-outline-primary ml-5" href="/products/detail/{{ProID}}" role="button">
                                     <i class="fa fa-eye"></i>
-                                    Details
+                                    Chi tiết
                                 </a>
-                                {{#if Show}}
-                                    <button class="btn btn-warning not-active">
-                                        <i class="fa fa-gavel"></i>
-                                    </button>
-                                {{/if}}
 
                                 <!--Khang: Del from watch list-->
                                 <div class="float-right">

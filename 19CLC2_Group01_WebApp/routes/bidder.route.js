@@ -3,6 +3,7 @@ import auth from '../middlewares/auth.mdw.js'
 import BidderModels from "../models/bidder.models.js";
 import ProductModels from "../models/product.models.js";
 import AccountModels from "../models/account.models.js";
+import productModel from "../models/product.models.js";
 
 const router = express.Router();
 
@@ -45,18 +46,21 @@ router.post('/send-request', async function (req, res){
     }
 });
 
-router.get('/comment/:id', async function (req, res){
+router.get('/comment/:id', auth, async function (req, res){
     const ProID = req.params.id;
     const product = await ProductModels.findById(ProID);
     const reviewList = await BidderModels.getReviewWithUserID(product.UploadUser, ProID);
-    console.log(reviewList);
+    const review = await productModel.getReviewBidderSide(product.Winner, product.UploadUser, product.ProID)
     res.render('vwBidder/comment', {
         ProID,
-        reviewList
+        reviewList,
+        hasReview: review == null,
+        BidderReview: review,
+        ProName: product.ProName
     });
 });
 
-router.post('/comment/:id', async function (req, res){
+router.post('/comment/:id', auth,async function (req, res){
     const comment = req.body.txtComment;
     const like = req.body.txtLike;
     const ProID = req.params.id;
@@ -75,7 +79,7 @@ router.post('/comment/:id', async function (req, res){
     res.redirect("/");
 });
 
-router.get('/review', async function (req, res){
+router.get('/review', auth, async function (req, res){
     const UserID = res.locals.authUser.UserID;
     const reviewList = await BidderModels.getReviewWithUserID(UserID);
     const userInfo = await AccountModels.getUserInfo(UserID);

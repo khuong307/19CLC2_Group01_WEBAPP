@@ -1,0 +1,48 @@
+<form method="POST">
+    <div class="card">
+        <h4 class="card-header">
+            Chỉnh sửa danh mục cấp 2
+        </h4>
+        {{#if isViewEdit}}
+        {{else}}
+            {{#if isSuccess}}
+            {{else}}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Lỗi!</strong> {{msg}}.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {{/if}}
+        {{/if}}
+
+        <div class="card-body">
+            <div class="form-group">
+                <label for="CatID">ID:</label>
+                <input type="text" class="form-control" id="CatID" name="CatID2" readonly value="{{this.category.CatID2}}">
+            </div>
+            <div class="form-group">
+                <label for="QuantityLV2">Số lượng sản phẩm hiện tại:</label>
+                <input type="text" class="form-control" id="QuantityLV2" name="QuantityLV2" readonly value="{{this.category.QuantityLV2}}">
+            </div>
+            <div class="form-group">
+                <label for="CatName">Tên danh mục:</label>
+                <input type="text" class="form-control" id="CatName" name="CatName2" value="{{this.category.CatName2}}" autofocus>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <a class="btn btn-success mr-2" href="javascript:history.back()" role="button">
+                <i class="fa fa-backward" aria-hidden="true"></i>
+                Quay lại
+            </a>
+            <button type="submit" formaction="/admin/categories/lv2/del" class="btn btn-danger mr-2">
+                <i class="fa fa-check" aria-hidden="true"></i>
+                Xóa
+            </button>
+            <button type="submit" formaction="/admin/categories/lv2/patch" class="btn btn-primary">
+                <i class="fa fa-check" aria-hidden="true"></i>
+                Cập nhật
+            </button>
+        </div>
+    </div>
+</form>

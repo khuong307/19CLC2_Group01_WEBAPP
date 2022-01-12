@@ -1,5 +1,47 @@
+{{#section 'css'}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-countdown/2.1.0/css/jquery.countdown.min.css">
+    <style>
+        .carousel-control-prev-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
+        }
+
+        .carousel-control-next-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
+        }
+
+        .display-responsive-table{
+            display: none;
+        }
+
+        @media only screen and (max-width: 768px){
+            .hidden{
+                display: none;
+            }
+
+            .display-responsive-table{
+                display: block;
+            }
+        }
+    </style>
+{{/section}}
+{{#section 'js'}}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/hilios/jQuery.countdown@2.0.4/dist/jquery.countdown.min.js"></script>
+    <script>
+        $(function () {
+            $('[data-countdown]').each(function () {
+                var $this = $(this), finalDate = $(this).data('countdown');
+                $this.countdown(finalDate, function (event) {
+                    $this.html(event.strftime('%D days %H:%M:%S'))
+                }).on('finish.countdown', function () {
+
+                });
+            });
+        });
+    </script>
+
+{{/section}}
 <div class="dropdown mb-3">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #0d1275; color: #fcec72; font-weight: bold">
         Lọc
     </button>
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -7,56 +49,115 @@
         <a class="dropdown-item" href="/products/history?ProID={{this.ProID}}&show=all">Tất cả giao dịch</a>
     </div>
 </div>
+<div class="card text">
+    <div class="card-body">
+        <div class="row justify-content-center">
+            <div class="col-sm-4 mb-5 ml-sm-auto">
+                <div class="card">
+                    <div id="{{this.product.ProID}}" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{this.product.CatID2}}/{{ProID}}/main.jpg" alt="{{this.product.ProName}}" title="{{this.product.ProName}}">
+                            </div>
+                            <div class="carousel-item">
+                                <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{this.product.CatID2}}/{{ProID}}/main_1.jpg" alt="{{this.product.ProName}}" title="{{this.product.ProName}}">
+                            </div>
+                            <div class="carousel-item">
+                                <img class="card-img-top" src="/public/imgs/sp/{{CatID1}}/{{this.product.CatID2}}/{{ProID}}/main_2.jpg" alt="{{this.product.ProName}}" title="{{this.product.ProName}}">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-target="#{{ProID}}" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-target="#{{ProID}}" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </div>
+                    <div class="card-footer" style="display: flex; justify-content: center; align-items: center;">
+                        <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button" style="margin: fill">
+                            <i class="fa fa-eye"></i>
+                            Chi tiết
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <p style="font-size: 23px"> <span>Tên sản phẩm:</span> <span style="font-weight: bold; color: darkorange"> {{this.product.ProName}}</span></p>
+                <p> <span> <i class="fa fa-clock-o"></i> Ngày đăng:</span> <span style="font-weight: bold; color: #1a8257">{{formatDate this.product.UploadDate}}</span></p>
+                <p> <span><i class="fa fa-clock-o"></i> Ngày hết hạn:</span><span class="card-title text-success" style="text-align: center; font-weight: bold; font-size: 20px" id="example1" data-countdown="{{formatDateCountdown this.product.EndDate}}"></span></p>
+                <p> <span><i class="fa fa-money"></i> Giá mua:</span> <span style="font-weight: bold; color: #c42e23">{{format_number this.product.CurrentPrice}}</span></p>
+                <table class="table table-hover table-bordered bg-light hidden">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Thời điểm ra giá</th>
+                        <th scope="col">Người ra giá</th>
+                        <th scope="col">Giá hiện tại</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each this.Users}}
+                        <tr>
+                            <th scope="row">{{No}}</th>
+                            <td>{{format_date Time}}</td>
+                            <td>{{MaskCharacter Username}}</td>
+                            <td>{{format_number Price}}</td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+                <table class="table-hover table-bordered bg-light display-responsive-table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Thời điểm ra giá</th>
+                        <th scope="col">Người ra giá</th>
+                        <th scope="col">Giá hiện tại</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each this.Users}}
+                        <tr>
+                            <td>{{format_date Time}}</td>
+                            <td>{{MaskCharacter Username}}</td>
+                            <td>{{format_number Price}}</td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
 
-<table class="table table-hover table-bordered bg-light">
-    <thead>
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">Thời điểm ra giá</th>
-        <th scope="col">Người ra giá</th>
-        <th scope="col">Giá hiện tại</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{#each this.Users}}
-        <tr>
-            <th scope="row">{{No}}</th>
-            <td>{{format_date Time}}</td>
-            <td>{{MaskCharacter Username}}</td>
-            <td>{{format_number Price}}</td>
-        </tr>
-    {{/each}}
-    </tbody>
-</table>
+                {{#if this.display}}
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-end">
+                            <li class="page-item">
+                                {{#if this.isFirstPage}}
+                                    <a class="page-link" href="?ProID={{this.ProID}}&show=all&page={{decrease_one this.currentPageIndex}}">
+                                    Previous
+                                    </a>
+                                {{/if}}
 
-{{#if this.display}}
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-end">
-            <li class="page-item">
-                {{#if this.isFirstPage}}
-                    <a class="page-link" href="?ProID={{this.ProID}}&show=all&page={{decrease_one this.currentPageIndex}}">
-                    Previous
-                    </a>
+                            </li>
+                            {{#each this.pageNumbers}}
+                                {{#if isCurrentPage}}
+                                    <li class="page-item active">
+                                        <a class="page-link" href="javascript:;">{{value}}</a>
+                                    </li>
+                                {{else}}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?ProID={{../this.ProID}}&show=all&page={{value}}">{{value}}</a>
+                                    </li>
+                                {{/if}}
+                            {{/each}}
+                            {{#if this.isLastPage}}
+                                <a class="page-link" href="?ProID={{this.ProID}}&show=all&page={{increase_one this.currentPageIndex}}">
+                                Next
+                                </a>
+                            {{/if}}
+                        </ul>
+                    </nav>
                 {{/if}}
-
-            </li>
-            {{#each this.pageNumbers}}
-                {{#if isCurrentPage}}
-                    <li class="page-item active">
-                        <a class="page-link" href="javascript:;">{{value}}</a>
-                    </li>
-                {{else}}
-                    <li class="page-item">
-                        <a class="page-link" href="?ProID={{../this.ProID}}&show=all&page={{value}}">{{value}}</a>
-                    </li>
-                {{/if}}
-            {{/each}}
-            {{#if this.isLastPage}}
-                <a class="page-link" href="?ProID={{this.ProID}}&show=all&page={{increase_one this.currentPageIndex}}">
-                Next
-                </a>
-            {{/if}}
-        </ul>
-    </nav>
-{{/if}}
-
+            </div>
+        </div>
+    </div>
+</div>

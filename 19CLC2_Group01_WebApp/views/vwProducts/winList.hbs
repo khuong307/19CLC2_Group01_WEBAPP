@@ -4,7 +4,6 @@
         .carousel-control-prev-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
         }
-
         .carousel-control-next-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
         }
@@ -32,8 +31,7 @@
     </h4>
     <div class="card-body">
         {{#if this.empty}}
-            <h5 class="card-title">No Information</h5>
-            <p class="card-text">With supporting text below as a natural lead-in to additional content</p>
+            <h5 class="card-title">Bạn chưa thắng bất kỳ sản phẩm nào!</h5>
         {{else}}
             <div class="row">
                 {{#each this.products}}
@@ -59,58 +57,25 @@
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                     <span class="sr-only">Next</span>
                                 </button>
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title" style="text-align: center; font-weight: bold"><p>{{ProName}}</p></h5>
-                                <h7 class="card-title text-danger" style="text-align: center"><p style="font-weight: bold">{{format_number CurrentPrice}}</p></h7>
-                                <h7 class="card-title">
-                                    <p>
-                                        <i class="fa fa-arrow-up"></i>
-                                        <i class="fa fa-user"></i>
-                                        Bidder.
-                                    </p>
-                                </h7>
-                                <h7 class="card-text">
-                                    <p>
-                                        <i class="fa fa-money"></i>
-                                        <span style="font-weight: bold">Mua ngay:</span> {{format_number PriceBuyNow}}
-                                    </p>
-                                </h7>
-                                <h7 class="card-text">
-                                    <p>
-                                        <i class="fa fa-clock-o"></i>
-                                        <span style="font-weight: bold">Ngày đăng:</span> {{formatDate UploadDate}}
-                                    </p>
-                                </h7>
-                                <h7 class="card-text">
-                                    <span style="font-weight: bold"> <i class="fa fa-clock-o"></i> Thời gian hết hạn: </span>
-                                    <div style="text-align: center; color:#181f5e; font-weight: bold" id="example1" data-countdown="{{formatDateCountdown EndDate}}"></div>
-                                </h7>
-                                <p class="card-text">Số lượt ra giá: </p>
-                            </div>
-                            <div class="card-footer text-muted">
-                                <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
-                                    <i class="fa fa-eye"></i>
-                                    Details
-                                </a>
-                                <a class="btn btn-outline-success" href="/bidder/comment/{{ProID}}" role="button">
-                                    <i class="fa fa-comment-o"></i>
-                                    Review
-                                </a>
-                                <!--Khang: Add to watch list-->
-                                {{#if ../this.isLogin}}
-                                    <div class="float-right">
-                                        <form action="/products/{{#if isWatchList}}delWatchList{{else}}addWatchList{{/if}}" method="post">
-                                            <input type="hidden" name="ProID" value={{ProID}}>
-                                            <button class="btn btn{{#if isWatchList}}-danger{{else}}-outline-danger{{/if}}" type="submit">
-                                                <i class="fa fa-heart-o"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <!--Khang: Add to watch list-->
-                                {{/if}}
+                                <div class="card-footer">
+                                    <a class="btn btn-outline-primary" href="/products/detail/{{ProID}}" role="button">
+                                        <i class="fa fa-eye"></i>
+                                        Chi tiết
+                                    </a>
+                                    <a class="btn btn-outline-success float-right" href="/bidder/comment/{{ProID}}" role="button">
+                                        <i class="fa fa-comment-o"></i>
+                                        Đánh giá
+                                    </a>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <p style="font-size: 23px"> <span>Tên sản phẩm:</span> <span style="font-weight: bold; color: darkorange"> {{ProName}}</span></p>
+                        <p> <span> <i class="fa fa-clock-o"></i> Ngày đăng:</span> <span style="font-weight: bold; color: #1a8257">{{formatDate UploadDate}}</span></p>
+                        <p> <span><i class="fa fa-clock-o"></i> Ngày hết hạn:</span> <span style="font-weight: bold; color: #1a8257">{{formatDate EndDate}}</span> </p>
+                        <p> <span><i class="fa fa-user-circle-o"></i> Người chiến thắng:</span> <span style="font-weight: bold; color: #c42e23">{{../authUser.Username}}</span></p>
+                        <p> <span><i class="fa fa-money"></i> Giá mua:</span> <span style="font-weight: bold; color: #c42e23">{{format_number CurrentPrice}}</span></p>
                     </div>
                 {{/each}}
             </div>

@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>E-Commerce Web App</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+          integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery-countdown/2.1.0/css/jquery.countdown.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/hoomanbahreini/bootstrap-half-and-quarter-grid/fractional-grid.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{{_sections.css}}}
     <style>
-        body{
+        body {
             height: 100vh;
             justify-content: center;
             align-items: center;
@@ -18,6 +23,7 @@
             font-family: "Pacifico", sans-serif;
             font-size: 18px;
         }
+
         .just-padding {
             padding: 15px;
         }
@@ -52,41 +58,81 @@
             margin-right: 5px;
         }
 
-        /*Khang*/
+        .search {
+            width: 100%;
+            position: relative;
+            display: flex;
+        }
+
+        .searchTerm {
+            width: 100%;
+            border: 3px solid #00B4CC;
+            border-right: none;
+            padding: 5px;
+            height: 36px;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+            color: #9DBFAF;
+        }
+
+        .searchTerm:focus {
+            color: #00B4CC;
+        }
+
+        .searchButton {
+            width: 40px;
+            height: 36px;
+            border: 1px solid #00B4CC;
+            background: #00B4CC;
+            text-align: center;
+            color: #fff;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .wrap {
+            width: 30%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
         .notifications {
-            min-width:420px;
+            min-width: 300px;
         }
 
         .notifications-wrapper {
-            overflow:auto;
-            max-height:300px;
+            overflow: auto;
+            max-height: 300px;
         }
 
         .menu-title {
-            color:#ff7788;
-            font-size:1.5rem;
-            display:inline-block;
+            color: #e3b600;
+            font-size: 1.3rem;
+            text-align: center;
         }
 
         .notification-heading {
-            padding:2px 10px;
+            padding: 2px 10px;
         }
 
         .item-title {
-            font-size:1.3rem;
-            color:#000;
+            font-size: 1.2rem;
+            color: #003b46;
         }
 
         .notifications a.content {
-            text-decoration:none;
-            background:#ccc;
+            text-decoration: none;
+            background: #c4dfe6;
         }
 
         .notification-item {
-            padding:10px;
-            margin:5px;
-            background:#ccc;
-            border-radius:4px;
+            padding: 10px;
+            margin: 5px;
+            background: #c4dfe6;
+            border-radius: 4px;
         }
 
         .not-active {
@@ -94,9 +140,8 @@
             cursor: default;
         }
 
-        .link-product:hover {
-            opacity: 0.8;
-            text-decoration: none;
+        .responsive-display-navbar {
+            display: none;
         }
 
         @media (min-width: 768px) {
@@ -113,12 +158,10 @@
                 transform: translateY(1rem);
                 opacity: 0;
             }
-
             100% {
                 transform: translateY(0rem);
                 opacity: 1;
             }
-
             0% {
                 transform: translateY(1rem);
                 opacity: 0;
@@ -127,15 +170,15 @@
 
         @-webkit-keyframes slideIn {
             0% {
-                -webkit-transform: transform;
                 -webkit-opacity: 0;
             }
-
+            0% {
+                -webkit-transform: transform;
+            }
             100% {
                 -webkit-transform: translateY(0);
                 -webkit-opacity: 1;
             }
-
             0% {
                 -webkit-transform: translateY(1rem);
                 -webkit-opacity: 0;
@@ -146,47 +189,57 @@
             -webkit-animation-name: slideIn;
             animation-name: slideIn;
         }
-        /*Khang*/
+
+        @media only screen and (max-width: 768px) {
+            .animate {
+                animation-duration: 0.8s;
+                -webkit-animation-duration: 0.8s;
+            }
+
+            .responsive-display-card {
+                display: none;
+            }
+
+            .responsive-display-navbar {
+                display: flex;
+                font-size: 20px;
+                margin-bottom: 24px;
+            }
+
+            .first-nav, .dropdown-menu {
+                font-size: 20px;
+            }
+            .hidden{
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow" style="border-radius: 10px">
-    <a class="navbar-brand" href="#">
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow first-nav" style="border-radius: 10px">
+    <a class="navbar-brand" href="/">
         <i class="fa fa-home fa-lg" aria-hidden="true"></i>
     </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse first-nav" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/">Trang chủ <span class="sr-only">(current)</span></a>
             </li>
             {{#if auth}}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                        {{#if actorBidder}}
-                            Bidder
-                        {{/if}}
-                        {{#if actorSeller}}
-                            Seller
-                        {{/if}}
-                        {{#if actorAdmin}}
-                            Admin
-                        {{/if}}
-                    </a>
+            <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+               aria-expanded="false" {{#if actorSeller}}style="color: darkorange" {{/if}}>
+                {{#if actorBidder}}
+                    <span style="color: #c42e23; font-weight: bold">Bidder</span>
+                </a>
                     <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
-                        <!--Khang-->
-                        <a class="dropdown-item" href="/bidder/upgrade">
-                            <i class="fa fa-arrow-up"></i>
-                            Nâng cấp thành Seller
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/products/WatchList">
-                            <i class="fa fa-heart"></i>
-                            Yêu thích: <span><b>{{lengthOfWatchList}} sản phẩm</b></span>
-                        </a>
+                        <a class="dropdown-item" href="/bidder/upgrade">Xin nâng cấp thành Seller</a>
+
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/products/AuctionList">
                             <i class="fa fa-list"></i>
@@ -202,29 +255,127 @@
                             <i class="fa fa-commenting-o"></i>
                             Đánh giá: <span><b>{{lengthOfReviewList}} đánh giá</b></span>
                         </a>
-                        <!--Khang-->
                     </div>
                 </li>
+                {{/if}}
+                {{#if actorSeller}}
+                    <span style="font-weight: bold">Seller</span>
+                    </a>
+                    <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/seller/addProduct"><i class="fa fa-plus-circle"></i> Đăng bán
+                            sản phẩm</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/seller/productsOf/{{authUser.Username}}"><i
+                                class="fa fa-check-circle-o"></i> Sản phẩm còn hạn</a>
+                        <a class="dropdown-item" href="/seller/productsSold/{{authUser.Username}}"><i
+                                class="fa fa-list"></i> Sản phẩm giao dịch</a>
+                        <a class="dropdown-item" href="/seller/productsOutDate/{{authUser.Username}}"> <i
+                                class="fa fa-times-circle-o"></i> Sản phẩm hết hạn</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item"><span style="color: #0f3596">Thời gian còn lại:</span> <span
+                                style="color: #0f3596; font-weight: bold">{{authUser.validTime}} ngày</span></a>
+                    </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-expanded="false" style="color: #c42e23; font-weight: bold">
+                            Bidder
+                        </a>
+                        <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/products/AuctionList">
+                                <i class="fa fa-list"></i>
+                                Đấu giá: <span><b>{{lengthOfAuctionList}} sản phẩm</b></span>
+                            </a>
+                            <a class="dropdown-item" href="/products/WinList">
+                                <i class="fa fa-trophy"></i>
+                                Đã thắng: <span><b>{{lengthOfWinningList}} sản phẩm</b></span>
+                            </a>
+                            <a class="dropdown-item" href="/bidder/review">
+                                <i class="fa fa-commenting-o"></i>
+                                Đánh giá: <span><b>{{lengthOfReviewList}} đánh giá</b></span>
+                            </a>
+                        </div>
+                    </li>
+                {{/if}}
+                {{#if actorAdmin}}
+                    <span style="font-weight: bold; color: darkblue">Admin</span>
+                    </a>
+                    <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/admin/categories/lv1">Danh mục cấp 1</a>
+                        <a class="dropdown-item" href="/admin/categories/lv2">Danh mục cấp 2</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/admin/user">Người dùng</a>
+                        <a class="dropdown-item" href="/admin/products">Sản phẩm</a>
+                    </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-expanded="false" style="color: darkorange; font-weight: bold">
+                            Seller
+                        </a>
+                        <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/seller/addProduct"><i class="fa fa-plus-circle"></i> Đăng
+                                bán sản phẩm</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/seller/productsOf/{{authUser.Username}}"><i
+                                    class="fa fa-check-circle-o"></i> Sản phẩm còn hạn</a>
+                            <a class="dropdown-item" href="/seller/productsSold/{{authUser.Username}}"><i
+                                    class="fa fa-list"></i> Sản phẩm giao dịch</a>
+                            <a class="dropdown-item" href="/seller/productsOutDate/{{authUser.Username}}"> <i
+                                    class="fa fa-times-circle-o"></i> Sản phẩm hết hạn</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-expanded="false" style="color: #c42e23; font-weight: bold">
+                            Bidder
+                        </a>
+                        <div class="dropdown-menu animate slideIn" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/products/AuctionList">
+                                <i class="fa fa-list"></i>
+                                Đấu giá: <span><b>{{lengthOfAuctionList}} sản phẩm</b></span>
+                            </a>
+                            <a class="dropdown-item" href="/products/WinList">
+                                <i class="fa fa-trophy"></i>
+                                Đã thắng: <span><b>{{lengthOfWinningList}} sản phẩm</b></span>
+                            </a>
+                            <a class="dropdown-item" href="/bidder/review">
+                                <i class="fa fa-commenting-o"></i>
+                                Đánh giá: <span><b>{{lengthOfReviewList}} đánh giá</b></span>
+                            </a>
+                        </div>
+                    </li>
+                {{/if}}
             {{/if}}
+            <li class="hidden" style="text-align: center">
+                <div class="wrap">
+                    <form method="POST" action="/account/search">
+                        <div class="search">
+                            <input type="text" class="searchTerm" placeholder="Tìm kiếm sản phẩm" style="color: black"
+                                   name="content" required>
+                            <button type="submit" class="searchButton" id="BtnSearch">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </li>
         </ul>
         <!--Khang-->
         {{#if auth}}
             <ul class="navbar-nav">
                 <div class="collapse navbar-collapse" id="navbarSupportedContent-5">
-
                     <ul class="navbar-nav ml-auto nav-flex-icons">
                         <li class="nav-item avatar dropdown">
-                            <a class="nav-link waves-effect waves-light" id="navbarDropdownMenuLink-5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <a class="nav-link waves-effect waves-light" id="navbarDropdownMenuLink-5"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                 <span class="badge badge-danger ml-2">{{lengthOfNotiList}}</span>
                                 <i class="fa fa-bell text-warning" st></i>
                             </a>
-                            <!--<div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="navbarDropdownMenuLink-5">-->
-                            <!--<a class="dropdowyle="cursor: pointer"n-item waves-effect waves-light" href="#">Action <span class="badge badge-danger ml-2">4</span></a>
-                            <a class="dropdown-item waves-effect waves-light" href="#">Another action <span class="badge badge-danger ml-2">1</span></a>
-                            <a class="dropdown-item waves-effect waves-light" href="#">Something else here <span class="badge badge-danger ml-2">4</span></a>-->
-                            <ul class="dropdown-menu dropdown-menu-lg-right notifications animate slideIn" role="menu" aria-labelledby="dLabel">
+                            <ul class="dropdown-menu dropdown-menu-lg-right notifications animate slideIn" role="menu"
+                                aria-labelledby="dLabel">
 
-                                <div class="notification-heading"><h4 class="menu-title">Notifications</h4></div>
+                                <div class="notification-heading"><h6 class="menu-title">Notifications</h6></div>
                                 <li class="divider"></li>
                                 <div class="notifications-wrapper">
                                     {{#each NotiListByUserID}}
@@ -246,20 +397,26 @@
                                                 {{else}}
                                                     {{#if this.Permission}}
                                                         {{#if this.DisplayPermission}}
-                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
-                                                                <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã được duyệt</h4>
+                                                            <a class="link-product"
+                                                               href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Yêu cầu đấu giá sản
+                                                                    phẩm {{this.ProID}} đã được duyệt</h4>
                                                                 <p class="item-info">{{format_date this.AcceptTime}}</p>
                                                             </a>
                                                         {{else}}
-                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
-                                                                <h4 class="item-title">Yêu cầu đấu giá sản phẩm {{this.ProID}} đã bị từ chối</h4>
+                                                            <a class="link-product"
+                                                               href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Yêu cầu đấu giá sản
+                                                                    phẩm {{this.ProID}} đã bị từ chối</h4>
                                                                 <p class="item-info">{{format_date this.AcceptTime}}</p>
                                                             </a>
                                                         {{/if}}
                                                     {{else}}
                                                         {{#if this.DisplayAuction}}
-                                                            <a class="link-product" href="/products/detail/{{this.ProID}}">
-                                                                <h4 class="item-title">Tài khoản không thể đấu giá sản phẩm {{this.ProID}}</h4>
+                                                            <a class="link-product"
+                                                               href="/products/detail/{{this.ProID}}">
+                                                                <h4 class="item-title">Tài khoản không thể đấu giá sản
+                                                                    phẩm {{this.ProID}}</h4>
                                                                 <p class="item-info">{{format_date this.AcceptTime}}</p>
                                                             </a>
                                                         {{/if}}
@@ -279,18 +436,24 @@
         <ul class="navbar-nav">
             {{#if auth}}
                 <li class="nav-item active dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                        Chào,  <b>{{authUser.Username}}!</b>
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-expanded="false">
+                        Chào, <b style="color: #0f3596">{{authUser.Username}}!</b>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right animate slideIn" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="/account/profile">
                             <i class="fa fa-user"></i>
-                            Profile
+                            Thông tin cá nhân
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/products/WatchList">
+                            <i class="fa fa-heart"></i>
+                            Yêu thích: <span><b>{{lengthOfWatchList}} sản phẩm</b></span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <form action="/account/logout" method="post" id="formLogout"></form>
                         <a class="dropdown-item" href="javascript: $('#formLogout').submit();">
-                            <i class="fa fa-sign-out"></i> Sign Out
+                            <i class="fa fa-sign-out"></i> Đăng xuất
                         </a>
                     </div>
                 </li>
@@ -298,13 +461,13 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/account/register">
                         <i class="fa fa-user-plus"></i>
-                        Register
+                        Đăng ký
                     </a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-link" href="/account/login">
                         <i class="fa fa-sign-in"></i>
-                        Sign In
+                        Đăng nhập
                     </a>
                 </li>
             {{/if}}
@@ -313,34 +476,79 @@
 </nav>
 <div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-sm-3">
-            <div class="card" style="border-radius: 10px">
+        <div class="col-sm-2-3qtr">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light shadow responsive-display-navbar"
+                 style="border-radius: 10px">
+                Danh mục
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav">
+                        <div class="just-padding">
+                            <div class="list-group list-group-root well">
+                                {{#each CategoryL1}}
+                                    <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if
+                                            isActive}}style="color: blue" {{/if}} data-toggle="collapse">
+                                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                        {{CatName1}}
+                                        {{#if numberPro}}
+                                            <span class="badge badge-pill badge-danger float-right">{{numberPro}}</span>
+                                        {{/if}}
+                                    </a>
+                                    <div class="list-group collapse" id="{{CatID1}}">
+                                        {{#each ../lcCategories}}
+                                            {{#ifCond ../this.CatID1 this.CatID1}}
+                                                <a href="/products/byCat/{{CatID2}}"
+                                                   class="list-group-item list-group-item-action" {{#if  this.isActive}}
+                                                   style="color: blue" {{/if}}>
+                                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                                    {{CatName2}}
+                                                    {{#if ProductCount}}
+                                                        <span class="badge badge-pill badge-success float-right">{{ProductCount}}</span>
+                                                    {{/if}}
+                                                </a>
+                                            {{/ifCond}}
+                                        {{/each}}
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+            </nav>
+            <div class="card responsive-display-card" style="border-radius: 10px">
                 <h4 class="card-header">
                     Danh mục
                 </h4>
-                <div class="just-padding hidden">
+                <div class="just-padding">
                     <div class="list-group list-group-root well">
                         {{#each CategoryL1}}
-                            <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if isActive}}style="color: blue" {{/if}} data-toggle="collapse">
+                            <a href="#{{CatID1}}" class="list-group-item list-group-item-action" {{#if
+                                    isActive}}style="color: blue; font-weight: bold" {{/if}} data-toggle="collapse">
                                 <i class="fa fa-caret-down" aria-hidden="true"></i>
                                 {{CatName1}}
                                 {{#if numberPro}}
                                     <span class="badge badge-pill badge-danger float-right">{{numberPro}}</span>
                                 {{/if}}
                             </a>
-                        <div class="list-group collapse" id="{{CatID1}}">
-                            {{#each ../lcCategories}}
-                                {{#ifCond ../this.CatID1 this.CatID1}}
-                                    <a href="/products/byCat/{{CatID2}}" class="list-group-item list-group-item-action" {{#if  this.isActive}} style="color: blue" {{/if}}>
-                                        <i class="fa fa-caret-right" aria-hidden="true"></i>
-                                        {{CatName2}}
-                                        {{#if ProductCount}}
-                                            <span class="badge badge-pill badge-success float-right">{{ProductCount}}</span>
-                                        {{/if}}
-                                    </a>
-                                {{/ifCond}}
-                            {{/each}}
-                        </div>
+                            <div class="list-group collapse" id="{{CatID1}}">
+                                {{#each ../lcCategories}}
+                                    {{#ifCond ../this.CatID1 this.CatID1}}
+                                        <a href="/products/byCat/{{CatID2}}"
+                                           class="list-group-item list-group-item-action" {{#if  this.isActive}}
+                                           style="color: blue; font-weight: bold" {{/if}}>
+                                            <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                            {{CatName2}}
+                                            {{#if ProductCount}}
+                                                <span class="badge badge-pill badge-success float-right">{{ProductCount}}</span>
+                                            {{/if}}
+                                        </a>
+                                    {{/ifCond}}
+                                {{/each}}
+                            </div>
                         {{/each}}
                     </div>
                 </div>
@@ -352,8 +560,24 @@
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"
+        integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2"
+        crossorigin="anonymous"></script>
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/gh/hoomanbahreini/bootstrap-half-and-quarter-grid/fractional-grid.min.css"></script>
 {{{_sections.js}}}
+<script>
+    var content = $('#BtnSearch').val()
+    var input = document.getElementById("subMitSignIn");
+    input.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13 && content.isEmpty() === false) {
+            event.preventDefault();
+            document.getElementById("subMitSignIn").click();
+        }
+    });
+</script>
 </body>
 </html>

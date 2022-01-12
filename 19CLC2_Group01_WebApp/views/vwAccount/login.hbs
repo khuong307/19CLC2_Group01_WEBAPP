@@ -112,6 +112,11 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -125,15 +130,15 @@
                 </button>
             </div>
         {{/if}}
-        <div>
-            <a class="nav-link" href="/"><h5>Home</h5> <span class="sr-only">(current)</span></a>
+        <div class="justify-content-between">
+            <a class="nav-link" href="/"><h5>Trang chủ</h5> <span class="sr-only">(current)</span></a>
         </div>
         <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #39d48c);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Đăng nhập</div>
         <div class="row justify-content-center">
             <form method="POST">
                 <div class="user-details">
-                    <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                    <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                         <div class="input-box">
                             <!--                        <span class="details">Username</span>-->
                             <i class="fa fa-user-circle-o"></i>
@@ -150,6 +155,7 @@
                 <div style="padding-top: 20px; text-align: center">
                     <a href="/account/forgetPass">Quên mật khẩu?</a>
                 </div>
+
                 <div class="button">
                     <input type="submit" value="Đăng nhập" id="subMitSignIn">
                 </div>
@@ -169,6 +175,13 @@
             x.type = "password";
         }
     }
+    var input = document.getElementById("subMitSignIn");
+    input.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("subMitSignIn").click();
+        }
+    });
 </script>
 </body>
 </html>

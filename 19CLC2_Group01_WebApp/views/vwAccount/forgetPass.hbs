@@ -112,6 +112,11 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -119,21 +124,21 @@
     <div class="container" >
         {{#if err_message}}
             <div class="alert alert-warning alert-dismissible fade show" role="alert" style="text-align: center">
-                <strong>Email failed: </strong> {{err_message}}
+                <strong>Lỗi: </strong> {{err_message}}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         {{/if}}
         <div>
-            <a class="nav-link" href="/"><h5>Home</h5> <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/"><h5>Trang chủ</h5> <span class="sr-only">(current)</span></a>
         </div>
         <div class="title"style="text-align: center; background: -webkit-linear-gradient(#71b7e6, #39d48c);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-bottom: 5px"> Quên mật khẩu</div>
         <div class="row justify-content-center">
             <form method="POST">
                 <div class="user-details">
-                    <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                    <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                         <div class="input-box">
                             <i class="fa fa-envelope"></i>
                             <input type="text" placeholder="Enter your email" name="Email" id = "email" required>
@@ -147,7 +152,7 @@
         </div>
         <a href="/account/login">
             <i class="fa fa-backward"></i>
-            Sign In
+            Đăng nhập
         </a>
     </div>
 </div>

@@ -1,0 +1,100 @@
+<div class="card text" style="border-radius: 10px">
+    <h4 class="card-header d-flex justify-content-between">
+        <span style="text-decoration: underline">Danh mục cấp 1</span>
+        <a class="btn btn-sm btn-outline-primary" href="/admin/categories/lv1/add" role="button">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            Thêm mới danh mục cấp 1
+        </a>
+    </h4>
+
+    <table class="table" id="CategoryTable" style="text-align: center">
+        <thead>
+        <tr class="table-active" style="color: white; background-color: midnightblue">
+            <th scope="col">ID</th>
+            <th scope="col">Tên danh mục</th>
+            <th scope="col">Số lượng sản phẩm</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.categories}}
+            <tr class="table" style="background-color: #dfffd1; font-size: 22px">
+                <th scope="row">{{CatID1}}</th>
+                <td>{{CatName1}}</td>
+                <td>{{ProductCount}}</td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-success" href="/admin/categories/lv1/detailL2?id={{CatID1}}" role="button">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    Danh mục cấp 2
+                    </a>
+
+                    <a class="btn btn-sm btn-primary" href="/admin/categories/lv1/edit?id={{CatID1}}&quantity={{ProductCount}}" role="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Chỉnh sửa
+                    </a>
+
+                    <a class="btn btn-sm btn-danger" value="{{CatID1}}" value1="{{ProductCount}}" value2="{{CatName1}}" id="btnDelete" role="button">
+                        <i class=" fa fa-trash" aria-hidden="true"></i>
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+<div class="card-footer">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <li class="page-item">
+                {{#if this.isFirstPage}}
+                    <a class="page-link" href="?page={{decrease_one this.currentPageIndex}}">
+                    Previous
+                    </a>
+                {{/if}}
+
+            </li>
+            {{#each this.pageNumbers}}
+                {{#if isCurrentPage}}
+                    <li class="page-item active">
+                        <a class="page-link" href="javascript:;">{{value}}</a>
+                    </li>
+                {{else}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{value}}">{{value}}</a>
+                    </li>
+                {{/if}}
+            {{/each}}
+            {{#if this.isLastPage}}
+                <a class="page-link" href="?page={{increase_one this.currentPageIndex}}">
+                Next
+                </a>
+            {{/if}}
+        </ul>
+    </nav>
+</div>
+
+{{#section 'js'}}
+    <script>
+        $("#CategoryTable tbody").on("click", "#btnDelete", function(e){
+            var CatID1=$(this).attr('value');
+            var ProductCount=parseInt($(this).attr('value1'));
+            var CatName1=$(this).attr('value2');
+            var url=window.location.origin+window.location.pathname+"/delrow?id="+CatID1;
+            if(ProductCount==0){
+                var answer=window.confirm('Bạn có muốn xóa '+ CatName1);
+                if(answer){
+                    $.post( url, function( data ) {
+                        if(data.status==1){
+                            alert(data.msg);
+                            window.location.reload();
+                        }
+                    });
+                }
+            }
+            else{
+                alert("Bạn không thể xóa danh mục với số lượng lớn hơn 0");
+            }
+        });
+    </script>
+{{/section}}

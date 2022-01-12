@@ -1,17 +1,16 @@
 //middle-ware: sẽ được khởi động chạy trước khi vào file hbs,  để lên trước các app.get
 import categoryModel from "../models/categories.models.js";
 import productModels from "../models/product.models.js";
-import BidderModels from "../models/bidder.models.js";
-import accountModels from "../models/account.models.js";
 import bidderModels from "../models/bidder.models.js";
+import accountModels from "../models/account.models.js";
 import moment from "moment";
-import ProductModels from "../models/product.models.js";
-import FuncMdw from "./func.mdw.js";
+import FuncMdw from "../middlewares/func.mdw.js";
+
 
 export default function(app){
-    //Khang
+    //khuong.
     app.use(async function(req, res, next){
-        const productList = await ProductModels.findAll();
+        const productList = await productModels.findAll();
         const now = new Date();
 
         for (let i = 0; i < productList.length; i++){
@@ -24,66 +23,21 @@ export default function(app){
                 else{
                     await FuncMdw.sendEmail(productList[i].UploadUser, `Sản phẩm ${productList[i].ProName} đã kết thúc mà không có người đấu giá`);
                 }
-                await ProductModels.updateProductSendEmailStatus(productList[i].ProID);
+                await productModels.updateProductSendEmailStatus(productList[i].ProID);
             }
         }
 
         if(typeof (req.session.auth) === 'undefined'){
-            req.session.auth = false;
+            req.session.auth = null;
         }
         if(typeof (req.session.authUser) === 'undefined'){
-            req.session.authUser = false;
+            req.session.authUser = null;
         }
 
         res.locals.auth = req.session.auth
         res.locals.authUser = req.session.authUser
 
-        if(res.locals.authUser != false){
-            const userid = res.locals.authUser.UserID;
-            const lst = await BidderModels.findById(userid);
-            const obj = lst[lst.length-1];
-            res.locals.upgrade = "Can upgrade";
-            if (obj !== undefined && obj.Change === 1){
-                if (obj.AcceptTime === null)
-                    res.locals.upgrade = "Yêu cầu của bạn đã được gửi và đang chờ xử lý";
-                else{
-                    if (obj.Status === 1){
-                        const now = new Date();
-                        const sendDate = new Date(obj.AcceptTime);
-                        const diffTime = now.getTime() - sendDate.getTime();
-                        console.log(diffTime)
-                        if (diffTime > 604800000){
-                            const ret = await accountModels.updateActorById(userid, 1);
-                            res.locals.authUser.Type = 1;
-                        }
-                        else{
-                            res.locals.upgrade = "Bạn đã trở thành seller";
-                        }
-                    }
-                    else if (obj.Status === 2){
-                        res.locals.upgrade = "Can upgrade";
-                    }
-                }
-            }
-        }
-
-        next();
-    });
-    // Khang
-
-    //khuong.
-    app.use(async function(req, res, next){
-        if(typeof (req.session.auth) === 'undefined'){
-            req.session.auth = false;
-        }
-        if(typeof (req.session.authUser) === 'undefined'){
-            req.session.authUser = false;
-        }
-
-        res.locals.auth = req.session.auth
-        res.locals.authUser = req.session.authUser
-
-        if(res.locals.authUser != false){
+        if(res.locals.authUser != null){
             if(res.locals.authUser.Type === 1){
                 res.locals.actorBidder = 1;
             }
@@ -92,6 +46,28 @@ export default function(app){
             }
             else if (res.locals.authUser.Type === 3){
                 res.locals.actorAdmin = 1;
+            }
+        }
+
+        if(res.locals.authUser != null){
+            const userid = res.locals.authUser.UserID;
+            const obj = await bidderModels.findById(userid);
+            res.locals.upgrade = "Can upgrade";
+            if (obj !== undefined && obj.Change === 1){
+                if (obj.AcceptTime === null)
+                    res.locals.upgrade = "Yêu cầu của bạn đã được gửi và đang chờ xử lý";
+                else{
+                    const now = new Date();
+                    const sendDate = new Date(obj.AcceptTime);
+                    const diffTime = now.getTime() - sendDate.getTime();
+                    if (diffTime > 604800000){
+                        const ret = await accountModels.updateActorById(userid, 1);
+                        res.locals.authUser.Type = 1;
+                    }
+                    else{
+                        res.locals.upgrade = "Bạn đã trở thành seller";
+                    }
+                }
             }
         }
         next()
@@ -115,7 +91,7 @@ export default function(app){
         }
 
         // Khang
-        if(res.locals.authUser != false){
+        if(res.locals.authUser != null){
             const userID = res.locals.authUser.UserID;
             const watchList = await productModels.getWatchListByUserID(userID);
             const changeList = await bidderModels.findById(userID);
@@ -195,18 +171,34 @@ export default function(app){
             res.locals.NotiListByUserID = temp.reverse();
             res.locals.lengthOfNotiList = temp.length;
             res.locals.WatchListByUSerID = watchList;
-            res.locals.lengthOfWatchList = watchList.length;
+            if (watchList === null){
+                res.locals.lengthOfWatchList = 0;
+            }else{
+                res.locals.lengthOfWatchList = watchList.length;
+            }
+
             const current = now.toISOString().slice(0, 19).replace('T', ' ');
             const auctioningList = await productModels.getAuctioningList(userID, current);
-            res.locals.lengthOfAuctionList = auctioningList.length;
+            if (auctioningList === null){
+                res.locals.lengthOfAuctionList = 0;
+            }else{
+                res.locals.lengthOfAuctionList = auctioningList.length;
+            }
+
             const winningList = await productModels.getWinningList(userID);
             res.locals.WinningListByUserID = winningList;
-            res.locals.lengthOfWinningList = winningList.length;
-            const reviewList = await BidderModels.getReviewWithUserID(userID);
-            res.locals.lengthOfReviewList = reviewList.length;
-            console.log(res.locals.lengthOfAuctionList);
+            if (winningList === null){
+                res.locals.lengthOfWinningList = 0;
+            }else{
+                res.locals.lengthOfWinningList = winningList.length;
+            }
+            const reviewList = await bidderModels.getReviewWithUserID(userID);
+            if (reviewList === null){
+                res.locals.lengthOfReviewList = 0;
+            }else{
+                res.locals.lengthOfReviewList = reviewList.length;
+            }
         }
-        // Khang
         next()
     })
 

@@ -1,0 +1,63 @@
+{{#section 'css'}}
+    <style>
+        .comment-list{
+            overflow: auto;
+            max-height: 310px;
+            border-radius: 5px;
+            border-width: 1px;
+        }
+    </style>
+{{/section}}
+
+<div class="card text">
+    <h4 class="card-header d-flex">
+        Điểm đánh giá: <span style="color: #0f3596; font-weight: bold">&nbsp{{username}}</span><span class="badge badge-danger ml-2">
+        {{#ifCond this.userInfo.DislikePoint 0}}
+            {{#ifCond this.userInfo.LikePoint 0}}
+                0%
+            {{/ifCond}}
+        {{/ifCond}}
+        {{#if this.userInfo.DislikePoint}}
+            {{#if this.userInfo.LikePoint}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{else}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{/if}}
+        {{else}}
+            {{#if this.userInfo.LikePoint}}
+                {{roundPercentage this.userInfo.Percentage}}%
+            {{/if}}
+        {{/if}}
+        </span>
+    </h4>
+    <div class="card-body">
+        <h5>Tổng số lượt thích: <span class="badge badge-danger ml-2">{{this.userInfo.LikePoint}}</span></h5>
+        <h5>Tổng số lượt không thích: <span class="badge badge-danger ml-2">{{this.userInfo.DislikePoint}}</span></h5>
+        {{#if this.userInfo.Show}}
+            <h5> <span style="text-decoration: underline">Tình trạng đấu giá:</span> <span style="color: #0aa33a; font-weight: bold">Đủ điều kiện.</span></h5>
+        {{else}}
+            <h5><span style="text-decoration: underline">Tình trạng đấu giá:</span>  <span style="color: #c42e23; font-weight: bold">Không đủ điều kiện.</span></h5>
+        {{/if}}
+        <div class="comment-list mt-3" style="background-color: #dfffd1">
+            {{#each this.reviewList}}
+                <div class="text-danger ml-3">{{format_date Time}}</div>
+                <div class="d-flex flex-row comment-row mt-2">
+                    <div class="p-2"><img src="https://www.seekpng.com/png/full/50-507252_customer-and-seller-icon.png" alt="user" width="50" class="rounded-circle"></div>
+                    <div class="comment-text w-100">
+                        <h6 class="font-medium">{{ MaskCharacter Username}}
+                            {{#if Status}}
+                                <i class="fa fa-thumbs-up text-primary"></i>
+                            {{else}}
+                                <i class="fa fa-thumbs-down text-primary"></i>
+                            {{/if}}
+                            <span style="color: darkblue"> - {{ProName}}</span>
+                        </h6> <span class="m-b-15 d-block">{{Comment}}</span>
+                    </div>
+                </div>
+                {{#unless @last}}
+                    <div class="dropdown-divider"></div>
+                {{/unless}}
+            {{/each}}
+        </div>
+    </div>
+</div>

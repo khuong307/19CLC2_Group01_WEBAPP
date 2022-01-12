@@ -1,0 +1,122 @@
+<div class="card">
+    <div class="card-header" style="background-color: antiquewhite">
+        <h4>
+            <i class="fa fa-arrow-up"></i> Bidder <i class="fa fa-arrow-right"></i> Seller
+            <div style="float: right">
+                <a class="btn btn-sm btn-outline-primary" href="/admin/user/seller" role="button">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    Xem danh sách Seller
+                </a>
+                <a class="btn btn-sm btn-outline-danger" href="/admin/user/bidder" role="button">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    Xem danh sách Bidder
+                </a>
+            </div>
+        </h4>
+    </div>
+
+    <table class="table" id="UpgradeTable" style="text-align: center">
+        <thead>
+        <tr class="table-active">
+            <th scope="col">ID</th>
+            <th scope="col">Username</th>
+            <th scope="col">Thời gian yêu cầu</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.upgradeList}}
+            <tr class="table-info">
+                <th scope="row">{{UserID}}</th>
+                <td>{{Username}}</td>
+                <td>{{formatDateTime Time}}</td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-primary" href="/admin/user/bidder/detail?id={{UserID}}" role="button">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    Thông tin chi tiết
+                    </a>
+
+                    <a class="btn btn-sm btn-success" value="{{UserID}}" value1="{{Username}}" id="btnAgree"
+                       role="button">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        Chấp nhận
+                    </a>
+                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}" id="btnDisagree"
+                       role="button">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        Không chấp nhận
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{#if empty}}
+{{else}}
+    <div class="card-footer">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+                <li class="page-item">
+                    {{#if this.isFirstPage}}
+                        <a class="page-link" href="?page={{decrease_one this.currentPageIndex}}">
+                        Previous
+                        </a>
+                    {{/if}}
+
+                </li>
+                {{#each this.pageNumbers}}
+                    {{#if isCurrentPage}}
+                        <li class="page-item active">
+                            <a class="page-link" href="javascript:;">{{value}}</a>
+                        </li>
+                    {{else}}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{value}}">{{value}}</a>
+                        </li>
+                    {{/if}}
+                {{/each}}
+                {{#if this.isLastPage}}
+                    <a class="page-link" href="?page={{increase_one this.currentPageIndex}}">
+                    Next
+                    </a>
+                {{/if}}
+            </ul>
+        </nav>
+    </div>
+{{/if}}
+
+
+{{#section 'js'}}
+    <script>
+        $("#UpgradeTable tbody").on("click", "#btnAgree", function (e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location.origin+window.location.pathname + "/accept?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn chấp nhập ' + Username + ' thành seller');
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+        $("#UpgradeTable tbody").on("click", "#btnDisagree", function (e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location.origin+window.location.pathname + "/deny?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn hủy yêu cầu ' + Username + ' thành seller');
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+{{/section}}

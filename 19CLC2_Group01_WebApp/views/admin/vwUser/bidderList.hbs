@@ -1,0 +1,137 @@
+<div class="card">
+    <div class="card-header" style="background-color: antiquewhite">
+        <h4 style="text-align: center">
+            Danh sách Bidder
+            <div style="float: right">
+                <a class="btn btn-sm btn-outline-primary" href="/admin/user/seller" role="button">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    Xem danh sách Seller
+                </a>
+                <a class="btn btn-sm btn-outline-danger" href="/admin/user/upgrade" role="button">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    Xem yêu cầu nâng cấp
+                </a>
+            </div>
+        </h4>
+    </div>
+
+    <table class="table" id="BidderTable" style="text-align: center">
+        <thead>
+        <tr class="table-active">
+            <th scope="col">UserID</th>
+            <th scope="col">Username</th>
+            <th scope="col">Loại</th>
+            <th scope="col">Tình trạng</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.bidderList}}
+            <tr class="table-info">
+                <th scope="row">{{UserID}}</th>
+                <td>{{Username}}</td>
+                <td>
+                    {{#ifCond Type 1}}
+                        Bidder
+                    {{else}}
+                        Seller
+                    {{/ifCond}}
+                </td>
+                <td>
+                    {{#ifCond Activate 1}}
+                        Đã kích hoạt
+                    {{/ifCond}}
+                    {{#ifCond Activate -1}}
+                        Đã vô hiệu hóa
+                    {{/ifCond}}
+                    {{#ifCond Activate 0}}
+                        Chưa xác nhận mã otp
+                    {{/ifCond}}
+                </td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-primary" href="/admin/user/bidder/detail?id={{UserID}}" role="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Chi tiết
+                    </a>
+                    {{#ifCond Activate 1}}
+                        <a class="btn btn-sm btn-warning" value="{{UserID}}" value1="{{Username}}" id="btnDisable"
+                           role="button">
+                            <i class=" fa fa-ban" aria-hidden="true"></i>
+                            Vô hiệu hóa
+                        </a>
+                    {{/ifCond}}
+                    <a class="btn btn-sm btn-danger" value="{{UserID}}" value1="{{Username}}" id="btnDelete"
+                       role="button">
+                        <i class=" fa fa-trash" aria-hidden="true"></i>
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+<div class="card-footer">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <li class="page-item">
+                {{#if this.isFirstPage}}
+                    <a class="page-link" href="?page={{decrease_one this.currentPageIndex}}">
+                    Previous
+                    </a>
+                {{/if}}
+
+            </li>
+            {{#each this.pageNumbers}}
+                {{#if isCurrentPage}}
+                    <li class="page-item active">
+                        <a class="page-link" href="javascript:;">{{value}}</a>
+                    </li>
+                {{else}}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{value}}">{{value}}</a>
+                    </li>
+                {{/if}}
+            {{/each}}
+            {{#if this.isLastPage}}
+                <a class="page-link" href="?page={{increase_one this.currentPageIndex}}">
+                Next
+                </a>
+            {{/if}}
+        </ul>
+    </nav>
+</div>
+
+
+{{#section 'js'}}
+    <script>
+        $("#BidderTable tbody").on("click", "#btnDisable", function (e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location.origin+window.location.pathname + "/disable?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn vô hiệu hóa tài khoản ' + Username);
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+        $("#BidderTable tbody").on("click", "#btnDelete", function (e) {
+            var UserID = $(this).attr('value');
+            var Username = $(this).attr('value1');
+            var url = window.location.origin + "/admin/user/delete?id=" + UserID;
+            var answer = window.confirm('Bạn có muốn xóa tài khoản ' + Username);
+            if (answer) {
+                $.post(url, function (data) {
+                    if (data.status == 1) {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+{{/section}}

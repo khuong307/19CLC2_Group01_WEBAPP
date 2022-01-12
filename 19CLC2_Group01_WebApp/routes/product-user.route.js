@@ -1,10 +1,12 @@
 //admin/categories
 import express from 'express';
 import productModel from '../models/product.models.js'
+import accountModels from "../models/account.models.js";
 import auth from '../middlewares/auth.mdw.js'
-import ProductModels from "../models/product.models.js";
-import AccountModels from "../models/account.models.js";
-import BidderModels from "../models/bidder.models.js";
+import moment from 'moment';
+import mails from "nodemailer";
+import bidderModels from "../models/bidder.models.js";
+import sellerModels from "../models/seller.models.js"; //format date.
 import FuncMdw from "../middlewares/func.mdw.js";
 const router = express.Router();
 //Khuong.
@@ -51,12 +53,13 @@ router.get('/byCat/:id', async function(req, res){
     const list = await productModel.findPageByCatID(catID2, limit, offset)
     for (let i = 0; i < list.length; i++){
         const auction = await productModel.getAuctionByProID(list[i].ProID);
-        if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
-            list[i].Show = 1;
+        if (auction != null && res.locals.authUser != null){
+            if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
+                list[i].Show = 1;
+        }
     }
-
-    // Khang
-    if (res.locals.WatchListByUSerID != undefined){
+    //check which product selected in watch list
+    if (res.locals.WatchListByUSerID != null){
         for(const c of list){
             for (const d of res.locals.WatchListByUSerID){
                 if (c.ProID === d.ProID){
@@ -66,7 +69,38 @@ router.get('/byCat/:id', async function(req, res){
         }
     }
 
-    if (res.locals.WinningListByUserID != undefined){
+    //get highest bidder + number of auction
+    for(const c of list){
+        const highestBidder =  await productModel.getUsernameMaxPriceByProID(c.ProID)
+        if (highestBidder === null){
+            c.highestBidder = 'None'
+        }else{
+            c.highestBidder = highestBidder.Username
+        }
+
+        const numberofAuction = await productModel.getNumberofAuctionByProID(c.ProID)
+        if(numberofAuction === null){
+            c.numberAuction = 0
+        }else{
+            c.numberAuction = numberofAuction.NumberOfAuction
+        }
+
+        //check í new product. (3 days)
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(c.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            c.isNew = true
+        }
+        else
+            c.isNew = false
+    }
+
+    const isLogin = req.session.auth || false
+    if (res.locals.WinningListByUserID != null){
         for(const c of list){
             for (const d of res.locals.WinningListByUserID){
                 if (c.ProID === d.ProID){
@@ -75,10 +109,6 @@ router.get('/byCat/:id', async function(req, res){
             }
         }
     }
-    // Khang
-
-    const isLogin = req.session.auth || false
-    console.log(isLogin)
 
     res.render('vwProducts/byCat', {
         products: list,
@@ -87,9 +117,120 @@ router.get('/byCat/:id', async function(req, res){
         currentPageIndex: page,
         isFirstPage: +page != 1,
         isLastPage: +page != nPages,
-        isLogin
+        isLogin,
+        CatID2: catID2
     })
 })
+
+// search by price ascending
+router.get('/byCat',
+    async function (req, res) {
+        req.session.retURL = req.originalUrl
+        const CatID2 = req.query.id
+        const type = req.query.type
+
+        //type = 1: price ascending, type =2, valid date descending.
+        const proIDs = await productModel.getProductsByCatID2(CatID2)
+
+        if (proIDs === null) {
+            return res.render('vwProducts/byCat', {
+                empty: true,
+            })
+        } else {
+            const limit = 3
+            const page = req.query.page || 1 //Paging
+            const offset = (page - 1) * limit
+
+            const total = proIDs.length
+            let nPages = Math.floor(total / limit)
+            let pageNumbers = []
+            if (total % limit > 0) {
+                nPages++
+            }
+
+            for (let i = 1; i <= nPages; i++) {
+                pageNumbers.push({
+                    value: i,
+                    isCurrentPage: +page === i,
+                })
+            }
+            var list = []
+            if (type === '1') {
+                list = await productModel.getProductsByCatID2ByPrice(CatID2, limit, offset)
+            } else if (type === '2')
+                list = await productModel.getProductsByCatID2ByDate(CatID2, limit, offset)
+            const resultList = [];
+
+            for (const c of list) {
+                const d = await productModel.getProductByProID(c.ProID);
+                resultList.push(d);
+            }
+            console.log(resultList)
+            for (const d of resultList) {
+                const CatID2 = d.CatID2;
+                const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
+                d.CatID1 = CatID1.CatID1;
+
+                const highestBidder = await productModel.getUsernameMaxPriceByProID(d.ProID)
+                if (highestBidder === null) {
+                    d.highestBidder = 'None'
+                } else {
+                    d.highestBidder = highestBidder.Username
+                }
+
+                const numberofAuction = await productModel.getNumberofAuctionByProID(d.ProID)
+                if (numberofAuction === null) {
+                    d.numberAuction = 0
+                } else {
+                    d.numberAuction = numberofAuction.NumberOfAuction
+                }
+
+                //check í new product. (3 days)
+                const now = new Date();
+                const date1 = moment.utc(now).format('MM/DD/YYYY')
+                const date2 = moment.utc(d.UploadDate).format('MM/DD/YYYY')
+                const diffTime = Math.abs(new Date(date1) - new Date(date2));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays <= 3) {
+                    d.isNew = true
+                } else
+                    d.isNew = false
+
+            }
+
+            if (res.locals.WatchListByUSerID != null) {
+                for (const d of resultList) {
+                    for (const c of res.locals.WatchListByUSerID) {
+                        if (d.ProID === c.ProID) {
+                            d.isWatchList = 1;
+                        }
+                    }
+                }
+            }
+            const isLogin = req.session.auth || false
+            var isLowtoHighPrice = 0;
+            var isDateClose = 0;
+            if (type === '1')
+                isLowtoHighPrice = 1
+            else if (type === '2')
+                isDateClose = 1
+
+            res.render('vwProducts/byCat', {
+                empty: 0,
+                isLowtoHighPrice,
+                isDateClose,
+                products: resultList,
+                type,
+                isLogin,
+                pageNumbers,
+                currentPageIndex: page,
+                isFirstPage: +page != 1,
+                isLastPage: +page != nPages,
+                CatID2,
+            })
+        }
+    });
 
 router.get('/detail/:id', async function(req, res){
     //const catID = req.query.id || 0
@@ -131,7 +272,7 @@ router.get('/detail/:id', async function(req, res){
 
     // Khang
     const WatchList = res.locals.WatchListByUSerID;
-    if (WatchList != undefined){
+    if (WatchList != null){
         for (var i = 0; i < WatchList.length; i++){
             if (WatchList[i].ProID === product.ProID){
                 product.isActive = true;
@@ -140,13 +281,49 @@ router.get('/detail/:id', async function(req, res){
         if (product.isActive === undefined)
             product.isActive = null;
     }
+    // Khang
 
-    if (res.locals.authUser != false){
+    //check upload user.
+    const sellerUsername = await productModel.getSellerNamebyUploadUserID(product.UploadUser);
+    product.sellerUsername = sellerUsername.Username
+
+    var highestBidder = "0"
+    const UploadUserPoint = await accountModels.getPointByUserID(product.UploadUser)
+    const Bidder =  await productModel.getUsernameMaxPriceByProID(product.ProID)
+    var bidderID = ""
+    if (Bidder === null){
+        highestBidder = 'None'
+    }else{
+        highestBidder = Bidder.Username
+        bidderID = Bidder.UserID
+    }
+
+
+    const desHistory = await productModel.getDescriptionHistoryByProID(proID);
+
+    //check user is owner;
+    var isOwner = 0
+    if(res.locals.authUser != null){
+        if(product.UploadUser === res.locals.authUser.UserID){
+            isOwner = 1
+        }
+    }
+
+    //get bidder information.
+    const bidderInfo = await productModel.getBidderInfoByProID(proID)
+    if (bidderInfo != null){
+        for(const c of bidderInfo){
+            const tmp = await productModel.getUsernameByUserID(c.Header)
+            c.HeaderUsername = tmp.Username
+        }
+    }
+
+    if (res.locals.authUser != null){
         const userID = res.locals.authUser.UserID;
-        var userInfo = await AccountModels.getUserInfo(userID);
+        var userInfo = await accountModels.getUserInfo(userID);
         var flag = true;
-        const auctionList = await ProductModels.getAuctionByProIDAndUserID(userID, proID);
-        const fullAuctionList = await ProductModels.getAuctionByProID(proID);
+        const auctionList = await productModel.getAuctionByProIDAndUserID(userID, proID);
+        const fullAuctionList = await productModel.getAuctionByProID(proID);
         for (let i = 0; i < fullAuctionList.length; i++){
             if (fullAuctionList[i].isBuyNow === 1){
                 flag = false;
@@ -171,7 +348,7 @@ router.get('/detail/:id', async function(req, res){
             else{
                 const totalReview = userInfo.LikePoint + userInfo.DislikePoint;
                 if (totalReview === 0 || userInfo.LikePoint / totalReview < 0.8){
-                    const permissionList = await BidderModels.getPermissionByUserIDAndProID(userID, proID);
+                    const permissionList = await bidderModels.getPermissionByUserIDAndProID(userID, proID);
                     if (permissionList.length === 0){
                         userInfo.Auction = 0;
                         userInfo.Show = 1;
@@ -193,32 +370,76 @@ router.get('/detail/:id', async function(req, res){
                 else{
                     userInfo.Auction = 1;
                 }
-                console.log(userInfo);
             }
         }
     }
-    // Khang
+
+    //get all request.
+    const allRequest = await sellerModels.getBidderFirstRequest(proID);
+    for(const c of allRequest){
+        c.Username = await sellerModels.getUsernameByUserID(c.BidderID)
+    }
+
+    var isWinner = 0 //để xem được detail sau khi sản phẩm có ng mua thì phải là ng bán và winner
+    if (res.locals.authUser != null){
+        if (res.locals.authUser.UserID == product.Winner){
+            isWinner = 1
+        }
+    }
+
+    //nếu sản phẩm đã có người mua thì chỉ có ng bán và người mua xem được
+    if (product.Winner !== null){
+        if (isWinner == 0 && isOwner == 0){
+            res.redirect('/')
+        }
+    }
+
+    //sản phẩm hết hạn + không có người mua chỉ có người bán mới xem được.
+    if (product.EndDate < new Date() && product.Winner == null){
+        if (isOwner == 0){
+            res.redirect('/')
+        }
+    }
 
     res.render('vwProducts/detail', {
         product,
         empty: product.length === 0,
         list5Relate,
         Category1: catID1.CatID1,
-        userInfo
+        UploadUserPoint,
+        highestBidder,
+        desHistory,
+        isOwner,
+        bidderInfo,
+        proID,
+        hasWinner: product.Winner === null,
+        userInfo,
+        allRequest,
+        bidderID,
+        hasBidder: highestBidder != 'None',
     })
 })
 //Khuong.
 
 // Khang
 router.get('/WatchList', auth, async function (req, res){
+
     req.session.retURL = req.originalUrl
+    for (const d of res.locals.CategoryL1){ // count tổng số lượng sản phẩm trong 1 CategoryL1.
+        d.numberPro = 0;
+        for (const c of res.locals.lcCategories){
+            if (d.CatID1 === c.CatID1){
+                d.numberPro += c.ProductCount;
+            }
+        }
+    }
 
     const limit = 3
     const page = req.query.page || 1 //Paging
     const offset = (page - 1) *limit
 
     const userID = req.session.authUser.UserID
-    const total = res.locals.lengthOfWatchList
+    const total = await productModel.countWatchList(userID);
     let nPages = Math.floor(total/limit)
     let pageNumbers = []
     if(total % limit > 0){
@@ -234,18 +455,39 @@ router.get('/WatchList', auth, async function (req, res){
 
 
     const WatchList = await productModel.getWatchListFromUserID(userID, limit, offset);
-    console.log(WatchList)
-
-    for (let i = 0; i < WatchList.length; i++){
-        const auction = await productModel.getAuctionByProID(WatchList[i].ProID);
-        if (auction.length !== 0 && res.locals.authUser.UserID === auction[0].UserID)
-            WatchList[i].Show = 1;
-    }
 
     for (const obj of WatchList){
         const CatID2 = obj.CatID2;
         const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
         obj.CatID1 = CatID1.CatID1;
+        //check í new product. (3 days)
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(obj.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            obj.isNew = true
+        }
+        else
+            obj.isNew = false
+
+        //number of auction.
+        const numberofAuction = await productModel.getNumberofAuctionByProID(obj.ProID)
+        if(numberofAuction === null){
+            obj.numberAuction = 0
+        }else{
+            obj.numberAuction = numberofAuction.NumberOfAuction
+        }
+
+        //hisghest bidder.
+        const highestBidder =  await productModel.getUsernameMaxPriceByProID(obj.ProID)
+        if (highestBidder === null){
+            obj.highestBidder = 'None'
+        }else{
+            obj.highestBidder = highestBidder.Username
+        }
     }
 
     res.render('vwProducts/watchList', {
@@ -258,10 +500,19 @@ router.get('/WatchList', auth, async function (req, res){
     })
 })
 
+router.post('/appendDescription/:id', async function(req, res){
+    const url = req.headers.referer || '/'
+    const info = req.body.Info
+    const proID = req.params.id
+    const now = new Date()
+    productModel.InsertNewDescriptionByProID(proID, now, info)
+
+    res.redirect(url)
+})
+
 router.post('/addWatchList', async function (req, res){
     req.session.retURL = req.originalUrl
     const id = req.body.ProID;
-    console.log(id);
 
     const userid = req.session.authUser.UserID || ''
     const entity = {
@@ -282,9 +533,8 @@ router.post('/delWatchList', async function(req, res){
         ProID: id
     };
     const ret = await productModel.delFromWatchList(entity);
-    const url = req.headers.referer || '/';
+    const url = req.headers.referer || '/'
     if (url.includes("http://localhost:3000/products/WatchList")){
-        console.log("true");
         const list = res.locals.WatchListByUSerID;
         const length = list.length - 1;
         for (var i = 0; i < list.length; i++){
@@ -303,7 +553,135 @@ router.post('/delWatchList', async function(req, res){
     else
         res.redirect(url);
 });
+// Khang
 
+//deny request.
+router.post('/denyRequest', async function(req, res){
+    const proID = req.query.ProID
+    const userID = req.query.UserID
+
+    const MaxBidder = await productModel.getMaxBidderByProID(proID)
+    console.log(MaxBidder)
+    productModel.updateStatusAuctionByUserID(userID)
+
+    //send OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'khuong16lop9a6@gmail.com',
+            pass: '0903024916'
+        }
+    });
+
+    //send deny request
+    const proName = await productModel.getProNameByProID(proID);
+    const mail = await productModel.getEmailByUserID(userID)
+    const maxPrice = await productModel.getMaxPriceByUserIDProID(proID, userID)
+
+    var mailOptions = {
+        from: 'khuong16lop9a6@gmail.com',
+        to: mail.Email,
+        subject: 'Bidding Wep App: Bạn bị từ chối lượt ra giá',
+        text: 'Sản phẩm có mã ('+ proID +'): ' + proName.ProName +' với giá tiền ' + maxPrice.MaxPrice +' đã bị người bán từ chối ra giá.\nNgoài ra bạn không thể tiếp tục đấu giá sản phẩm này.'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+
+    // //is highest bidder.
+    const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
+    const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[0].MaxPrice);
+    console.log(highestBidder)
+    if (userID === highestBidder.UserID){
+        const secondPrice = await productModel.getSecondPriceInAuction(proID)
+        productModel.updateCurrentPriceByProID(proID, secondPrice.Price)
+        await productModel.deleteMaxPriceByProIDUserID(proID, userID)
+    }
+
+
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+})
+
+
+//approve request new bidder
+router.post('/approveRequest', async function(req, res){
+    const proID = req.query.ProID
+    console.log(proID)
+    const userID = req.query.UserID
+    console.log(userID)
+    const mail = await productModel.getEmailByUserID(userID)
+    const proName = await productModel.getProNameByProID(proID)
+    const time = new Date()
+    sellerModels.updateStatusPermission(userID, proID, time);
+//send OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'khuong16lop9a6@gmail.com',
+            pass: '0903024916'
+        }
+    });
+
+    //send email
+    console.log(mail.Email)
+    var mailOptions = {
+        from: 'khuong16lop9a6@gmail.com',
+        to: mail.Email,
+        subject: 'Bidding Wep App: Người bán ra đồng ý cho phép bạn ra giá!',
+        text: 'Sản phẩm có mã ('+ proID +'): ' + proName.ProName + '. Bạn dã có thể ra giá cho sản phẩm này!'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+})
+
+
+//approve request new bidder
+router.post('/denyRequestFirstTime', async function(req, res){
+    const proID = req.query.ProID
+    const userID = req.query.UserID
+    const mail = await productModel.getEmailByUserID(userID)
+    const proName = await productModel.getProNameByProID(proID)
+    const time = new Date()
+    sellerModels.updateStatusDenyPermission(userID, proID, time);
+//send OTP emails.
+    var transporter = mails.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'khuong16lop9a6@gmail.com',
+            pass: '0903024916'
+        }
+    });
+
+    //send email
+    var mailOptions = {
+        from: 'khuong16lop9a6@gmail.com',
+        to: mail.Email,
+        subject: 'Bidding Wep App: Người bán ra không đồng ý cho phép bạn ra giá!',
+        text: 'Sản phẩm có mã ('+ proID +'): ' + proName.ProName + '. Bạn không thể ra giá cho sản phẩm này!'
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    const url = req.headers.referer || '/'
+    res.redirect(url)
+})
+//history
 router.get('/history', async function (req, res){
     req.session.retURL = req.originalUrl
     const ProID = req.query.ProID;
@@ -312,12 +690,12 @@ router.get('/history', async function (req, res){
     var lst = [];
     if (type === undefined || type === "top-5"){
         var display = false;
-        lst = await ProductModels.getAuctionByProIDWithLimit(ProID, 5, 0);
+        lst = await productModel.getAuctionByProIDWithLimit(ProID, 5, 0);
     }
     else{
         var display = true;
         const offset = (page-1)*6;
-        const length = await ProductModels.getLengthAuction(ProID);
+        const length = await productModel.getLengthAuction(ProID);
         if (length === 0)
             display = false;
         else{
@@ -334,12 +712,15 @@ router.get('/history', async function (req, res){
                     isCurrentPage: +page === i,
                 });
             }
-            lst = await ProductModels.getAuctionByProIDWithLimit(ProID, 6, offset);
+            lst = await productModel.getAuctionByProIDWithLimit(ProID, 6, offset);
         }
     }
     for (var i = 0; i < lst.length; i++) {
         lst[i].No = (i + 1) + (page - 1) * 6;
     }
+    const product = await productModel.getProductByProID(ProID)
+    const catid2 = await productModel.getCatID2FromProID(ProID)
+    const catid1 =  await productModel.getCatID1FromCatID2(catid2.CatID2)
     res.render('vwProducts/history', {
         Users: lst,
         ProID,
@@ -347,7 +728,9 @@ router.get('/history', async function (req, res){
         currentPageIndex: page,
         isFirstPage: +page != 1,
         isLastPage: +page != nPages,
-        display
+        display,
+        product,
+        CatID1: catid1.CatID1
     });
 });
 
@@ -362,7 +745,7 @@ router.post('/auction/:id', async function (req, res){
             Status: 0,
             AcceptTime: null
         };
-        await BidderModels.insertToPermission(entity);
+        await bidderModels.insertToPermission(entity);
     }
     else{
         const entity = {
@@ -371,13 +754,13 @@ router.post('/auction/:id', async function (req, res){
             MaxPrice: req.body.txtPrice,
             Time: d
         };
-        const product = await ProductModels.findById(entity.ProID);
+        const product = await productModel.findById(entity.ProID);
         const endDate = new Date(product.EndDate);
         const diffTime = endDate.getTime() - d.getTime();
         console.log(diffTime);
-        const priceList = await ProductModels.getMaxPriceByProID(entity.ProID);
+        const priceList = await productModel.getMaxPriceByProID(entity.ProID);
         if (priceList.length === 0){
-            await BidderModels.insertMaxPrice(entity);
+            await bidderModels.insertMaxPrice(entity);
             const new_entity = {
                 UserID: res.locals.authUser.UserID,
                 ProID: req.params.id,
@@ -390,21 +773,21 @@ router.post('/auction/:id', async function (req, res){
                 new_entity.isBuyNow = 1;
                 new_entity.Price = product.PriceBuyNow;
             }
-            await ProductModels.insertAuction(new_entity);
-            await ProductModels.updatePriceProduct(new_entity);
+            await productModel.insertAuction(new_entity);
+            await productModel.updatePriceProduct(new_entity);
             if (req.body.txtBuyNow !== undefined)
-                await ProductModels.updateWinnerProduct(new_entity);
+                await productModel.updateWinnerProduct(new_entity);
             if (diffTime <= 300000 && product.AutoExtendTime === 1)
-                await ProductModels.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
+                await productModel.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
             await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
             await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
         }
         else{
-            const obj = await BidderModels.selectMaxPrice(entity);
+            const obj = await bidderModels.selectMaxPrice(entity);
             if (obj[0].Num !== 0)
-                await BidderModels.updateMaxPrice(entity);
+                await bidderModels.updateMaxPrice(entity);
             else
-                await BidderModels.insertMaxPrice(entity);
+                await bidderModels.insertMaxPrice(entity);
             if (product.CurrentPrice != entity.MaxPrice){
                 const new_entity = {
                     ProID: req.params.id,
@@ -438,12 +821,12 @@ router.post('/auction/:id', async function (req, res){
                     }
                 }
                 if ((priceList[0].UserID !== entity.UserID) || (priceList[0].UserID === entity.UserID && req.body.txtBuyNow !== undefined)){
-                    await ProductModels.insertAuction(new_entity);
-                    await ProductModels.updatePriceProduct(new_entity);
+                    await productModel.insertAuction(new_entity);
+                    await productModel.updatePriceProduct(new_entity);
                     if (req.body.txtBuyNow !== undefined)
-                        await ProductModels.updateWinnerProduct(new_entity);
+                        await productModel.updateWinnerProduct(new_entity);
                     if (diffTime <= 300000 && product.AutoExtendTime === 1)
-                        await ProductModels.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
+                        await productModel.updateProductEndTime(product.ProID, new Date(endDate.setMinutes(endDate.getMinutes()+10)));
                     await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
                     await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
                     if (new_entity.UserID !== priceList[0].UserID)
@@ -461,9 +844,9 @@ router.post('/auction/:id', async function (req, res){
                         Header: res.locals.authUser.UserID,
                         isBuyNow: 1
                     };
-                    await ProductModels.insertAuction(new_entity);
-                    await ProductModels.updatePriceProduct(new_entity);
-                    await ProductModels.updateWinnerProduct(new_entity);
+                    await productModel.insertAuction(new_entity);
+                    await productModel.updatePriceProduct(new_entity);
+                    await productModel.updateWinnerProduct(new_entity);
                     await FuncMdw.sendEmail(new_entity.UserID, `Bạn đã đấu giá thành công sản phẩm ${new_entity.ProID} với mức giá ${new_entity.Price}`);
                     await FuncMdw.sendEmail(product.UploadUser, `Sản phẩm ${new_entity.ProID} hiện đang có mức giá ${new_entity.Price} giữ bởi người dùng ${new_entity.UserID}`);
                     if (new_entity.UserID !== priceList[0].UserID)
@@ -476,7 +859,7 @@ router.post('/auction/:id', async function (req, res){
     res.redirect(url);
 })
 
-router.get("/AuctionList", async function (req, res){
+router.get("/AuctionList", auth, async function (req, res){
     req.session.retURL = req.originalUrl;
     const userID = res.locals.authUser.UserID;
     const d = new Date();
@@ -515,8 +898,37 @@ router.get("/AuctionList", async function (req, res){
         const CatID1 = await productModel.getCatID1FromCatID2(CatID2);
         obj.CatID1 = CatID1.CatID1;
     }
+    //get highest bidder + number of auction
+    for(const c of list){
+        const highestBidder =  await productModel.getUsernameMaxPriceByProID(c.ProID)
+        if (highestBidder === null){
+            c.highestBidder = 'None'
+        }else{
+            c.highestBidder = highestBidder.Username
+        }
 
-    //check wwhich product selected in watch list
+        const numberofAuction = await productModel.getNumberofAuctionByProID(c.ProID)
+        if(numberofAuction === null){
+            c.numberAuction = 0
+        }else{
+            c.numberAuction = numberofAuction.NumberOfAuction
+        }
+
+        //check í new product. (3 days)
+        const now = new Date();
+        const date1 = moment.utc(now).format('MM/DD/YYYY')
+        const date2 = moment.utc(c.UploadDate).format('MM/DD/YYYY')
+        const diffTime = Math.abs(new Date(date1)- new Date(date2));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 3){
+            c.isNew = true
+        }
+        else
+            c.isNew = false
+    }
+
+    //check which product selected in watch list
     if (res.locals.WatchListByUSerID != undefined){
         for(const c of list){
             for (const d of res.locals.WatchListByUSerID){
@@ -527,7 +939,6 @@ router.get("/AuctionList", async function (req, res){
         }
     }
     const isLogin = req.session.auth || false
-    console.log(isLogin)
 
     res.render('vwProducts/auctionList', {
         products: list,
@@ -540,7 +951,8 @@ router.get("/AuctionList", async function (req, res){
     })
 });
 
-router.get('/WinList', async function(req, res){
+//Khang
+router.get('/WinList', auth,async function(req, res){
     req.session.retURL = req.originalUrl;
     const userID = res.locals.authUser.UserID;
 
@@ -562,7 +974,7 @@ router.get('/WinList', async function(req, res){
         })
     }
 
-    const list = await ProductModels.getWinningListWithLimitOffset(userID, limit, offset);
+    const list = await productModel.getWinningListWithLimitOffset(userID, limit, offset);
 
     for (const obj of list){
         const CatID2 = obj.CatID2;
@@ -570,7 +982,7 @@ router.get('/WinList', async function(req, res){
         obj.CatID1 = CatID1.CatID1;
     }
     //check wwhich product selected in watch list
-    if (res.locals.WatchListByUSerID != undefined){
+    if (res.locals.WatchListByUSerID != null){
         for(const c of list){
             for (const d of res.locals.WatchListByUSerID){
                 if (c.ProID === d.ProID){
@@ -580,7 +992,6 @@ router.get('/WinList', async function(req, res){
         }
     }
     const isLogin = req.session.auth || false
-    console.log(isLogin)
 
     res.render('vwProducts/winList', {
         products: list,
@@ -592,5 +1003,4 @@ router.get('/WinList', async function(req, res){
         isLogin
     })
 })
-// Khang
 export default router;

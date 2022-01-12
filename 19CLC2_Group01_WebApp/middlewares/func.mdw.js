@@ -8,8 +8,8 @@ export default {
         var transporter = mails.createTransport({
             service: 'gmail',
             auth: {
-                user: 'ddkhang19@clc.fitus.edu.vn',
-                pass: 'khang9901'
+                user: 'khuong16lop9a6@gmail.com',
+                pass: '0903024916'
             }
         });
 

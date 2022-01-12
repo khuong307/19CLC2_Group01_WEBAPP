@@ -8,7 +8,6 @@ const router = express.Router();
 router.get('/', async function(req, res){
     req.session.retURL = req.originalUrl
     const list = await productModel.findAll()
-    console.log(list)
     res.render('vwProducts/index', {
         products: list
     })
@@ -31,7 +30,6 @@ router.get('/edit', async function(req, res){
     req.session.retURL = req.originalUrl
     const id = req.query.id || 0;
     const product = await productModel.findById(id)
-    console.log(category);
     if(category === null){
         return res.redirect('/admin/products')
     }
@@ -44,7 +42,6 @@ router.get('/edit', async function(req, res){
 router.post('/del', async function(req, res){
     req.session.retURL = req.originalUrl
     const id = req.body.ProID
-    console.log(id)
     const ret = await productModel.deleteCate(id);
     res.redirect('/admin/products')
 })
