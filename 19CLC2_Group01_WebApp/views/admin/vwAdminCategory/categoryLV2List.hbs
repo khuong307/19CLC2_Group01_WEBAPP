@@ -1,3 +1,22 @@
+{{#section 'css'}}
+    <style>
+        .display-responsive-table{
+            display: none;
+        }
+
+        @media only screen and (max-width: 768px){
+            .hidden{
+                display: none;
+            }
+
+            .display-responsive-table{
+                display: block;
+                margin-left: -17px;
+            }
+        }
+    </style>
+{{/section}}
+
 <div class="card text">
     <h4 class="card-header d-flex justify-content-between">
         <span style="text-decoration: underline">Danh mục cấp 2</span>
@@ -7,7 +26,7 @@
         </a>
     </h4>
 
-    <table class="table" id="CategoryTable" style="text-align: center">
+    <table class="table hidden" id="CategoryTable" style="text-align: center">
         <thead>
         <tr class="table-active" style="background-color: #1a8257; color: white">
             <th scope="col">ID</th>
@@ -26,6 +45,38 @@
                 <td>{{ProductCount}}</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-primary" href="/admin/categories/lv2/edit?id={{CatID2}}&quantity={{ProductCount}}" role="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Chỉnh sửa
+                    </a>
+
+                    <a class="btn btn-sm btn-danger" value="{{CatID2}}" value1="{{ProductCount}}" value2="{{CatName2}}" id="btnDelete" role="button">
+                        <i class=" fa fa-trash" aria-hidden="true"></i>
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    <table class="display-responsive-table" id="CategoryTable" style="text-align: center">
+        <thead>
+        <tr class="table-active" style="background-color: #1a8257; color: white">
+            <th scope="col">ID</th>
+            <th scope="col">Danh mục L2</th>
+            <th scope="col">Danh mục L1</th>
+            <th scope="col">Số lượng sản phẩm</th>
+            <th scope="col" style="text-align: center">Tính năng</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each this.categories}}
+            <tr class="table" style="font-size: 21px;background-color: #dfffd1">
+                <th scope="row">{{CatID2}}</th>
+                <td>{{CatName2}}</td>
+                <td>{{CatName1}}</td>
+                <td>{{ProductCount}}</td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-primary" style="margin-bottom: 5px" href="/admin/categories/lv2/edit?id={{CatID2}}&quantity={{ProductCount}}" role="button">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Chỉnh sửa
                     </a>

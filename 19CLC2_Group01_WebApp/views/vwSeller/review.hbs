@@ -6,12 +6,28 @@
             border-radius: 5px;
             border-width: 1px;
         }
+        .display{
+            display: flex;
+        }
+        .margin{
+            margin-left: 0.5rem;
+        }
+        @media only screen and (max-width: 768px){
+            .display{
+                display: block;
+            }
+            .margin{
+                margin-top: 8px;
+                margin-left: 114px;
+                margin-right: 40px;
+            }
+        }
     </style>
 {{/section}}
 
 <div class="card text">
-    <h4 class="card-header d-flex">
-        Điểm đánh giá: <span style="color: #0f3596; font-weight: bold">&nbsp{{username}}</span><span class="badge badge-danger ml-2">
+    <h4 class="card-header display">
+        Điểm đánh giá: <span style="color: #0f3596; font-weight: bold">&nbsp{{username}}</span><span class="badge badge-danger margin">
         {{#ifCond this.userInfo.DislikePoint 0}}
             {{#ifCond this.userInfo.LikePoint 0}}
                 0%

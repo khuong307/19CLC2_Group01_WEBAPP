@@ -78,19 +78,19 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow responsive-display-navbar"
          style="border-radius: 10px">
         {{this.product.ProName}}
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarFeature"
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarFeature1"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarFeature">
+        <div class="collapse navbar-collapse" id="navbarFeature1">
             <ul class="navbar-nav">
                 <div class="list-group list-group-root well mb-2">
                     {{#if this.auth}}
                         {{#if this.actorAdmin}}
                             <form action="/admin/products/delView?id={{this.product.ProID}}" method="post">
                             <input type="hidden" name="ProID" value={{this.product.ProID}}>
-                            <button class="btn btn-outline-danger" type="submit">
+                            <button class="btn btn-outline-danger mt-2" style="width: 97%" type="submit">
                                 <i class="fa fa-trash"></i>
                                 Xóa
                             </button>
@@ -131,17 +131,17 @@
                 {{#if auth}}
                     {{#if isOwner}}
                     {{else}}
-                        <button type="button" class="btn btn-outline-warning mr-2 mb-2" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">
+                        <button type="button" class="btn btn-outline-warning mr-2 mb-2" data-toggle="modal" data-target="#exampleModal22" data-whatever="@mdo">
                             <i class="fa fa-gavel"></i>
                             Đấu giá
                         </button>
 
-                        <button type="button" class="btn btn-outline-success mr-2" data-toggle="modal" data-target="#BuyNowModal" data-whatever="@mdo">
+                        <button type="button" class="btn btn-outline-success mr-2" data-toggle="modal" data-target="#BuyNowModal22" data-whatever="@mdo">
                             <i class="fa fa-shopping-cart"></i>
                             Mua ngay
                         </button>
 
-                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="exampleModal22" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -206,7 +206,7 @@
                             </div>
                         </div>
 
-                        <div class="modal fade" id="BuyNowModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="BuyNowModal22" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -256,7 +256,7 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                                    <button type="submit" form="myform2" class="btn btn-primary">Gửi</button>
+                                                    <button type="submit" form="myform2" class="btn btn-primary">Gửi yêu cầu</button>
                                                 </div>
                                             {{else}}
                                                 <div class="modal-body">
@@ -489,7 +489,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                            <button type="submit" form="myform2" class="btn btn-primary">Gửi</button>
+                                            <button type="submit" form="myform2" class="btn btn-primary">Gửi yêu cầu</button>
                                         </div>
                                     {{else}}
                                         <div class="modal-body">
@@ -596,7 +596,7 @@
                                     <div class="float-right">
                                         <form action="/products/denyRequest?ProID={{../this.proID}}&UserID={{UserID}}" method="post">
                                             {{#if ../this.hasWinner}}
-                                                <button class="btn btn-outline-danger">
+                                                <button {{#if Status}}class="btn btn-outline-danger"{{else}}class="btn btn-danger"disabled="disabled"{{/if}} >
                                                     <i class="fa fa-trash-o"></i>
                                                 </button>
                                             {{else}}

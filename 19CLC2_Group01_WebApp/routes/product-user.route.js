@@ -560,9 +560,6 @@ router.post('/denyRequest', async function(req, res){
     const proID = req.query.ProID
     const userID = req.query.UserID
 
-    const MaxBidder = await productModel.getMaxBidderByProID(proID)
-    console.log(MaxBidder)
-    productModel.updateStatusAuctionByUserID(userID)
 
     //send OTP emails.
     var transporter = mails.createTransport({
@@ -592,19 +589,52 @@ router.post('/denyRequest', async function(req, res){
         }
     });
 
-    // //is highest bidder.
-    const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
-    const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[0].MaxPrice);
-    console.log(highestBidder)
-    if (userID === highestBidder.UserID){
-        const secondPrice = await productModel.getSecondPriceInAuction(proID)
-        productModel.updateCurrentPriceByProID(proID, secondPrice.Price)
+    const MaxBidder = await productModel.getMaxBidderByProID(proID)
+    console.log(MaxBidder.length)
+    if (MaxBidder.length === 1) {
+        console.log('hello')
+        const oldPrice = await productModel.getAuctionPriceByProIDOneBidder(proID, userID)
+        await productModel.updateCurrentPriceByProID(proID, oldPrice[0].Price)
         await productModel.deleteMaxPriceByProIDUserID(proID, userID)
+        await productModel.updateStatusAuctionByUserID(userID)
+        const url = req.headers.referer || '/'
+        res.redirect(url)
     }
+    else{
+        // //is highest bidder.
+        const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
+        const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[0].MaxPrice);
 
+        if (userID === highestBidder.UserID){
+            const secondPrice = await productModel.getSecondPriceInAuction(proID)
+            console.log(secondPrice.Price)
+            await productModel.updateCurrentPriceByProID(proID, secondPrice.Price)
+            await productModel.deleteMaxPriceByProIDUserID(proID, userID)
+        }else {
+            const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
+            const secondBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[1].MaxPrice);
 
-    const url = req.headers.referer || '/'
-    res.redirect(url)
+            // const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[0].MaxPrice);
+            if (userID === secondBidder.UserID) {
+                const thirdPrice = await productModel.getThirdPriceInMaxPrice(proID)
+                if (thirdPrice == null) {
+                    const stepPrice = await productModel.getStepPriceByProID(proID)
+                    const oldPrice = await productModel.getAuctionPriceByProID(proID, userID)
+                    await productModel.updateCurrentPriceByProID(proID, stepPrice[0].StepPrice + oldPrice[0].Price)
+                    await productModel.updateAuctionPriceMaxBidder(proID, highestBidder.UserID, stepPrice[0].StepPrice + oldPrice[0].Price)
+                    await productModel.deleteMaxPriceByProIDUserID(proID, userID)
+                } else {
+                    const stepPrice = await productModel.getStepPriceByProID(proID)
+                    await productModel.updateCurrentPriceByProID(proID, thirdPrice.MaxPrice + stepPrice[0].StepPrice)
+                    await productModel.updateAuctionPriceMaxBidder(proID, highestBidder.UserID, thirdPrice.MaxPrice + stepPrice[0].StepPrice)
+                    await productModel.deleteMaxPriceByProIDUserID(proID, userID)
+                }
+            }
+        }
+        await productModel.updateStatusAuctionByUserID(userID)
+        const url = req.headers.referer || '/'
+        res.redirect(url)
+    }
 })
 
 

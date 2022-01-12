@@ -365,16 +365,29 @@ export default {
         return db('MaxPrice').where('UserID', userID).del()
     },
     async getSecondPriceInAuction(proID){
-        const ans = await db('Auction').where('ProID', proID).orderBy('Price', 'ASC')
+        const ans = await db('Auction').where('ProID', proID).andWhere('Status', '1').orderBy('Price', 'ASC')
+        console.log(ans)
         if(ans.length === 0)
             return null
         else
             return ans[ans.length - 2]
     },
+    async getThirdPriceInMaxPrice(proID){
+        const ans = await db('MaxPrice').where('ProID', proID).orderBy('MaxPrice', 'ASC')
+        if(ans.length === 0)
+            return null
+        else
+            return ans[ans.length - 3]
+    },
     async updateCurrentPriceByProID(proID, newPrice){
         return db('Product').where('ProID', proID).update('CurrentPrice', newPrice)
     },
-
+    async updateAuctionPriceMaxBidder(proID, userID, newPrice){
+        return db('Auction').where('ProID', proID).where('UserID', userID).update('Price', newPrice)
+    },
+    async getStepPriceByProID(proID){
+        return db('Product').where('ProID', proID).select('StepPrice', 'CurrentPrice')
+    },
     async delWatchListOutDate(){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const watch = await db('Product').where('EndDate', '<', now).whereNull('Winner').select('ProID')
@@ -472,6 +485,16 @@ export default {
 
     async getAuctionByProID(id){
         const lst = await db('Auction').where('ProID', id).orderBy('Time', 'desc').select();
+        return lst;
+    },
+
+    async getAuctionPriceByProID(proID,userID){
+        const lst = await db('Auction').where('ProID', proID).andWhere('UserID', userID).orderBy('Time', 'desc').select();
+        return lst;
+    },
+
+    async getAuctionPriceByProIDOneBidder(proID,userID){
+        const lst = await db('Auction').where('ProID', proID).andWhere('UserID', userID).orderBy('Time', 'ASC').select();
         return lst;
     },
 
