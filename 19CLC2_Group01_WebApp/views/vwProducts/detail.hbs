@@ -338,10 +338,11 @@
                                     </a>
                                 </td>
                                 <td>
+<!--                                    sửa chỗ này nè-->
                                     <div class="float-right">
                                         <form action="/products/denyRequest?ProID={{../this.proID}}&UserID={{UserID}}" method="post">
                                             {{#if ../this.hasWinner}}
-                                                <button class="btn btn-outline-danger">
+                                                <button {{#if Status}}class="btn btn-outline-danger"{{else}}class="btn btn-danger"disabled="disabled"{{/if}} >
                                                     <i class="fa fa-trash-o"></i>
                                                 </button>
                                             {{else}}
