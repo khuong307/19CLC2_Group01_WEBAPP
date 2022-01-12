@@ -548,7 +548,7 @@ router.post('/delete',async function(req,res){
     var transporter = mails.createTransport({
         service: 'gmail',
         auth: {
-            user: 'khuong16lop9a6.com',
+            user: 'khuong16lop9a6@gmail.com',
             pass: '0903024916'
         }
     });
@@ -556,7 +556,7 @@ router.post('/delete',async function(req,res){
     var mailOptions = {
         from: 'khuong16lop9a6@gmail.com',
         to: email,
-        subject: 'Bidding Wep App: Xóa tài khoảnr',
+        subject: 'Bidding Wep App: Xóa tài khoản',
         text: 'Tài khoản của bạn đã bị xóa khỏi hệ thống đấu giá trực tuyến'
     };
     transporter.sendMail(mailOptions, function(error, info){
