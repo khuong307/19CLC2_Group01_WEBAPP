@@ -3,6 +3,7 @@ import express from 'express';
 import productModel from '../../models/product.models.js';
 import auth from "../../middlewares/auth.mdw.js";
 import mails from "nodemailer";
+import {rmdirSync} from "fs";
 
 const router = express.Router();
 
@@ -54,8 +55,10 @@ router.post('/del',auth,async function(req,res){
     }
     req.session.retURL=req.originalUrl;
 
+
     // Lấy ProID trong query string
     const ProID=req.query.id;
+    const Cat2 = await productModel.getCatID2FromProID(ProID)
     // Lấy full thông tin Product
     const ProInfo=await productModel.findById(ProID);
     // Lấy danh sách những bidder đặt sản phẩm đó
@@ -84,6 +87,16 @@ router.post('/del',auth,async function(req,res){
     const retWatchList=await productModel.delWatchListByProId(ProID);
     const retProInfo=await productModel.delProInfoSearchByProId(ProID);
     const retProduct=await productModel.delProductByProId(ProID);
+
+    //xóa folder ảnh
+
+    try {
+        const catId1 = await productModel.getCatID1FromCatID2(Cat2.CatID2)
+        const folderDelPro = './public/imgs/sp/'+catId1.CatID1+'/'+Cat2.CatID2+'/'+ProInfo.ProID
+        console.log(folderDelPro)
+        rmdirSync(folderDelPro, { recursive: true });
+    } catch (err) {
+    }
 
     res.json({
         msg:"Xóa thành công",

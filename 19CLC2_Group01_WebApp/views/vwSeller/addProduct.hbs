@@ -25,6 +25,13 @@
                 alert('Hãy chọn danh mục cấp 1');
                 return;
             }
+            const price = $('#CurrentPrice').val();
+            const maxPrice = $('#PriceBuyNow').val();
+
+            if (parseInt(maxPrice) > 0 && parseInt(maxPrice) <= parseInt(price)){
+                alert('Giá mua ngay phải lớn hơn giá khởi điểm!');
+                return;
+            }
 
             if(new Date(date) < new Date()){
                 alert('Ngày kết khúc không hợp lệ');
@@ -256,7 +263,7 @@
                         </div>
                         <div class="input-box">
                             <span class="details">Giá khởi điểm:</span>
-                            <input type="number" placeholder="Nhập giá khởi điểm" required name="CurrentPrice">
+                            <input type="number" placeholder="Nhập giá khởi điểm" required name="CurrentPrice" id="CurrentPrice">
                         </div>
                         <div class="input-box">
                             <span class="details">Giá tăng tối thiểu:</span>
@@ -264,7 +271,7 @@
                         </div>
                         <div class="input-box">
                             <span class="details">Giá mua ngay:</span>
-                            <input type="number" placeholder="Nhập giá mua ngay (nếu có)" name="PriceBuyNow">
+                            <input type="number" placeholder="Nhập giá mua ngay (nếu có)" name="PriceBuyNow" id="PriceBuyNow">
                         </div>
                         <div class="input-box">
                             <span class="details">Thời gian kết thúc</span>
@@ -276,7 +283,7 @@
                         </div>
                         <div class="input-box">
                             <span class="details">Mô tả chi tiết:</span>
-                            <textarea id="FullDes" name="FullDes">Ghi mô tả chi tiết tại đây</textarea>
+                            <textarea id="FullDes" name="FullDes">Mô tả chi tiết tại đây</textarea>
                         </div>
                         <div class="input-box">
                             <span class="details">Tự động gia hạn khi có lượt đấu giá mới:
