@@ -230,7 +230,7 @@ export default {
                              or
                              MATCH(ProInfoSearch.CatName2)
                              AGAINST('${content}'))
-                     ORDER BY ProInfoSearch.CurrentPrice ASC
+                     ORDER BY Product.CurrentPrice ASC
                          LIMIT ${limit} 
                          OFFSET ${offset}`;
 
@@ -262,7 +262,7 @@ export default {
                              or
                              MATCH(ProInfoSearch.CatName2)
                              AGAINST('${content}'))
-                     ORDER BY ProInfoSearch.EndDate DESC
+                     ORDER BY Product.EndDate DESC
                      LIMIT ${limit} 
                      OFFSET ${offset}`;
 

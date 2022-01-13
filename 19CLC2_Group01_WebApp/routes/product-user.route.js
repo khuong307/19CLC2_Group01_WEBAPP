@@ -620,8 +620,8 @@ router.post('/denyRequest', async function(req, res){
                 if (thirdPrice == null) {
                     const stepPrice = await productModel.getStepPriceByProID(proID)
                     const oldPrice = await productModel.getAuctionPriceByProID(proID, userID)
-                    await productModel.updateCurrentPriceByProID(proID, stepPrice[0].StepPrice + oldPrice[0].Price)
-                    await productModel.updateAuctionPriceMaxBidder(proID, highestBidder.UserID, stepPrice[0].StepPrice + oldPrice[0].Price)
+                    await productModel.updateCurrentPriceByProID(proID, oldPrice[0].Price)
+                    await productModel.updateAuctionPriceMaxBidder(proID, highestBidder.UserID, oldPrice[0].Price)
                     await productModel.deleteMaxPriceByProIDUserID(proID, userID)
                 } else {
                     const stepPrice = await productModel.getStepPriceByProID(proID)
