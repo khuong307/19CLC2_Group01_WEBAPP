@@ -103,6 +103,15 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 20px;
+            }
+
+            .card-title{
+                text-align: center;
+            }
+        }
     </style>
 {{/section}}
 <div class="container" style="border-radius: 20px">
@@ -119,7 +128,7 @@
     <form id="formOTP"method="POST" style="align-items: center">
         <div class="row" style="justify-content: center">
             <div class="user-details" >
-                <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 30px;">
+                <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 30px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
 -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px"> OTP Code</h4>
                     <div class="input-box">

@@ -372,7 +372,6 @@ export default {
         else
             return ans[ans.length - 2]
     },
-
     async getThirdPriceInMaxPrice(proID){
         const ans = await db('MaxPrice').where('ProID', proID).orderBy('MaxPrice', 'ASC')
         if(ans.length === 0)
@@ -380,19 +379,15 @@ export default {
         else
             return ans[ans.length - 3]
     },
-
     async updateCurrentPriceByProID(proID, newPrice){
         return db('Product').where('ProID', proID).update('CurrentPrice', newPrice)
     },
-
     async updateAuctionPriceMaxBidder(proID, userID, newPrice){
         return db('Auction').where('ProID', proID).where('UserID', userID).update('Price', newPrice)
     },
-
     async getStepPriceByProID(proID){
         return db('Product').where('ProID', proID).select('StepPrice', 'CurrentPrice')
     },
-
     async delWatchListOutDate(){
         const now = moment(new Date()).utcOffset('+0700').format('YYYY-MM-DD HH:mm:ss')
         const watch = await db('Product').where('EndDate', '<', now).whereNull('Winner').select('ProID')

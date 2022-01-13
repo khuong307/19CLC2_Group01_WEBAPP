@@ -185,6 +185,12 @@
         .select:hover::after {
             color: white;
         }
+        .margin{
+            margin-left: 1rem;
+        }
+        .padding-left{
+            padding-left: 300px;
+        }
 
         @media (max-width: 584px){
             .container{
@@ -202,6 +208,18 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 6px;
+                margin-bottom: 20px;
+            }
+            .margin{
+                margin-left: 0px;
+            }
+            form .button{
+                padding-left: 85px;
+            }
+        }
     </style>
 {{/section}}
 {{#if this.isSeller}}
@@ -210,11 +228,11 @@
         <form id="formAddProduct" method="POST" enctype="multipart/form-data">
             <div class="user-details" >
                 <div class="col-lg-6">
-                    <div class="card" style="align-items: center; border-radius: 10px;border-color: #0b409c">
+                    <div class="card padding" style="align-items: center; border-radius: 10px;border-color: #0b409c">
                         <div class="input-box">
                             <div class="select">
                                 <span class="details justify-content-between mt-2">Danh mục cấp 1:
-                                    <select name="CateL1" id="CateL1" class="ml-3" style ="color: #c42e23">
+                                    <select name="CateL1" id="CateL1" class="margin" style ="color: #c42e23">
                                         <option selected disabled>Chọn danh mục<i class="fa fa-arrow-down float-right"></i></option>
                                         {{#each this.CateL1}}
                                             <option value="{{CatName1}}">{{CatName1}}</option>
@@ -226,7 +244,7 @@
                         <div class="input-box">
                             <div class="select">
                                 <span class="details">Danh mục cấp 2:
-                                    <select name="CateL2" id="CateL2" class="ml-3" style ="color: #c42e23">
+                                    <select name="CateL2" id="CateL2" class="margin" style ="color: #c42e23">
                                         <option value="" selected="selected">Chọn danh mục cấp 1 trước</option>
                                     </select>
                                 </span>
@@ -262,7 +280,7 @@
                         </div>
                         <div class="input-box">
                             <span class="details">Tự động gia hạn khi có lượt đấu giá mới:
-                                <input class="form-check-input ml-4" type="checkbox" style="padding-left: 60px; width: 20px; height: 20px;" name="Extend">
+                                <input class="form-check-input ml-4" type="checkbox" style="padding-left: 300px; width: 20px; height: 20px;" name="Extend">
                             </span>
                         </div>
                     </div>
@@ -276,7 +294,7 @@
                     </div>
                 </div>
             </div>
-            <div class="button" style="padding-left: 300px">
+            <div class="button padding-left">
                 <input type="submit" value="Xác nhận" id="Confirm">
             </div>
         </form>

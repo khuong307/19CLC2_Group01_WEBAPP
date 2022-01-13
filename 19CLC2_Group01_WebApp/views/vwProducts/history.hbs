@@ -8,6 +8,20 @@
         .carousel-control-next-icon {
             background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
         }
+
+        .display-responsive-table{
+            display: none;
+        }
+
+        @media only screen and (max-width: 768px){
+            .hidden{
+                display: none;
+            }
+
+            .display-responsive-table{
+                display: block;
+            }
+        }
     </style>
 {{/section}}
 {{#section 'js'}}
@@ -71,11 +85,10 @@
             </div>
             <div class="col-sm-8">
                 <p style="font-size: 23px"> <span>Tên sản phẩm:</span> <span style="font-weight: bold; color: darkorange"> {{this.product.ProName}}</span></p>
-                <p> <span> <i class="fa fa-clock-o"></i> Ngày đăng:</span> <span style="font-weight: bold; color: #1a8257">{{formatDate this.product.UploadDate}}</span>
-                    <span class="ml-3"><i class="fa fa-clock-o"></i> Ngày hết hạn:</span>
-                <span class="card-title text-success" style="text-align: center; font-weight: bold; font-size: 20px" id="example1" data-countdown="{{formatDateCountdown this.product.EndDate}}"></span></p>
+                <p> <span> <i class="fa fa-clock-o"></i> Ngày đăng:</span> <span style="font-weight: bold; color: #1a8257">{{formatDate this.product.UploadDate}}</span></p>
+                <p> <span><i class="fa fa-clock-o"></i> Ngày hết hạn:</span><span class="card-title text-success" style="text-align: center; font-weight: bold; font-size: 20px" id="example1" data-countdown="{{formatDateCountdown this.product.EndDate}}"></span></p>
                 <p> <span><i class="fa fa-money"></i> Giá mua:</span> <span style="font-weight: bold; color: #c42e23">{{format_number this.product.CurrentPrice}}</span></p>
-                <table class="table table-hover table-bordered bg-light">
+                <table class="table table-hover table-bordered bg-light hidden">
                     <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -88,6 +101,24 @@
                     {{#each this.Users}}
                         <tr>
                             <th scope="row">{{No}}</th>
+                            <td>{{format_date Time}}</td>
+                            <td>{{MaskCharacter Username}}</td>
+                            <td>{{format_number Price}}</td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+                <table class="table-hover table-bordered bg-light display-responsive-table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Thời điểm ra giá</th>
+                        <th scope="col">Người ra giá</th>
+                        <th scope="col">Giá hiện tại</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each this.Users}}
+                        <tr>
                             <td>{{format_date Time}}</td>
                             <td>{{MaskCharacter Username}}</td>
                             <td>{{format_number Price}}</td>

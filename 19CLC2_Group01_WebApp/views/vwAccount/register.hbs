@@ -39,8 +39,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css">
     <style>
         *{
-            margin: 0;
-            padding: 0;
+            /*margin: 0;*/
+            /*padding: 0;*/
             box-sizing: border-box;
         }
         .container{
@@ -133,6 +133,27 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 20px;
+            }
+
+            .card-title{
+                text-align: center;
+            }
+
+            .margin{
+                margin-top: 20px;
+            }
+
+            form .button{
+                padding-left: 90px;
+            }
+
+            .margin-captcha{
+                margin-left: -30px;
+            }
+        }
     </style>
 {{/section}}
 <div class="container">
@@ -141,7 +162,7 @@
     <form id="formRegister" method="POST">
         <div class="user-details">
             <div class="col-md-6">
-                <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px; padding-bottom: 10px"> Thông tin người dùng</h4>
                     <div class="input-box">
@@ -154,7 +175,7 @@
                     </div>
                     <div class="input-box">
                         <span class="details">Năm sinh</span>
-                        <input data-toggle="datepicker" type="text" placeholder="Chọn ngày tháng năm sinh" required name="Dob">
+                        <input data-toggle="datepicker" type="text" placeholder="Chọn ngày tháng năm sinh " required name="Dob">
                     </div>
                     <div class="input-box">
                         <span class="details">Địa chỉ</span>
@@ -163,8 +184,8 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+            <div class="col-md-6 margin">
+                <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px; padding-bottom: 10px">Thông tin tài khoản</h4>
                     <div class="input-box">
@@ -180,7 +201,7 @@
                         <input type="password" placeholder="Xác nhận lại mật khẩu" id="ConfirmPassword" required>
                     </div>
                 </div>
-                <div style="align-items: center; padding-top: 17px" class="g-recaptcha" data-sitekey="6LcBnaQdAAAAAE5JVlofp-twIKK0o6d2x4AczT1L
+                <div style="align-items: center; padding-top: 17px" class="g-recaptcha margin-captcha" data-sitekey="6LcBnaQdAAAAAE5JVlofp-twIKK0o6d2x4AczT1L
 " data-callback="recaptcha_callback"></div>
             </div>
         </div>

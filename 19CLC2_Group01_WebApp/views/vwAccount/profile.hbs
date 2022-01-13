@@ -95,6 +95,15 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 20px;
+            }
+
+            .card-title{
+                text-align: center;
+            }
+        }
     </style>
 {{/section}}
 {{#section 'js'}}
@@ -114,7 +123,7 @@
     <form id="formRegister" method="POST">
         <div class="user-details">
             <div class="col-md-6">
-                <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px; padding-bottom: 10px"> Thông tin người dùng</h4>
                     <div class="input-box">
@@ -135,7 +144,7 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                     <h4 class="card-title"style="background: -webkit-linear-gradient(#71b7e6, #9b59b6);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding-top: 5px; padding-bottom: 10px">Thông tin tài khoản</h4>
                     <div class="input-box">

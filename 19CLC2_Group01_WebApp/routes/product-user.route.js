@@ -591,7 +591,7 @@ router.post('/denyRequest', async function(req, res){
 
     const MaxBidder = await productModel.getMaxBidderByProID(proID)
     console.log(MaxBidder.length)
-    if (MaxBidder.length === 1){
+    if (MaxBidder.length === 1) {
         console.log('hello')
         const oldPrice = await productModel.getAuctionPriceByProIDOneBidder(proID, userID)
         await productModel.updateCurrentPriceByProID(proID, oldPrice[0].Price)
@@ -599,7 +599,8 @@ router.post('/denyRequest', async function(req, res){
         await productModel.updateStatusAuctionByUserID(userID)
         const url = req.headers.referer || '/'
         res.redirect(url)
-    }else{
+    }
+    else{
         // //is highest bidder.
         const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
         const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[0].MaxPrice);
@@ -609,29 +610,27 @@ router.post('/denyRequest', async function(req, res){
             console.log(secondPrice.Price)
             await productModel.updateCurrentPriceByProID(proID, secondPrice.Price)
             await productModel.deleteMaxPriceByProIDUserID(proID, userID)
-        }else{
+        }else {
             const maxPriceByProID = await productModel.getMaxPriceByProID(proID)
             const secondBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[1].MaxPrice);
 
             // const highestBidder = await productModel.getUserIDHasMaxPrice(proID, maxPriceByProID[0].MaxPrice);
-            if (userID === secondBidder.UserID){
+            if (userID === secondBidder.UserID) {
                 const thirdPrice = await productModel.getThirdPriceInMaxPrice(proID)
-                if (thirdPrice == null){
+                if (thirdPrice == null) {
                     const stepPrice = await productModel.getStepPriceByProID(proID)
                     const oldPrice = await productModel.getAuctionPriceByProID(proID, userID)
-                    await productModel.updateCurrentPriceByProID(proID, stepPrice[0].StepPrice + oldPrice[0].Price )
-                    await productModel.updateAuctionPriceMaxBidder(proID,highestBidder.UserID, stepPrice[0].StepPrice + oldPrice[0].Price )
+                    await productModel.updateCurrentPriceByProID(proID, stepPrice[0].StepPrice + oldPrice[0].Price)
+                    await productModel.updateAuctionPriceMaxBidder(proID, highestBidder.UserID, stepPrice[0].StepPrice + oldPrice[0].Price)
                     await productModel.deleteMaxPriceByProIDUserID(proID, userID)
-                }
-                else{
+                } else {
                     const stepPrice = await productModel.getStepPriceByProID(proID)
                     await productModel.updateCurrentPriceByProID(proID, thirdPrice.MaxPrice + stepPrice[0].StepPrice)
-                    await productModel.updateAuctionPriceMaxBidder(proID,highestBidder.UserID, thirdPrice.MaxPrice +stepPrice[0].StepPrice)
+                    await productModel.updateAuctionPriceMaxBidder(proID, highestBidder.UserID, thirdPrice.MaxPrice + stepPrice[0].StepPrice)
                     await productModel.deleteMaxPriceByProIDUserID(proID, userID)
                 }
             }
         }
-
         await productModel.updateStatusAuctionByUserID(userID)
         const url = req.headers.referer || '/'
         res.redirect(url)

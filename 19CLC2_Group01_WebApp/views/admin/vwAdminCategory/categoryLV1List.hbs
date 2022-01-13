@@ -1,3 +1,13 @@
+{{#section 'css'}}
+    <style>
+        @media only screen and (max-width: 768px){
+            .margin{
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+{{/section}}
+
 <div class="card text" style="border-radius: 10px">
     <h4 class="card-header d-flex justify-content-between">
         <span style="text-decoration: underline">Danh mục cấp 1</span>
@@ -23,7 +33,7 @@
                 <td>{{CatName1}}</td>
                 <td>{{ProductCount}}</td>
                 <td class="text-center">
-                    <a class="btn btn-sm btn-success" href="/admin/categories/lv1/detailL2?id={{CatID1}}" role="button">
+                    <a class="btn btn-sm btn-success margin" href="/admin/categories/lv1/detailL2?id={{CatID1}}" role="button">
                     <i class="fa fa-eye" aria-hidden="true"></i>
                     Danh mục cấp 2
                     </a>

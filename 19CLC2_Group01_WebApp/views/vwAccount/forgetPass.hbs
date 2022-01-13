@@ -112,6 +112,11 @@
                 width: 0;
             }
         }
+        @media only screen and (max-width: 768px){
+            .padding{
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -133,7 +138,7 @@
         <div class="row justify-content-center">
             <form method="POST">
                 <div class="user-details">
-                    <div class="card" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
+                    <div class="card padding" style="align-items: center; border-color: #0b409c; border-radius: 10px;">
                         <div class="input-box">
                             <i class="fa fa-envelope"></i>
                             <input type="text" placeholder="Enter your email" name="Email" id = "email" required>
