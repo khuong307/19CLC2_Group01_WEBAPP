@@ -169,7 +169,7 @@
                                     {{else}}
                                         {{#if this.userInfo.Auction}}
                                             <div class="modal-body">
-                                                <form id="myform1" method="post" action="/products/auction/{{this.product.ProID}}">
+                                                <form id="myform3" method="post" action="/products/auction/{{this.product.ProID}}">
                                                     <div class="form-group">
                                                         <label for="recipient-name" class="col-form-label">Ra giá</label>
                                                         <input type="number" step={{this.product.StepPrice}} min={{this.product.CurrentPrice}} max={{this.product.PriceBuyNow}} class="form-control" id="recipient-name" name="txtPrice" value="{{this.product.CurrentPrice}}">
@@ -178,12 +178,12 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1" data-dismiss="modal">Gửi yêu cầu</button>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal222" data-dismiss="modal">Gửi yêu cầu</button>
                                             </div>
                                         {{else}}
                                             {{#if this.userInfo.Show}}
                                                 <div class="modal-body">
-                                                    <form id="myform1" method="post" action="/products/auction/{{this.product.ProID}}">
+                                                    <form id="myform3" method="post" action="/products/auction/{{this.product.ProID}}">
                                                         Tài khoản hiện không đủ điều kiện đấu giá. Để tiếp tục đấu giá, bạn cần gửi yêu cầu cho người bán
                                                         <input type="hidden" name="txtRequest" value="1">
                                                     </form>
@@ -234,7 +234,7 @@
                                     {{else}}
                                         {{#if this.userInfo.Auction}}
                                             <div class="modal-body">
-                                                <form id="myform2" method="post" action="/products/auction/{{this.product.ProID}}">
+                                                <form id="myform4" method="post" action="/products/auction/{{this.product.ProID}}">
                                                     <div class="form-group">
                                                         <label for="recipient-name" class="col-form-label">Giá mua ngay</label>
                                                         <input type="text" class="form-control" id="recipient-name" name="txtPrice" value="{{this.product.PriceBuyNow}}" readonly>
@@ -244,12 +244,12 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" data-dismiss="modal">Gửi yêu cầu</button>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal333" data-dismiss="modal">Gửi yêu cầu</button>
                                             </div>
                                         {{else}}
                                             {{#if this.userInfo.Show}}
                                                 <div class="modal-body">
-                                                    <form id="myform2" method="post" action="/products/auction/{{this.product.ProID}}">
+                                                    <form id="myform4" method="post" action="/products/auction/{{this.product.ProID}}">
                                                         Tài khoản hiện không đủ điều kiện đấu giá. Để tiếp tục đấu giá, bạn cần gửi yêu cầu cho người bán
                                                         <input type="hidden" name="txtRequest" value="1">
                                                     </form>
@@ -272,7 +272,7 @@
                             </div>
                         </div>
 
-                        <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="exampleModal222" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -286,13 +286,13 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Từ chối</button>
-                                        <button type="submit" form="myform1" class="btn btn-primary">Đồng ý</button>
+                                        <button type="submit" form="myform3" class="btn btn-primary">Đồng ý</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="exampleModal333" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -306,7 +306,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Từ chối</button>
-                                        <button type="submit" form="myform2" class="btn btn-primary">Đồng ý</button>
+                                        <button type="submit" form="myform4" class="btn btn-primary">Đồng ý</button>
                                     </div>
                                 </div>
                             </div>
