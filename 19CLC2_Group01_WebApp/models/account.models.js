@@ -131,7 +131,7 @@ export default {
 
     //check time for seller.
     async getSellerTimeValidByUserID(userID) {
-        const user = await db('ChangeLevel').where('UserID', userID).orderBy('ChangeLevel.AcceptTime', 'DESC').select('ChangeLevel.AcceptTime')
+        const user = await db('ChangeLevel').where('UserID', userID).where('Status', '1').where('Change', '1').orderBy('ChangeLevel.AcceptTime', 'DESC').select('ChangeLevel.AcceptTime')
         if (user.length === 0)
             return null
         return user[0]
